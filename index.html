@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Patrick+Hand&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=23">
+<link rel="stylesheet" href="style.css?v=24">
 </head>
 <body>
 
@@ -79,7 +79,7 @@
 </nav>
 
 <main class="wrap">
-  <p class="privacy crayon-box"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg> Answers are anonymous: only your time, city, job and shift type are saved.</p>
+  <p class="privacy crayon-box" id="privacyNote"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg> Answers are anonymous: only your time, city, job and shift type are saved.</p>
 
 
 
@@ -151,10 +151,6 @@
 
   <!-- Results -->
   <section class="results" id="results" hidden>
-    <div class="preview-note crayon-box" id="previewNote" hidden>
-    Preview mode: the crowd below is made-up sample data. Real answers start once the database is connected.
-    </div>
-    <div class="you crayon-box" id="youCard"></div>
 
     <div class="crowd crayon-box">
       <div class="crowd-head">
@@ -189,17 +185,22 @@
       </div>
     </div>
 
+    <div class="you crayon-box" id="youCard"></div>
+
     <div class="actions center">
       <button type="button" class="btn btn-ghost" id="resetBtn"><svg class="icon" aria-hidden="true"><use href="#i-reset"/></svg> Start over</button>
       <button type="button" class="btn btn-red" id="shareBtn">Share my log-off time</button>
     </div>
     <p class="share-status" id="shareStatus" aria-live="polite"></p>
+    <div class="preview-note crayon-box" id="previewNote" hidden>
+    Preview mode: the crowd below is made-up sample data. Real answers start once the database is connected.
+    </div>
   </section>
 
 </main>
 
-<script src="config.js?v=23"></script>
-<script src="data.js?v=23"></script>
-<script src="app.js?v=23"></script>
+<script src="config.js?v=24"></script>
+<script src="data.js?v=24"></script>
+<script src="app.js?v=24"></script>
 </body>
 </html>

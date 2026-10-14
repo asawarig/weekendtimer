@@ -110,7 +110,7 @@ body {
   .nav-cta { font-size: 18px; padding: 5px 12px; }
 }
 
-.preview-note { --fill: #fff4c2; padding: 12px 18px; margin: 0 0 18px; font-size: 18px; }
+.preview-note { --fill: #fff4c2; padding: 12px 18px; margin: 18px 0 0; font-size: 18px; }
 
 /* ---------- Steps ---------- */
 .step { padding: 24px 24px 22px; margin-bottom: 20px; }
@@ -232,7 +232,7 @@ button { font: inherit; color: inherit; }
 .error { color: var(--red); margin: 12px 0 0; }
 
 /* ---------- Results ---------- */
-.you { --fill: var(--red); color: #fff; text-shadow: 0 1px 0 rgba(0,0,0,.35); padding: 22px 24px; margin-bottom: 20px; text-align: center; }
+.you { --fill: var(--red); color: #fff; text-shadow: 0 1px 0 rgba(0,0,0,.35); padding: 22px 24px; margin: 4px 0 20px; text-align: center; }
 .you .label { font-size: 20px; }
 .you .big { display: block; font-family: var(--hand); font-size: clamp(48px, 12vw, 72px); line-height: 1.05; }
 .you .line { font-size: 22px; margin: 6px 0 0; }
@@ -284,6 +284,7 @@ button { font: inherit; color: inherit; }
 
 .share-status { text-align: center; min-height: 1.4em; margin: 10px 0 0; }
 
+.privacy[hidden] { display: none; }
 .privacy {
   display: table;
   margin: 0 auto 16px;

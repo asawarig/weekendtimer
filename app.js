@@ -485,6 +485,7 @@
     setSky(me.minutes);
     document.querySelectorAll('.step').forEach(s => { s.hidden = true; });
     $('results').hidden = false;
+    $('privacyNote').hidden = true;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -549,6 +550,7 @@
     $('shareStatus').textContent = '';
     renderPicker();
     $('results').hidden = true;
+    $('privacyNote').hidden = false;
     showStep(1);
   });
 
