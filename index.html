@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Q4 Planning – Final v3</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%234285f4' d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/%3E%3Cpath fill='%23a1c2fa' d='M14 2v6h6z'/%3E%3Cpath fill='%23fff' d='M8 12h8v1.5H8zm0 3h8v1.5H8zm0 3h5v1.5H8z'/%3E%3C/svg%3E">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #f9fbfd;
+    color: #1f1f1f;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+  }
+
+  /* ---------- Top bar ---------- */
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px 0;
+    background: #f9fbfd;
+  }
+  .doc-icon { width: 28px; height: 36px; flex: none; }
+  .title-block { flex: 1; min-width: 0; }
+  .title-row { display: flex; align-items: center; gap: 8px; }
+  .doc-title {
+    font-size: 18px;
+    padding: 2px 6px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    outline: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .doc-title:hover, .doc-title:focus { border-color: #747775; }
+  .star { color: #444746; font-size: 16px; }
+  .menus { display: flex; gap: 2px; flex-wrap: wrap; }
+  .menus span {
+    padding: 2px 7px;
+    border-radius: 4px;
+    cursor: default;
+    color: #1f1f1f;
+  }
+  .menus span:hover { background: #e8eaed; }
+  .last-edit {
+    color: #444746;
+    text-decoration: underline;
+    padding: 2px 7px;
+    cursor: default;
+    white-space: nowrap;
+  }
+  .right-actions { display: flex; align-items: center; gap: 12px; }
+  .share {
+    background: #c2e7ff;
+    color: #001d35;
+    border: 0;
+    border-radius: 18px;
+    padding: 9px 18px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: #7b61ff;
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-weight: bold;
+  }
+
+  /* ---------- Toolbar ---------- */
+  .toolbar {
+    margin: 8px 16px;
+    background: #edf2fa;
+    border-radius: 24px;
+    padding: 6px 14px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    overflow-x: auto;
+    white-space: nowrap;
+    color: #444746;
+  }
+  .toolbar span { padding: 3px 7px; border-radius: 4px; cursor: default; }
+  .toolbar span:hover { background: #dde3ea; }
+  .toolbar .sep { width: 1px; height: 20px; background: #c7c7c7; padding: 0; margin: 0 4px; }
+  .toolbar b, .toolbar i, .toolbar u { font-size: 15px; }
+
+  /* ---------- Page ---------- */
+  .canvas { padding: 16px 16px 60px; }
+  .page {
+    background: #fff;
+    max-width: 816px;
+    min-height: 1056px;
+    margin: 0 auto;
+    padding: 72px 96px;
+    border: 1px solid #c7c7c7;
+    font-family: Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.5;
+    outline: none;
+  }
+  .page h1 { font-size: 20pt; font-weight: normal; margin: 0 0 6px; }
+  .page .subtitle { color: #666; font-size: 13pt; margin: 0 0 24px; }
+  .page h2 { font-size: 14pt; font-weight: normal; margin: 24px 0 6px; }
+  .page p { margin: 0 0 10px; }
+  .page ul { margin: 0 0 10px; padding-left: 24px; }
+  .page table { border-collapse: collapse; width: 100%; margin: 6px 0 14px; }
+  .page th, .page td { border: 1px solid #000; padding: 5px 8px; text-align: left; vertical-align: top; }
+  .page th { background: #f3f3f3; font-weight: bold; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  .bar { height: 8px; background: #e6e6e6; border-radius: 4px; overflow: hidden; margin-top: 4px; }
+  .bar > div { height: 100%; background: #34a853; width: 0; }
+
+  .statusbar {
+    position: fixed; right: 16px; bottom: 12px;
+    background: #fff; border: 1px solid #dadce0; border-radius: 8px;
+    padding: 6px 12px; color: #444746; font-size: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.12);
+  }
+
+  @media (max-width: 760px) {
+    .menus, .toolbar { display: none; }
+    .last-edit { display: none; }
+    .page { padding: 36px 24px; min-height: auto; }
+    .share { padding: 8px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <svg class="doc-icon" viewBox="0 0 24 30" aria-hidden="true">
+    <path fill="#4285f4" d="M15 0H3a3 3 0 0 0-3 3v24a3 3 0 0 0 3 3h18a3 3 0 0 0 3-3V9z"/>
+    <path fill="#a1c2fa" d="M15 0v9h9z"/>
+    <path fill="#fff" d="M6 14h12v2H6zm0 4h12v2H6zm0 4h8v2H6z"/>
+  </svg>
+  <div class="title-block">
+    <div class="title-row">
+      <div class="doc-title" contenteditable="true" spellcheck="false">Q4 Planning – Final v3</div>
+      <span class="star">☆</span>
+    </div>
+    <nav class="menus">
+      <span>File</span><span>Edit</span><span>View</span><span>Insert</span><span>Format</span><span>Tools</span><span>Extensions</span><span>Help</span>
+      <span class="last-edit" id="lastEdit">Last edit was seconds ago</span>
+    </nav>
+  </div>
+  <div class="right-actions">
+    <button class="share" type="button">🔒 Share</button>
+    <div class="avatar">A</div>
+  </div>
+</header>
+
+<div class="toolbar" aria-hidden="true">
+  <span>↶</span><span>↷</span><span>🖶</span><span class="sep"></span>
+  <span>100% ▾</span><span class="sep"></span>
+  <span>Normal text ▾</span><span class="sep"></span>
+  <span>Arial ▾</span><span class="sep"></span>
+  <span>− 11 +</span><span class="sep"></span>
+  <span><b>B</b></span><span><i>I</i></span><span><u>U</u></span><span>A</span><span class="sep"></span>
+  <span>🔗</span><span>💬</span><span>🖼</span><span class="sep"></span>
+  <span>≡</span><span>☰</span><span>⋮</span>
+</div>
+
+<main class="canvas">
+  <article class="page" contenteditable="true" spellcheck="false">
+    <h1>Q4 Planning – Delivery Timeline</h1>
+    <p class="subtitle">Internal · Draft for review</p>
+
+    <h2>1. Summary</h2>
+    <p>This document outlines the key milestones, owners and dependencies for the upcoming delivery cycle. Teams should review the timeline below and flag any risks to their workstream before the next sync.</p>
+
+    <h2>2. Milestone Tracker</h2>
+    <table>
+      <tr><th>Milestone</th><th>Owner</th><th>Time remaining</th><th>Status</th></tr>
+      <tr>
+        <td>Stakeholder alignment</td><td>Product</td><td>—</td><td>Complete</td>
+      </tr>
+      <tr>
+        <td>Resource planning</td><td>Ops</td><td>—</td><td>Complete</td>
+      </tr>
+      <tr>
+        <td id="milestoneName">Phase 2 sign-off (Fri, 18:00)</td>
+        <td>Me</td>
+        <td class="num" id="countdown">—</td>
+        <td>
+          <span id="pct">0%</span>
+          <div class="bar"><div id="progress"></div></div>
+        </td>
+      </tr>
+      <tr>
+        <td>Retro &amp; next steps</td><td>All</td><td>TBD</td><td>Not started</td>
+      </tr>
+    </table>
+
+    <h2>3. Key Risks</h2>
+    <ul>
+      <li>Cross-team dependencies may shift timelines; owners to update weekly.</li>
+      <li>Scope changes after sign-off will be tracked in the change log.</li>
+      <li>Capacity is limited during the end-of-quarter period.</li>
+    </ul>
+
+    <h2>4. Next Steps</h2>
+    <p>Owners to confirm dates in the tracker above. Comments and suggestions are welcome directly in this document.</p>
+  </article>
+</main>
+
+<div class="statusbar" id="statusbar">All changes saved</div>
+
+<script>
+  // Weekend starts Friday 18:00 and ends Monday 09:00 (visitor's local time).
+  const START_DAY = 5, START_HOUR = 18; // Friday 6pm
+  const END_DAY = 1, END_HOUR = 9;      // Monday 9am
+
+  function lastAt(now, day, hour) {
+    const d = new Date(now);
+    d.setHours(hour, 0, 0, 0);
+    d.setDate(d.getDate() - ((d.getDay() - day + 7) % 7));
+    if (d > now) d.setDate(d.getDate() - 7);
+    return d;
+  }
+  function nextAt(now, day, hour) {
+    const d = lastAt(now, day, hour);
+    d.setDate(d.getDate() + 7);
+    return d;
+  }
+  function fmt(ms) {
+    const s = Math.max(0, Math.floor(ms / 1000));
+    const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600),
+          m = Math.floor(s % 3600 / 60), sec = s % 60;
+    const pad = n => String(n).padStart(2, '0');
+    return (d ? d + 'd ' : '') + pad(h) + 'h ' + pad(m) + 'm ' + pad(sec) + 's';
+  }
+
+  const $ = id => document.getElementById(id);
+
+  function tick() {
+    const now = new Date();
+    const lastStart = lastAt(now, START_DAY, START_HOUR);
+    const lastEnd = lastAt(now, END_DAY, END_HOUR);
+    const inWeekend = lastStart > lastEnd;
+
+    if (inWeekend) {
+      const end = nextAt(now, END_DAY, END_HOUR);
+      $('milestoneName').textContent = 'Out of office (until Mon, 09:00)';
+      $('countdown').textContent = fmt(end - now);
+      $('pct').textContent = 'In progress';
+      $('progress').style.width = '100%';
+      $('lastEdit').textContent = 'Last edit was Friday';
+      document.title = 'Q4 Planning – Final v3';
+    } else {
+      const start = nextAt(now, START_DAY, START_HOUR);
+      const pct = Math.min(100, (now - lastEnd) / (start - lastEnd) * 100);
+      $('milestoneName').textContent = 'Phase 2 sign-off (Fri, 18:00)';
+      $('countdown').textContent = fmt(start - now);
+      $('pct').textContent = pct.toFixed(1) + '%';
+      $('progress').style.width = pct + '%';
+      $('lastEdit').textContent = 'Last edit was ' + (now.getSeconds() % 20 < 10 ? 'seconds ago' : '1 minute ago');
+    }
+  }
+
+  tick();
+  setInterval(tick, 1000);
+
+  // Make typing look like autosave.
+  let saveTimer;
+  document.querySelector('.page').addEventListener('input', () => {
+    $('statusbar').textContent = 'Saving…';
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => $('statusbar').textContent = 'All changes saved', 800);
+  });
+</script>
+</body>
+</html>
