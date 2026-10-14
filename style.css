@@ -400,6 +400,8 @@ button { font: inherit; color: inherit; }
     position: sticky; bottom: 12px; z-index: 4;
     margin-top: 16px;
   }
+  /* While typing (keyboard open) the buttons go back into the page so they don't cover the field. */
+  .step:focus-within .actions { position: static; }
   /* Smaller clock on short phones so the whole first step fits. */
   #pickClock { width: min(100%, 37vh); }
   #step-time .time-row { gap: 10px; margin-top: 4px; flex-wrap: nowrap; }

@@ -274,7 +274,16 @@
       open(false);
       onPick(shown[i]);
     }
-    input.addEventListener('focus', () => { active = -1; render(); });
+    input.addEventListener('focus', () => {
+      active = -1; render();
+      // On phones the keyboard takes half the screen: bring the field up so it and its list stay visible.
+      if (window.matchMedia('(max-width: 640px)').matches) {
+        setTimeout(() => {
+          const top = input.getBoundingClientRect().top + window.scrollY - 70;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }, 300);
+      }
+    });
     input.addEventListener('input', () => { onPick(null); active = 0; render(); });
     input.addEventListener('keydown', e => {
       if (e.key === 'ArrowDown') { e.preventDefault(); active = Math.min(shown.length - 1, active + 1); render(); }
