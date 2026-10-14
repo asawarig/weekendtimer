@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Patrick+Hand&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=10">
+<link rel="stylesheet" href="style.css?v=11">
 </head>
 <body>
 
@@ -55,7 +55,7 @@
     <div class="nav-right">
       <a class="nav-plum" href="https://www.plumhq.com" target="_blank" rel="noopener">
         <span class="by">by</span>
-        <img src="assets/plum-logo.svg?v=10" alt="Plum" height="28">
+        <img src="assets/plum-logo.svg?v=11" alt="Plum" height="28">
       </a>
       <a class="btn btn-purple nav-cta" href="https://www.plumhq.com" target="_blank" rel="noopener">Visit Plum ↗</a>
     </div>
@@ -63,23 +63,13 @@
 </nav>
 
 <main class="wrap">
-  <header class="masthead">
-    <h1 class="lockup" aria-label="Log your logoff">
-      <svg class="mark" viewBox="0 0 120 120" aria-hidden="true"><use href="#logoMark"/></svg>
-      <span class="wordmark" aria-hidden="true"><span class="w1">Log your</span><span class="w2">logoff</span></span>
-    </h1>
-    <p class="tagline">When are <em>you</em> stopping work today?</p>
-  </header>
 
-  <div class="preview-note crayon-box" id="previewNote" hidden>
-    Preview mode: the crowd below is made-up sample data. Real answers start once the database is connected.
-  </div>
 
   <!-- Step 1: time -->
   <section class="step crayon-box" id="step-time" data-step="1">
     <p class="step-count">Step 1 of 3</p>
     <h2>When will you stop working today?</h2>
-    <p class="hint">Drag the clock round, or tap the time below and type it.</p>
+    <p class="hint">Drag the clock around, or tap the time below and type it.</p>
     <div class="clock-holder">
       <svg class="clock" id="pickClock" viewBox="0 0 400 400" role="slider" tabindex="0"
            aria-label="Stop-working time" aria-valuemin="0" aria-valuemax="1439"></svg>
@@ -133,6 +123,9 @@
 
   <!-- Results -->
   <section class="results" id="results" hidden>
+    <div class="preview-note crayon-box" id="previewNote" hidden>
+    Preview mode: the crowd below is made-up sample data. Real answers start once the database is connected.
+    </div>
     <div class="you crayon-box" id="youCard"></div>
 
     <div class="crowd crayon-box">
@@ -176,8 +169,8 @@
   <footer class="foot">Answers are anonymous: only time, city and job are saved.</footer>
 </main>
 
-<script src="config.js?v=10"></script>
-<script src="data.js?v=10"></script>
-<script src="app.js?v=10"></script>
+<script src="config.js?v=11"></script>
+<script src="data.js?v=11"></script>
+<script src="app.js?v=11"></script>
 </body>
 </html>
