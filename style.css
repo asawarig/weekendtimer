@@ -114,7 +114,7 @@ body {
 .ex-search { margin: 20px 0 0; }
 .ex-search.combo label { color: var(--ink); font-family: var(--hand); font-size: 26px; margin-bottom: 8px; }
 body.night .ex-search.combo label { color: #fffdf8; }
-.ex-result { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 18px; }
+.ex-result { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
 .ex-result:empty { display: none; }
 .ex-result .clock-card.first { grid-column: 2 / span 2; grid-row: auto; }
 .ex-none { --fill: #fffdf8; grid-column: 1 / -1; text-align: center; padding: 14px; margin: 0; }
@@ -130,9 +130,10 @@ body.night .ex-search.combo label { color: #fffdf8; }
 .ex-title .icon { width: 1em; height: 1em; vertical-align: -0.12em; }
 .ex-empty { color: #fff; }
 .clock-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px;
 }
 .clock-card {
+  min-width: 0;
   position: relative; padding: 16px 12px 14px; text-align: center; color: var(--ink);
   display: flex; flex-direction: column; align-items: center;
 }
@@ -153,7 +154,7 @@ body.night .ex-search.combo label { color: #fffdf8; }
   position: absolute; top: -12px; right: -6px; padding: 2px 10px; font-size: 15px; color: #fff;
   background: var(--red); border: 3px solid var(--ink); border-radius: 12px 16px 10px 14px; filter: url(#wobble);
 }
-.cc-name { font-family: var(--hand); font-size: 22px; line-height: 1.1; }
+.cc-name { font-family: var(--hand); font-size: 22px; line-height: 1.1; max-width: 100%; overflow-wrap: anywhere; }
 .cc-time { font-family: var(--hand); font-size: 30px; line-height: 1.1; }
 .clock-card.first .cc-name { font-size: 32px; }
 .clock-card.first .cc-time { font-size: 50px; }
@@ -375,7 +376,7 @@ button { font: inherit; color: inherit; }
   filter: url(#wobble); transition: left .2s ease;
 }
 .ampm-switch[aria-checked="true"] .sw-knob { left: 35px; }
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 20px; }
 .stat { padding: 16px; text-align: center; display: flex; flex-direction: column; justify-content: center; }
 .stat .label { font-size: 18px; }
 .stat .big { font-family: var(--hand); font-size: 38px; line-height: 1.1; }
@@ -419,7 +420,7 @@ button { font: inherit; color: inherit; }
   .privacy { font-size: 14.5px; padding: 5px 12px; }
   .step { padding: 20px 16px; }
   .stats { grid-template-columns: 1fr; }
-  .clock-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .clock-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
   .clock-card.first { grid-row: span 1; }
   .ex-title { font-size: 23px; }
   .ex-result { grid-template-columns: 1fr; }
