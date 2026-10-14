@@ -179,22 +179,23 @@
     while (SKY[i + 1][0] <= t) i++;
     const [t0, a0, b0] = SKY[i], [t1, a1, b1] = SKY[i + 1];
     const f = (t - t0) / (t1 - t0);
-    const top = mix(a0, a1, f), bottom = mix(b0, b1, f);
+    const skyTop = mix(a0, a1, f), bottom = mix(b0, b1, f);
     const root = document.documentElement.style;
-    root.setProperty('--sky-top', top);
+    root.setProperty('--sky-top', skyTop);
     root.setProperty('--sky-bottom', bottom);
-    const dark = lum(top) < 0.45;
+    const dark = lum(skyTop) < 0.45;
     document.body.classList.toggle('night', dark);
 
     // Sun by day (6 AM to 7 PM), moon at night, each travelling in an arc.
     const sky = $('sky');
     const isDay = t >= 360 && t < 1140;
     const p = isDay ? (t - 360) / 780 : ((t - 1140 + 1440) % 1440) / 660;
-    // Rise and set in the top-right corner, clear of the title.
-    const w = window.innerWidth, small = w < 700;
-    const x = small ? w - 44 : w - Math.max(110, (w - 760) / 4) + (p - 0.5) * 60;
-    const y = (small ? 300 : 260) - Math.sin(Math.PI * p) * (small ? 230 : 170);
+    // Rise at the bottom-left, arc over the top, set at the bottom-right.
+    const w = window.innerWidth, h = window.innerHeight, small = w < 700;
     const k0 = small ? 0.6 : 1;
+    const edge = small ? 34 : 70, horizon = h - edge, top = small ? 14 : 22;
+    const x = w / 2 - (w / 2 - edge) * Math.cos(Math.PI * p);
+    const y = horizon - (horizon - top) * Math.sin(Math.PI * p);
     sky.setAttribute('viewBox', `0 0 ${w} ${window.innerHeight}`);
     sky.innerHTML = '';
     const g = el('g', { filter: 'url(#crayon)' }, sky);
@@ -213,7 +214,7 @@
         el('circle', { cx: sx, cy: sy, r, fill: '#fff6c9' }, g);
       }
       el('circle', { cx: x, cy: y, r: 34 * k0, fill: '#fff3c4', stroke: '#161616', 'stroke-width': 4 }, g);
-      el('circle', { cx: x + 16 * k0, cy: y - 10 * k0, r: 30 * k0, fill: top }, g);
+      el('circle', { cx: x + 16 * k0, cy: y - 10 * k0, r: 30 * k0, fill: mix(skyTop, bottom, Math.min(1, Math.max(0, y / h))) }, g);
     }
   }
   window.addEventListener('resize', () => setSky(me ? me.minutes : minutes));
