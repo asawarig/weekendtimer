@@ -86,8 +86,23 @@
   const pick = $('pickClock');
   let minutes = 18 * 60; // default 6:00 PM
 
+  // Instructions written round the outside of the clock: top half and bottom half,
+  // each running left to right so both read the right way up.
+  function ringText(svg) {
+    const defs = el('defs', {}, svg);
+    el('path', { id: 'ringTop', d: 'M 0 200 A 200 200 0 0 1 400 200' }, defs);
+    el('path', { id: 'ringBottom', d: 'M -22 200 A 222 222 0 0 0 422 200' }, defs);
+    const style = { 'font-size': 27, fill: '#333', 'text-anchor': 'middle', 'letter-spacing': 0.5 };
+    [['#ringTop', 'Drag the clock around,'], ['#ringBottom', 'or tap the time below and type it.']].forEach(([p, words]) => {
+      const t = el('text', style, svg);
+      const tp = el('textPath', { href: p, startOffset: '50%' }, t);
+      tp.textContent = words;
+    });
+  }
+
   function renderPicker() {
     drawFace(pick);
+    ringText(pick);
     const h12 = (minutes % 720) / 60, m = minutes % 60;
     const hands = el('g', {}, pick);
     hand(hands, h12 * 30, 88, 14, '#e2352b');
