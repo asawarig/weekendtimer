@@ -19,16 +19,20 @@ and leaderboards of the cities that log off latest and the jobs that log off ear
 | `app.js` | Clock, steps, dropdowns, results |
 | `data.js` | City and occupation lists |
 | `config.js` | Database connection settings |
-| `supabase.sql` | Database table and security rules |
+| `apps-script.gs` | Google Sheet script that saves and serves answers |
 
-## Connecting the crowd database (Supabase, free)
+## Connecting the crowd database (Google Sheet, free)
 
 Until this is done the site runs in **preview mode** with made-up sample answers and a banner saying so.
 
-1. Create a free project at https://supabase.com.
-2. In the project, open **SQL Editor**, paste the contents of `supabase.sql` and run it.
-3. Open **Project Settings → API** and copy the **Project URL** and the **anon public** key.
-4. Put them in `config.js` and push. The banner disappears and real answers start collecting.
+1. Create a new Google Sheet (any name, e.g. "Log-off O'Clock answers").
+2. In the sheet, open **Extensions → Apps Script**. Delete what's there, paste in `apps-script.gs`, and click **Save**.
+3. Click **Deploy → New deployment**. Click the gear next to "Select type" and choose **Web app**.
+   - **Execute as:** Me
+   - **Who has access:** Anyone
+4. Click **Deploy**, then **Authorize access** and allow it with your Google account.
+   (Google may warn the app isn't verified: click **Advanced → Go to … (unsafe)**. It's your own script.)
+5. Copy the **Web app URL** (ends in `/exec`), put it in `config.js` as `sheetUrl`, and push.
 
-The anon key is designed to be public. The security rules only allow adding and reading answers,
-never editing or deleting them. Only answers whose city and job are in `data.js` are displayed.
+Answers appear as rows in an **Answers** tab. Only answers whose city and job are in `data.js` are shown on the site.
+If you change the script later, use **Deploy → Manage deployments → Edit → New version** so the URL stays the same.

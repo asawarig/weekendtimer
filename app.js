@@ -6,7 +6,7 @@
   const STORE_KEY = 'logoff-clock-answer';
 
   const cfg = window.CLOCK_CONFIG || {};
-  const LIVE = Boolean(cfg.supabaseUrl && cfg.supabaseAnonKey);
+  const LIVE = Boolean(cfg.sheetUrl);
   const CITY_SET = new Set(window.CITIES);
   const JOB_SET = new Set(window.OCCUPATIONS);
 
@@ -193,38 +193,28 @@
     onPick: j => { job = j; $('submitBtn').disabled = !j; },
   });
 
-  // ---------- Data ----------
-  async function api(path, opts = {}) {
-    const res = await fetch(`${cfg.supabaseUrl.replace(/\/$/, '')}/rest/v1/${path}`, {
-      ...opts,
-      headers: {
-        apikey: cfg.supabaseAnonKey,
-        Authorization: `Bearer ${cfg.supabaseAnonKey}`,
-        'Content-Type': 'application/json',
-        ...(opts.headers || {}),
-      },
-    });
-    if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
-    return res.status === 204 || res.status === 201 ? null : res.json();
-  }
-
+  // ---------- Data (Google Sheet via Apps Script web app) ----------
   async function saveAnswer(a) {
-    if (LIVE) {
-      await api('entries', {
-        method: 'POST',
-        headers: { Prefer: 'return=minimal' },
-        body: JSON.stringify({ stop_minutes: a.minutes, city: a.city, occupation: a.job }),
-      });
-    }
+    if (!LIVE) return;
+    // text/plain keeps this a "simple" request, which Apps Script accepts from any site.
+    const res = await fetch(cfg.sheetUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ minutes: a.minutes, city: a.city, job: a.job }),
+    });
+    const out = await res.json();
+    if (!out.ok) throw new Error(out.error || 'save failed');
   }
 
   async function loadCrowd() {
     if (!LIVE) return sampleCrowd();
-    const since = new Date(Date.now() - 30 * 864e5).toISOString();
-    const rows = await api(`entries?select=stop_minutes,city,occupation&created_at=gte.${encodeURIComponent(since)}&order=created_at.desc&limit=1000`);
-    return rows
-      .filter(r => CITY_SET.has(r.city) && JOB_SET.has(r.occupation))
-      .map(r => ({ minutes: r.stop_minutes, city: r.city, job: r.occupation }));
+    const res = await fetch(cfg.sheetUrl);
+    const out = await res.json();
+    if (!out.ok) throw new Error(out.error || 'load failed');
+    return out.rows
+      .map(([minutes, city, job]) => ({ minutes: Number(minutes), city, job }))
+      .filter(r => Number.isInteger(r.minutes) && r.minutes >= 0 && r.minutes < 1440
+        && CITY_SET.has(r.city) && JOB_SET.has(r.job));
   }
 
   // Made-up answers so the design can be previewed before the database is connected.
