@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Patrick+Hand&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=17">
+<link rel="stylesheet" href="style.css?v=18">
 </head>
 <body>
 
@@ -73,7 +73,7 @@
     <div class="nav-right">
       <a class="nav-plum" href="https://www.plumhq.com" target="_blank" rel="noopener">
         <span class="by">by</span>
-        <img src="assets/plum-logo.svg?v=17" alt="Plum" height="28">
+        <img src="assets/plum-logo.svg?v=18" alt="Plum" height="28">
       </a>
       <a class="btn btn-purple nav-cta" href="https://www.plumhq.com" target="_blank" rel="noopener">Visit Plum <svg class="icon" aria-hidden="true"><use href="#i-ext"/></svg></a>
     </div>
@@ -81,7 +81,7 @@
 </nav>
 
 <main class="wrap">
-  <p class="privacy crayon-box"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg> Answers are anonymous: only your time, city, job and shift are saved.</p>
+  <p class="privacy crayon-box"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg> Answers are anonymous: only your time, city, job and shift type are saved.</p>
 
 
 
@@ -104,11 +104,10 @@
         <button type="button" class="pill" data-ampm="pm">PM</button>
       </div>
     </div>
-    <div class="shift-block">
-      <p class="shift-q">Which shift are you on?</p>
-      <div class="shift-picker" id="shiftPicker" role="group" aria-label="Your shift"></div>
-      <p class="shift-hint" id="shiftHint" hidden>Logging off in the morning? If you work nights, pick Night so we compare you with the right people.</p>
+    <div class="shift-row">
+      <button type="button" class="pill shift-toggle" id="nightShift" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg> I'm on a night shift</button>
     </div>
+    <p class="shift-hint" id="shiftHint" hidden>Logging off in the morning? If you work nights, tap the night shift button so we compare you with other night-shift workers.</p>
     <div class="actions">
       <button type="button" class="btn btn-red" data-next="2">Next <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
     </div>
@@ -199,8 +198,8 @@
 
 </main>
 
-<script src="config.js?v=17"></script>
-<script src="data.js?v=17"></script>
-<script src="app.js?v=17"></script>
+<script src="config.js?v=18"></script>
+<script src="data.js?v=18"></script>
+<script src="app.js?v=18"></script>
 </body>
 </html>

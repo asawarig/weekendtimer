@@ -32,6 +32,7 @@ body {
 /* Text that sits straight on the sky turns light at night. */
 .icon { width: 1em; height: 1em; vertical-align: -0.14em; overflow: visible; flex: none; }
 .btn .icon, .pill .icon { width: .95em; height: .95em; }
+.night-label .icon { vertical-align: -0.18em; }
 .privacy .icon { width: 1.15em; height: 1.15em; vertical-align: -0.2em; }
 .board h3 .icon { width: 1.05em; height: 1.05em; vertical-align: -0.12em; margin-right: 2px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -140,10 +141,9 @@ body {
   border: 0; background: transparent; outline: none;
 }
 .ampm { display: flex; gap: 8px; }
-.shift-block { margin-top: 18px; text-align: center; }
-.shift-q { font-family: var(--hand); font-size: 24px; margin: 0 0 8px; }
-.shift-picker { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-.shift-picker .pill { font-size: 18px; padding: 5px 13px; }
+.shift-row { display: flex; justify-content: center; margin-top: 14px; }
+.shift-toggle { font-size: 20px; }
+.shift-toggle[aria-pressed="true"] { --fill: #2a3263; color: #fff6c9; }
 .shift-hint { text-align: center; color: #555; font-size: 17px; margin: 8px auto 0; max-width: 460px; }
 
 /* ---------- Buttons ---------- */
