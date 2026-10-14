@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Patrick+Hand&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=29">
+<link rel="stylesheet" href="style.css?v=30">
 </head>
 <body>
 
@@ -38,6 +38,7 @@
     <symbol id="i-arrow-r" viewBox="0 0 24 24"><g filter="url(#crayon-icon)" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5h15M13.5 6.5l6 6-6 6"/></g></symbol>
     <symbol id="i-arrow-l" viewBox="0 0 24 24"><g filter="url(#crayon-icon)" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12.5H5M10.5 6.5l-6 6 6 6"/></g></symbol>
     <symbol id="i-ext" viewBox="0 0 24 24"><g filter="url(#crayon-icon)" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M9 6h9v9"/></g></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><g filter="url(#crayon-icon)" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></g></symbol>
     <symbol id="i-reset" viewBox="0 0 24 24"><g filter="url(#crayon-icon)" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 9.5A7.5 7.5 0 1 1 5 14"/><path d="M4.5 4.5v5h5"/></g></symbol>
     <symbol id="i-lock" viewBox="0 0 24 24"><g filter="url(#crayon-icon)" stroke="#161616" stroke-width="2.4" stroke-linejoin="round"><path d="M7.5 10.5V8a4.5 4.5 0 0 1 9 0v2.5" fill="none" stroke-linecap="round"/><rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5" fill="#f5b82e"/><path d="M12 14.5v2.5" stroke-linecap="round"/></g></symbol>
     <symbol id="i-moon" viewBox="0 0 24 24"><g filter="url(#crayon-icon)"><path d="M15.5 3.5a8.5 8.5 0 1 0 5 15A7 7 0 0 1 15.5 3.5z" fill="#fff3c4" stroke="#161616" stroke-width="2.2" stroke-linejoin="round"/></g></symbol>
@@ -73,7 +74,6 @@
         <span class="by">by</span>
         <img src="assets/plum-logo.png?v=1" alt="Plum" width="80" height="25">
       </a>
-      <a class="btn btn-purple nav-cta" href="https://www.plumhq.com" target="_blank" rel="noopener">Visit Plum <svg class="icon" aria-hidden="true"><use href="#i-ext"/></svg></a>
     </div>
   </div>
 </nav>
@@ -214,8 +214,28 @@
 
 </main>
 
-<script src="config.js?v=29"></script>
-<script src="data.js?v=29"></script>
-<script src="app.js?v=29"></script>
+<!-- Detail pop-up for one city or job -->
+<div class="detail-backdrop" id="detail" hidden>
+  <div class="detail crayon-box" role="dialog" aria-modal="true" aria-labelledby="dtTitle">
+    <button type="button" class="dt-close" id="dtClose" aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    <div class="dt-body">
+      <div class="dt-left">
+        <h2 id="dtTitle"></h2>
+        <div id="dtCard"></div>
+        <div class="actions center"><button type="button" class="btn btn-ghost" id="dtAll" hidden></button></div>
+      </div>
+      <div class="dt-right">
+        <h3 id="dtListTitle"></h3>
+        <div class="field crayon-box"><input id="dtSearch" type="text" autocomplete="off" aria-label="Search the list"></div>
+        <ul class="dt-list" id="dtList"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="config.js?v=30"></script>
+<script src="data.js?v=30"></script>
+<script src="app.js?v=30"></script>
 </body>
 </html>

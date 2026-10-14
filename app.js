@@ -469,7 +469,7 @@
 
   const exShowAll = { city: false, job: false };
 
-  function clockCard(row, { rank, first = false, tag = '', note = '' }) {
+  function clockCard(row, { rank, first = false, tag = '', note = '', key = null }) {
     const [top, bottom] = skyAt(row.t);
     const card = document.createElement('div');
     card.className = 'clock-card crayon-box' + (first ? ' first' : '') + (tag ? ' mine' : '')
@@ -483,6 +483,16 @@
       <div class="cc-n">${row.n} ${row.n === 1 ? 'answer' : 'answers'}</div>
       ${note ? `<div class="cc-note">${note}</div>` : ''}`;
     card.insertBefore(miniClock(row.t), card.querySelector('.cc-name'));
+    if (key) {
+      // Clickable: opens the detail pop-up for this city or job.
+      card.classList.add('clickable');
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
+      card.setAttribute('aria-label', `Open ${row.name}: logs off around ${fmt(row.t)}`);
+      const go = () => openDetail(key, row.name);
+      card.addEventListener('click', go);
+      card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    }
     return card;
   }
 
@@ -506,7 +516,84 @@
       ? `#${pos + 1} of ${rows.length} ${list} that log off ${latest ? 'latest' : 'earliest'}`
       : 'Not ranked yet: needs at least 3 answers';
     const mine = (key === 'city' ? me.city : me.job) === name;
-    out.appendChild(clockCard(row, { tag: mine ? `your ${key}` : '', note, first: true }));
+    out.appendChild(clockCard(row, { tag: mine ? `your ${key}` : '', note, first: true, key }));
+  }
+
+  // ---------- Detail pop-up: one clock large, plus a searchable list of the other side ----------
+  // A city lists its jobs; a job lists its cities. Only entries with answers are listed.
+  let detail = null; // { key, name, other, pick, lastFocus }
+
+  function smallClock(t) {
+    const svg = miniClock(t);
+    svg.setAttribute('class', 'row-clock');
+    return svg;
+  }
+
+  function renderDetail() {
+    const { key, name, pick } = detail;
+    const other = key === 'city' ? 'job' : 'city';
+    const start = startFor();
+    const inGroup = peers().filter(a => a[key] === name);
+    const focus = pick ? inGroup.filter(a => a[other] === pick) : inGroup;
+    const title = pick
+      ? (key === 'city' ? `${pick}s in ${name}` : `${name}s in ${pick}`)
+      : name;
+    $('dtTitle').textContent = title;
+    const card = $('dtCard');
+    card.innerHTML = '';
+    if (focus.length) {
+      const mine = key === 'city' ? me.city === name && (!pick || me.job === pick) : me.job === name && (!pick || me.city === pick);
+      const note = pick ? '' : `${new Set(inGroup.map(a => a[other])).size} ${other === 'job' ? 'jobs' : 'cities'} answered`;
+      card.appendChild(clockCard({ name: title, t: avg(focus.map(a => a.minutes), start), n: focus.length },
+        { first: true, tag: mine ? (pick ? 'you' : `your ${key}`) : '', note }));
+    }
+    $('dtAll').hidden = !pick;
+    $('dtAll').textContent = `Show all of ${name}`;
+
+    // The list on the right.
+    const groups = {};
+    inGroup.forEach(a => (groups[a[other]] ||= []).push(a.minutes));
+    const q = $('dtSearch').value.trim().toLowerCase();
+    const rows = Object.entries(groups)
+      .map(([n, v]) => ({ name: n, t: avg(v, start), n: v.length }))
+      .filter(x => x.name.toLowerCase().includes(q))
+      .sort((x, y) => norm(y.t, start) - norm(x.t, start));
+    const noun = other === 'job' ? 'Jobs' : 'Cities';
+    $('dtListTitle').textContent = key === 'city' ? `${noun} in ${name}` : `${noun} with ${name}s`;
+    $('dtSearch').placeholder = `Search ${noun.toLowerCase()}…`;
+    const list = $('dtList');
+    list.innerHTML = '';
+    if (!rows.length) list.innerHTML = `<li class="dt-empty">${q ? 'No match.' : 'No answers yet.'}</li>`;
+    rows.forEach(x => {
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'dt-row' + (x.name === pick ? ' on' : '');
+      b.setAttribute('aria-pressed', String(x.name === pick));
+      b.innerHTML = `<span class="dt-name">${escapeHtml(x.name)}</span><span class="dt-time">${fmt(x.t)}</span><span class="dt-n">${x.n}</span>`;
+      b.prepend(smallClock(x.t));
+      b.addEventListener('click', () => { detail.pick = x.name === pick ? null : x.name; renderDetail(); });
+      li.appendChild(b);
+      list.appendChild(li);
+    });
+  }
+
+  function openDetail(key, name) {
+    detail = { key, name, pick: null, lastFocus: document.activeElement };
+    $('dtSearch').value = '';
+    renderDetail();
+    $('detail').hidden = false;
+    document.body.classList.add('modal-open');
+    $('dtClose').focus();
+  }
+
+  function closeDetail() {
+    if (!detail) return;
+    $('detail').hidden = true;
+    document.body.classList.remove('modal-open');
+    const f = detail.lastFocus;
+    detail = null;
+    if (f && f.focus) f.focus();
   }
 
   function clockCards(gridEl, moreBtn, key, latest, noun) {
@@ -518,7 +605,7 @@
       gridEl.innerHTML = '<p class="ex-empty">Needs a few more answers. Check back soon!</p>';
     }
     shown.forEach((row, i) => {
-      gridEl.appendChild(clockCard(row, { rank: i + 1, first: i === 0, tag: row.name === mine ? `your ${noun}` : '' }));
+      gridEl.appendChild(clockCard(row, { rank: i + 1, first: i === 0, tag: row.name === mine ? `your ${noun}` : '', key }));
     });
     moreBtn.hidden = rows.length <= 5;
     moreBtn.innerHTML = exShowAll[key]
@@ -629,6 +716,11 @@
     onPick: showLookup,
   });
   $('exploreBtn').addEventListener('click', () => showExplore(true));
+  $('dtClose').addEventListener('click', closeDetail);
+  $('detail').addEventListener('click', e => { if (e.target === $('detail')) closeDetail(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && detail) closeDetail(); });
+  $('dtSearch').addEventListener('input', () => renderDetail());
+  $('dtAll').addEventListener('click', () => { detail.pick = null; renderDetail(); });
   $('exBack').addEventListener('click', () => showExplore(false));
   $('exMoreCities').addEventListener('click', () => { exShowAll.city = !exShowAll.city; renderExplore(); });
   $('exMoreJobs').addEventListener('click', () => { exShowAll.job = !exShowAll.job; renderExplore(); });
