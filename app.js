@@ -247,6 +247,8 @@
   // ---------- Steps ----------
   function showStep(n) {
     document.querySelectorAll('.step').forEach(s => { s.hidden = s.dataset.step !== String(n); });
+    // The anonymity note appears once we start asking for city and job (step 2 onwards).
+    $('privacyNote').hidden = String(n) === '1';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   document.querySelectorAll('[data-next]').forEach(b => b.addEventListener('click', () => showStep(b.dataset.next)));
@@ -744,6 +746,7 @@
   });
 
   // ---------- Start ----------
+  $('privacyNote').hidden = true;
   $('previewNote').hidden = LIVE;
   renderPicker();
 
