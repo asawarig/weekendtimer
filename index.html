@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Patrick+Hand&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
 
@@ -30,6 +30,8 @@
   </defs>
 </svg>
 
+<svg class="sky" id="sky" aria-hidden="true"></svg>
+
 <main class="wrap">
   <header class="masthead">
     <h1>Log-off O'Clock</h1>
@@ -43,13 +45,15 @@
   <!-- Step 1: time -->
   <section class="step crayon-box" id="step-time" data-step="1">
     <p class="step-count">Step 1 of 3</p>
-    <h2>Drag the clock to when you'll stop working today</h2>
+    <h2>When will you stop working today?</h2>
+    <p class="hint">Drag the clock round, or tap the time below and type it.</p>
     <div class="clock-holder">
       <svg class="clock" id="pickClock" viewBox="0 0 400 400" role="slider" tabindex="0"
            aria-label="Stop-working time" aria-valuemin="0" aria-valuemax="1439"></svg>
     </div>
     <div class="time-row">
-      <div class="time-readout" id="timeReadout">6:00 PM</div>
+      <label class="sr-only" for="timeReadout">Type your log-off time</label>
+      <input class="time-readout" id="timeReadout" type="text" inputmode="text" autocomplete="off" spellcheck="false" value="6:00 PM">
       <div class="ampm" role="group" aria-label="AM or PM">
         <button type="button" class="pill" data-ampm="am">AM</button>
         <button type="button" class="pill" data-ampm="pm">PM</button>
@@ -139,8 +143,8 @@
   <footer class="foot">Answers are anonymous: only time, city and job are saved.</footer>
 </main>
 
-<script src="config.js?v=7"></script>
-<script src="data.js?v=7"></script>
-<script src="app.js?v=7"></script>
+<script src="config.js?v=8"></script>
+<script src="data.js?v=8"></script>
+<script src="app.js?v=8"></script>
 </body>
 </html>

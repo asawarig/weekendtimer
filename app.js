@@ -91,7 +91,8 @@
     hand(hands, h12 * 30, 88, 14, '#e2352b');
     hand(hands, m * 6, 132, 9, '#3a9bd9');
     el('circle', { cx: 200, cy: 200, r: 14, fill: '#161616', filter: 'url(#crayon)' }, hands);
-    $('timeReadout').textContent = fmt(minutes);
+    if (!typing) { timeInput.value = fmt(minutes); timeInput.classList.remove('bad'); }
+    setSky(minutes);
     pick.setAttribute('aria-valuenow', minutes);
     pick.setAttribute('aria-valuetext', fmt(minutes));
     document.querySelectorAll('[data-ampm]').forEach(b =>
@@ -104,7 +105,9 @@
     let deg = Math.atan2(x, -y) * 180 / Math.PI;
     if (deg < 0) deg += 360;
     const m12 = (Math.round(deg / 360 * 720 / 5) * 5) % 720;
-    minutes = m12 + (minutes >= 720 ? 720 : 0);
+    // Move by the shortest way round the dial, so passing 12 flips AM/PM.
+    const delta = ((m12 - (minutes % 720) + 1080) % 720) - 360;
+    minutes = (minutes + delta + 1440) % 1440;
     renderPicker();
   }
   let dragging = false;
@@ -123,6 +126,97 @@
     minutes = (minutes % 720) + (b.dataset.ampm === 'pm' ? 720 : 0);
     renderPicker();
   }));
+
+  // ---------- Typing a time ----------
+  const timeInput = $('timeReadout');
+  let typing = false;
+  // Accepts "7:30 pm", "7.30pm", "19:30", "7pm", "730pm". Without AM/PM, 1-12 keeps the current half of the day.
+  function parseTime(text) {
+    const t = text.trim().toLowerCase().replace(/\s+/g, '').replace(/\./g, ':');
+    const m = t.match(/^(\d{1,2})(?::?(\d{2}))?(a|am|p|pm)?$/);
+    if (!m) return null;
+    let h = Number(m[1]); const min = Number(m[2] || 0); const mer = m[3];
+    if (min > 59 || h > 23) return null;
+    if (mer) {
+      if (h < 1 || h > 12) return null;
+      h = (h % 12) + (mer[0] === 'p' ? 12 : 0);
+    } else if (h >= 1 && h <= 12) {
+      h = (h % 12) + (minutes >= 720 ? 12 : 0);
+    }
+    return h * 60 + min;
+  }
+  timeInput.addEventListener('focus', () => { typing = true; timeInput.select(); });
+  timeInput.addEventListener('input', () => {
+    const v = parseTime(timeInput.value);
+    timeInput.classList.toggle('bad', v === null && timeInput.value.trim() !== '');
+    if (v !== null) { minutes = v; renderPicker(); }
+  });
+  timeInput.addEventListener('keydown', e => { if (e.key === 'Enter') timeInput.blur(); });
+  timeInput.addEventListener('blur', () => { typing = false; renderPicker(); });
+
+  // ---------- Day and night sky ----------
+  // [minute of day, top colour, bottom colour]
+  const SKY = [
+    [0,    '#121a3a', '#26305e'],
+    [300,  '#1d2552', '#3a3f7a'],
+    [360,  '#f6a46b', '#fbe3c4'],
+    [480,  '#a9dcf4', '#f4f1ea'],
+    [960,  '#b6e0f2', '#f4f1ea'],
+    [1080, '#f58a5c', '#f6c38f'],
+    [1170, '#5b3f8c', '#d9776a'],
+    [1260, '#151d42', '#2a3263'],
+    [1440, '#121a3a', '#26305e'],
+  ];
+  const mix = (a, b, t) => {
+    const p = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16));
+    const A = p(a), B = p(b);
+    return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join('');
+  };
+  const lum = c => { const [r, g, b] = [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16)); return (0.299 * r + 0.587 * g + 0.114 * b) / 255; };
+
+  function setSky(t) {
+    let i = 0;
+    while (SKY[i + 1][0] <= t) i++;
+    const [t0, a0, b0] = SKY[i], [t1, a1, b1] = SKY[i + 1];
+    const f = (t - t0) / (t1 - t0);
+    const top = mix(a0, a1, f), bottom = mix(b0, b1, f);
+    const root = document.documentElement.style;
+    root.setProperty('--sky-top', top);
+    root.setProperty('--sky-bottom', bottom);
+    const dark = lum(top) < 0.45;
+    document.body.classList.toggle('night', dark);
+
+    // Sun by day (6 AM to 7 PM), moon at night, each travelling in an arc.
+    const sky = $('sky');
+    const isDay = t >= 360 && t < 1140;
+    const p = isDay ? (t - 360) / 780 : ((t - 1140 + 1440) % 1440) / 660;
+    // Rise and set in the top-right corner, clear of the title.
+    const w = window.innerWidth, small = w < 700;
+    const x = small ? w - 44 : w - Math.max(110, (w - 760) / 4) + (p - 0.5) * 60;
+    const y = (small ? 300 : 260) - Math.sin(Math.PI * p) * (small ? 230 : 170);
+    const k0 = small ? 0.6 : 1;
+    sky.setAttribute('viewBox', `0 0 ${w} ${window.innerHeight}`);
+    sky.innerHTML = '';
+    const g = el('g', { filter: 'url(#crayon)' }, sky);
+    if (isDay) {
+      for (let k = 0; k < 12; k++) {
+        const a = k / 12 * Math.PI * 2;
+        el('line', { x1: x + Math.cos(a) * 44 * k0, y1: y + Math.sin(a) * 44 * k0, x2: x + Math.cos(a) * 64 * k0, y2: y + Math.sin(a) * 64 * k0,
+          stroke: '#f5b82e', 'stroke-width': 8 * k0, 'stroke-linecap': 'round' }, g);
+      }
+      el('circle', { cx: x, cy: y, r: 36 * k0, fill: '#f5b82e', stroke: '#161616', 'stroke-width': 4 }, g);
+    } else {
+      let seed = 3;
+      const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+      for (let k = 0; k < 26; k++) {
+        const sx = rnd() * w, sy = rnd() * window.innerHeight, r = 2 + rnd() * 3;
+        el('circle', { cx: sx, cy: sy, r, fill: '#fff6c9' }, g);
+      }
+      el('circle', { cx: x, cy: y, r: 34 * k0, fill: '#fff3c4', stroke: '#161616', 'stroke-width': 4 }, g);
+      el('circle', { cx: x + 16 * k0, cy: y - 10 * k0, r: 30 * k0, fill: top }, g);
+    }
+  }
+  window.addEventListener('resize', () => setSky(me ? me.minutes : minutes));
 
   // ---------- Steps ----------
   function showStep(n) {
@@ -320,6 +414,7 @@
     board($('boardJobs'), 'job', false);
     renderCrowdClock();
 
+    setSky(me.minutes);
     document.querySelectorAll('.step').forEach(s => { s.hidden = true; });
     $('results').hidden = false;
     window.scrollTo({ top: 0, behavior: 'smooth' });

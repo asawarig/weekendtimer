@@ -15,7 +15,7 @@
 }
 
 * { box-sizing: border-box; }
-html { background: var(--paper); }
+html { background: var(--sky-bottom, var(--paper)); }
 body {
   margin: 0;
   min-height: 100vh;
@@ -23,9 +23,18 @@ body {
   font-family: var(--body);
   font-size: 20px;
   line-height: 1.35;
-  background: var(--paper);
+  background: var(--grain), linear-gradient(var(--sky-top, var(--paper)), var(--sky-bottom, var(--paper))) fixed;
   overflow-x: hidden;
 }
+
+.sky { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+
+/* Text that sits straight on the sky turns light at night. */
+body.night .tagline, body.night .foot { color: #f4f1ea; }
+body.night .tagline em { color: var(--ink); }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.hint { margin: -6px 0 6px; color: #555; font-size: 18px; }
 
 .wrap {
   position: relative;
@@ -92,7 +101,14 @@ body {
 .clock text { font-family: var(--hand); }
 
 .time-row { display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; margin-top: 8px; }
-.time-readout { font-family: var(--hand); font-size: 52px; line-height: 1; }
+.time-readout {
+  font-family: var(--hand); font-size: 52px; line-height: 1.1; color: var(--ink);
+  width: 5.2em; text-align: center; padding: 2px 6px;
+  border: 0; border-bottom: 3px dashed #b9b2a3; background: transparent; outline: none;
+}
+.time-readout:hover { border-bottom-color: var(--ink); }
+.time-readout:focus { border-bottom: 3px solid var(--blue); background: #fff8e1; border-radius: 6px 6px 0 0; }
+.time-readout.bad { border-bottom-color: var(--red); color: var(--red); }
 .ampm { display: flex; gap: 8px; }
 
 /* ---------- Buttons ---------- */
