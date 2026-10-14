@@ -253,7 +253,7 @@ body.modal-open { overflow: hidden; }
 .shift-row { display: flex; justify-content: center; margin-top: 14px; }
 .shift-toggle { font-size: 20px; }
 .shift-toggle[aria-pressed="true"] { --fill: #2a3263; color: #fff6c9; }
-.shift-hint { text-align: center; color: #555; font-size: 17px; margin: 8px auto 0; max-width: 460px; }
+.shift-hint { text-align: center; color: #555; font-size: 17px; margin: 8px auto 0; max-width: 460px; line-height: 1.25; }
 
 /* ---------- Buttons ---------- */
 button { font: inherit; color: inherit; }
@@ -399,8 +399,9 @@ button { font: inherit; color: inherit; }
   body { font-size: 19px; }
   /* Keep each step's Next/Back buttons on screen: pinned to the bottom while the step scrolls. */
   .step .actions {
-    position: sticky; bottom: 12px; z-index: 4;
-    margin-top: 16px;
+    position: sticky; bottom: 4px; z-index: 4;
+    margin: 12px -8px 0; padding: 8px 8px;
+    background: #fffdf8; border-radius: 16px;
   }
   /* While typing (keyboard open) the buttons go back into the page so they don't cover the field. */
   .step:focus-within .actions { position: static; }
