@@ -2,7 +2,9 @@
   const $ = id => document.getElementById(id);
   const SVG = 'http://www.w3.org/2000/svg';
   const COLORS = ['#e2352b', '#3a9bd9', '#6a4ce0', '#f5b82e', '#a2482a', '#1f6b6b', '#2fa35a', '#ef7d2d'];
-  const DAY_START = 240; // treat 4:00 AM as the start of a "work day" when averaging
+  // Where a "work day" starts when comparing times. Logging off at 6 AM is very late, not early.
+  const DAY_START = 600;    // 10:00 AM for regular workers
+  const NIGHT_START = 1080; // 6:00 PM for night-shift workers
   const STORE_KEY = 'logoff-clock-answer';
 
   const cfg = window.CLOCK_CONFIG || {};
@@ -22,17 +24,17 @@
     const h = h24 % 12 || 12;
     return `${h}:${String(m).padStart(2, '0')} ${h24 < 12 ? 'AM' : 'PM'}`;
   };
-  const shift = t => (t - DAY_START + 1440) % 1440;
-  const avg = list => {
+  const norm = (t, start = DAY_START) => (t - start + 1440) % 1440;
+  const avg = (list, start = DAY_START) => {
     if (!list.length) return null;
-    const s = list.reduce((a, t) => a + shift(t), 0) / list.length;
-    return Math.round((s + DAY_START) % 1440);
+    const s = list.reduce((a, t) => a + norm(t, start), 0) / list.length;
+    return Math.round((s + start) % 1440);
   };
-  const diffText = (mine, other) => {
-    const d = shift(mine) - shift(other);
+  const diffText = (mine, other, start = DAY_START) => {
+    const d = norm(mine, start) - norm(other, start);
     if (Math.abs(d) < 5) return 'right on time with';
     const h = Math.floor(Math.abs(d) / 60), m = Math.abs(d) % 60;
-    const span = (h ? `${h}h ` : '') + (m ? `${m}m` : '').trim();
+    const span = (h ? `${h}h ` : '') + (m ? `${m}m` : '');
     return `${span.trim()} ${d < 0 ? 'earlier than' : 'later than'}`;
   };
   const hash = s => { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; };
@@ -97,7 +99,11 @@
     pick.setAttribute('aria-valuetext', fmt(minutes));
     document.querySelectorAll('[data-ampm]').forEach(b =>
       b.setAttribute('aria-pressed', String((b.dataset.ampm === 'pm') === (minutes >= 720))));
+    $('nightShift').setAttribute('aria-pressed', String(nightShift));
+    $('shiftHint').hidden = nightShift || minutes >= DAY_START;
   }
+  let nightShift = false;
+  $('nightShift').addEventListener('click', () => { nightShift = !nightShift; renderPicker(); });
 
   function setFromPointer(e) {
     const r = pick.getBoundingClientRect();
@@ -295,7 +301,7 @@
     const res = await fetch(cfg.sheetUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ minutes: a.minutes, city: a.city, job: a.job }),
+      body: JSON.stringify({ minutes: a.minutes, city: a.city, job: a.job, night: a.night }),
     });
     const out = await res.json();
     if (!out.ok) throw new Error(out.error || 'save failed');
@@ -307,7 +313,9 @@
     const out = await res.json();
     if (!out.ok) throw new Error(out.error || 'load failed');
     return out.rows
-      .map(([minutes, city, job]) => ({ minutes: Number(minutes), city, job }))
+      .map(([minutes, city, job, night]) => ({
+        minutes: Number(minutes), city, job, night: night === true || String(night).toUpperCase() === 'TRUE',
+      }))
       .filter(r => Number.isInteger(r.minutes) && r.minutes >= 0 && r.minutes < 1440
         && CITY_SET.has(r.city) && JOB_SET.has(r.job));
   }
@@ -325,22 +333,29 @@
       const j = jobs[Math.floor(rnd() * jobs.length)];
       const bias = (hash(c) % 60) - 20 + (hash(j) % 90) - 40;
       let m = Math.round((18 * 60 + 30 + bias + gauss() * 75) / 5) * 5;
-      if (rnd() < 0.05) m = Math.round((60 + rnd() * 360) / 5) * 5; // a few night owls
-      out.push({ minutes: (m + 1440) % 1440, city: c, job: j });
+      let night = false;
+      if (rnd() < 0.05) m = Math.round((60 + rnd() * 360) / 5) * 5; // a few working through the night
+      else if (rnd() < 0.09) { night = true; m = Math.round((7 * 60 + gauss() * 60) / 5) * 5; } // night shifts
+      out.push({ minutes: (m + 1440) % 1440, city: c, job: j, night });
     }
     return out;
   }
 
   // ---------- Results ----------
   let crowd = [], me = null, filter = 'all';
+  // People are only compared with others on the same kind of shift.
+  const peers = () => crowd.filter(a => !!a.night === !!me.night);
+  const startFor = () => (me.night ? NIGHT_START : DAY_START);
+  const groupName = () => (me.night ? 'night-shift workers' : 'everyone');
 
   function renderCrowdClock() {
     const svg = $('crowdClock');
     drawFace(svg, { fill: '#cfe8fa' });
     const dots = el('g', { filter: 'url(#crayon)' }, svg);
     const match = a => filter === 'all' || (filter === 'city' ? a.city === me.city : a.job === me.job);
-    const subset = crowd.filter(match);
-    crowd.forEach((a, i) => {
+    const pool = peers();
+    const subset = pool.filter(match);
+    pool.forEach((a, i) => {
       const h = hash(`${a.city}|${a.job}|${i}`);
       const ang = ((a.minutes % 720) / 720) * Math.PI * 2;
       const pm = a.minutes >= 720;
@@ -354,7 +369,7 @@
       if (pm) el('circle', { cx: x, cy: y, r: 6.5, ...style }, dots);
       else el('polygon', { points: `${x},${y - 8.5} ${x + 8.5},${y} ${x},${y + 8.5} ${x - 8.5},${y}`, ...style }, dots);
     });
-    const a = avg(subset.map(x => x.minutes));
+    const a = avg(subset.map(x => x.minutes), startFor());
     if (a !== null) {
       hand(svg, ((a % 720) / 60) * 30, 120, 12, '#e2352b');
       el('circle', { cx: 200, cy: 200, r: 13, fill: '#161616', filter: 'url(#crayon)' }, svg);
@@ -369,7 +384,8 @@
     }, svg);
     star.textContent = '★';
 
-    const who = filter === 'all' ? 'everyone' : filter === 'city' ? `people in ${me.city}` : `${me.job}s`;
+    const night = me.night ? 'night-shift ' : '';
+    const who = filter === 'all' ? groupName() : filter === 'city' ? `${night}people in ${me.city}` : `${night}${me.job}s`;
     $('crowdSub').textContent = a === null
       ? `No answers from ${who} yet.`
       : `${subset.length} ${subset.length === 1 ? 'answer' : 'answers'} from ${who}. The red hand is their average: ${fmt(a)}.`;
@@ -377,38 +393,56 @@
   }
 
   function board(listEl, key, latest) {
-    const groups = {};
-    crowd.forEach(a => (groups[a[key]] ||= []).push(a.minutes));
+    const groups = {}, start = startFor();
+    peers().forEach(a => (groups[a[key]] ||= []).push(a.minutes));
     const rows = Object.entries(groups)
       .filter(([name, v]) => v.length >= 3 && !name.startsWith('Other'))
-      .map(([name, v]) => ({ name, t: avg(v), n: v.length }))
-      .sort((x, y) => latest ? shift(y.t) - shift(x.t) : shift(x.t) - shift(y.t))
+      .map(([name, v]) => ({ name, t: avg(v, start), n: v.length }))
+      .sort((x, y) => latest ? norm(y.t, start) - norm(x.t, start) : norm(x.t, start) - norm(y.t, start))
       .slice(0, 5);
     listEl.innerHTML = rows.length
       ? rows.map(r => `<li>${escapeHtml(r.name)} · <b>${fmt(r.t)}</b></li>`).join('')
       : '<li class="none">Needs a few more answers. Check back soon!</li>';
   }
 
+  function youLine(pool, start) {
+    const others = pool.length - 1;
+    if (others < 4) {
+      return me.night
+        ? 'Not many night-shift answers yet. Check back soon to see how you compare.'
+        : 'Not many answers yet. Check back soon to see how you compare.';
+    }
+    const everyone = avg(pool.map(a => a.minutes), start);
+    const later = pool.filter(a => norm(a.minutes, start) > norm(me.minutes, start)).length;
+    const pct = Math.round(later / pool.length * 100);
+    const vs = me.night ? 'other night-shift workers' : 'everyone else';
+    const lead = !me.night && me.minutes < DAY_START ? 'Burning the midnight oil! ' : '';
+    const tail = pct === 0
+      ? `Hardly anyone ${me.night ? 'on nights ' : ''}works later than you. Get some rest! 😴`
+      : `${pct}% of ${me.night ? 'night-shift workers' : 'people'} are still working after you.`;
+    return `${lead}That's ${diffText(me.minutes, everyone, start)} ${vs}. ${tail}`;
+  }
+
   function renderResults() {
-    const all = crowd.map(a => a.minutes);
-    const later = crowd.filter(a => shift(a.minutes) > shift(me.minutes)).length;
-    const pct = crowd.length ? Math.round(later / crowd.length * 100) : 0;
-    const everyone = avg(all);
+    const pool = peers(), start = startFor();
     $('youCard').innerHTML = `
       <span class="label">You're logging off at</span>
       <span class="big">${fmt(me.minutes)}</span>
-      <p class="line">That's ${diffText(me.minutes, everyone)} everyone else. ${pct}% of people are still working after you.</p>`;
+      ${me.night ? '<span class="label">🌙 after a night shift</span>' : ''}
+      <p class="line">${youLine(pool, start)}</p>`;
 
-    const cityTimes = crowd.filter(a => a.city === me.city).map(a => a.minutes);
-    const jobTimes = crowd.filter(a => a.job === me.job).map(a => a.minutes);
-    $('statAll').textContent = fmt(everyone);
-    $('statCityLabel').textContent = `${me.city} logs off around`;
-    $('statCity').textContent = cityTimes.length ? fmt(avg(cityTimes)) : '–';
-    $('statJobLabel').textContent = `${me.job} logs off around`;
-    $('statJob').textContent = jobTimes.length ? fmt(avg(jobTimes)) : '–';
+    const cityTimes = pool.filter(a => a.city === me.city).map(a => a.minutes);
+    const jobTimes = pool.filter(a => a.job === me.job).map(a => a.minutes);
+    const nightLabel = me.night ? ' on nights' : '';
+    $('statAllLabel').textContent = me.night ? 'Night shifts log off around' : 'Everyone logs off around';
+    $('statAll').textContent = pool.length ? fmt(avg(pool.map(a => a.minutes), start)) : '–';
+    $('statCityLabel').textContent = `${me.city}${nightLabel} logs off around`;
+    $('statCity').textContent = cityTimes.length ? fmt(avg(cityTimes, start)) : '–';
+    $('statJobLabel').textContent = `${me.job}${nightLabel} logs off around`;
+    $('statJob').textContent = jobTimes.length ? fmt(avg(jobTimes, start)) : '–';
 
     $('filters').innerHTML = [
-      ['all', 'Everyone'], ['city', `Only ${me.city}`], ['job', `Only ${me.job}`],
+      ['all', me.night ? 'All night shifts' : 'Everyone'], ['city', `Only ${me.city}`], ['job', `Only ${me.job}`],
     ].map(([f, label]) => `<button type="button" class="pill" data-f="${f}">${escapeHtml(label)}</button>`).join('');
 
     board($('boardCities'), 'city', true);
@@ -432,12 +466,12 @@
     const btn = $('submitBtn');
     btn.disabled = true;
     $('submitError').hidden = true;
-    me = { minutes, city, job, date: today() };
+    me = { minutes, city, job, night: nightShift, date: today() };
     try {
       await saveAnswer(me);
       try { localStorage.setItem(STORE_KEY, JSON.stringify(me)); } catch {}
       crowd = await loadCrowd();
-      if (!LIVE) crowd.push({ minutes: me.minutes, city: me.city, job: me.job });
+      if (!LIVE) crowd.push({ minutes: me.minutes, city: me.city, job: me.job, night: !!me.night });
       renderResults();
     } catch (err) {
       console.error(err);
@@ -448,8 +482,9 @@
   });
 
   $('shareBtn').addEventListener('click', async () => {
-    const cityAvg = avg(crowd.filter(a => a.city === me.city).map(a => a.minutes));
-    const text = `Log your logoff: I'm logging off at ${fmt(me.minutes)} today. ${me.city} logs off around ${fmt(cityAvg)}. When do you stop working?`;
+    const cityAvg = avg(peers().filter(a => a.city === me.city).map(a => a.minutes), startFor());
+    const shiftNote = me.night ? ' after a night shift' : '';
+    const text = `Log your logoff: I'm logging off at ${fmt(me.minutes)}${shiftNote} today. ${me.city}${me.night ? ' night shifts log' : ' logs'} off around ${fmt(cityAvg)}. When do you stop working?`;
     const url = location.href.split('#')[0];
     try {
       if (navigator.share) await navigator.share({ title: "Log your logoff", text, url });
@@ -465,6 +500,7 @@
     try { localStorage.removeItem(STORE_KEY); } catch {}
     me = null; crowd = []; filter = 'all';
     minutes = 18 * 60;
+    nightShift = false;
     setCity(null);
     cityCombo.set('');
     $('jobInput').value = '';
@@ -487,7 +523,7 @@
     me = saved;
     loadCrowd().then(c => {
       crowd = c;
-      if (!LIVE) crowd.push({ minutes: me.minutes, city: me.city, job: me.job });
+      if (!LIVE) crowd.push({ minutes: me.minutes, city: me.city, job: me.job, night: !!me.night });
       renderResults();
     }).catch(err => console.error(err));
   }

@@ -135,6 +135,10 @@ body {
 .time-readout:focus { border-bottom: 3px solid var(--blue); background: #fff8e1; border-radius: 6px 6px 0 0; }
 .time-readout.bad { border-bottom-color: var(--red); color: var(--red); }
 .ampm { display: flex; gap: 8px; }
+.shift-row { display: flex; justify-content: center; margin-top: 14px; }
+.shift-toggle { font-size: 20px; }
+.shift-toggle[aria-pressed="true"] { --fill: #2a3263; color: #fff6c9; }
+.shift-hint { text-align: center; color: #555; font-size: 17px; margin: 8px auto 0; max-width: 460px; }
 
 /* ---------- Buttons ---------- */
 button { font: inherit; color: inherit; }
