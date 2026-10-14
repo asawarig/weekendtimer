@@ -30,9 +30,6 @@
   </defs>
 </svg>
 
-<!-- Scribbled background -->
-<svg class="scribbles" id="scribbles" aria-hidden="true"></svg>
-
 <main class="wrap">
   <header class="masthead">
     <h1>Log-off O'Clock</h1>
@@ -133,12 +130,13 @@
     </div>
 
     <div class="actions center">
+      <button type="button" class="btn btn-ghost" id="resetBtn">↺ Start over</button>
       <button type="button" class="btn btn-red" id="shareBtn">Share my log-off time</button>
     </div>
     <p class="share-status" id="shareStatus" aria-live="polite"></p>
   </section>
 
-  <footer class="foot">One answer per person per day · Answers are anonymous: only time, city and job are saved.</footer>
+  <footer class="foot">Answers are anonymous: only time, city and job are saved.</footer>
 </main>
 
 <script src="config.js"></script>

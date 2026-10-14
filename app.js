@@ -39,34 +39,6 @@
   const today = () => new Date().toLocaleDateString('en-CA'); // local YYYY-MM-DD
   const escapeHtml = s => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-  // ---------- Background scribbles ----------
-  function drawScribbles() {
-    const svg = $('scribbles');
-    const w = window.innerWidth, h = window.innerHeight;
-    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-    svg.innerHTML = '';
-    const g = el('g', { filter: 'url(#crayon)', opacity: '0.55' }, svg);
-    let seed = 7;
-    const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-    const colors = ['#1f6b6b', '#8f8f8f', '#1f6b6b', '#a2482a', '#f5b82e'];
-    const count = Math.round((w * h) / 90000) + 4;
-    for (let i = 0; i < count; i++) {
-      // Hug the edges so the middle stays readable.
-      const side = i % 4;
-      const x = side === 0 ? rnd() * w * 0.15 : side === 1 ? w - rnd() * w * 0.15 : rnd() * w;
-      const y = side === 2 ? rnd() * h * 0.12 : side === 3 ? h - rnd() * h * 0.12 : rnd() * h;
-      let d = `M${x} ${y}`;
-      const len = 6 + Math.floor(rnd() * 8), ang = rnd() * Math.PI;
-      for (let j = 0; j < len; j++) {
-        const along = (j % 2 ? 1 : -1) * (30 + rnd() * 50);
-        const dx = Math.cos(ang) * along - Math.sin(ang) * j * 7;
-        const dy = Math.sin(ang) * along + Math.cos(ang) * j * 7;
-        d += ` L${x + dx} ${y + dy}`;
-      }
-      el('path', { d, fill: 'none', stroke: colors[i % colors.length], 'stroke-width': 9, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
-    }
-  }
-
   // ---------- Clock face ----------
   function drawFace(svg, { fill = '#f5b82e' } = {}) {
     svg.innerHTML = '';
@@ -399,11 +371,24 @@
     } catch { /* share sheet closed */ }
   });
 
+  // Start over: forget today's answer and go back to step 1.
+  $('resetBtn').addEventListener('click', () => {
+    try { localStorage.removeItem(STORE_KEY); } catch {}
+    me = null; crowd = []; filter = 'all';
+    minutes = 18 * 60;
+    setCity(null);
+    cityCombo.set('');
+    $('jobInput').value = '';
+    job = null;
+    $('submitBtn').disabled = true;
+    $('shareStatus').textContent = '';
+    renderPicker();
+    $('results').hidden = true;
+    showStep(1);
+  });
+
   // ---------- Start ----------
   $('previewNote').hidden = LIVE;
-  drawScribbles();
-  let resizeTimer;
-  window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(drawScribbles, 200); });
   renderPicker();
 
   // Already answered today? Go straight to the crowd.
