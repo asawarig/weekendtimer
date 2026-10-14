@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Patrick+Hand&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=19">
+<link rel="stylesheet" href="style.css?v=20">
 </head>
 <body>
 
@@ -71,7 +71,7 @@
     <div class="nav-right">
       <a class="nav-plum" href="https://www.plumhq.com" target="_blank" rel="noopener">
         <span class="by">by</span>
-        <img src="assets/plum-logo.svg?v=19" alt="Plum" height="28">
+        <img src="assets/plum-logo.svg?v=20" alt="Plum" height="28">
       </a>
       <a class="btn btn-purple nav-cta" href="https://www.plumhq.com" target="_blank" rel="noopener">Visit Plum <svg class="icon" aria-hidden="true"><use href="#i-ext"/></svg></a>
     </div>
@@ -157,13 +157,16 @@
     <div class="you crayon-box" id="youCard"></div>
 
     <div class="crowd crayon-box">
-      <h2>The crowd clock</h2>
+      <div class="crowd-head">
+        <h2>The crowd clock</h2>
+        <button type="button" class="ampm-switch" id="halfSwitch" role="switch" aria-checked="true" aria-label="Show PM answers (off shows AM)">
+          <span class="sw-label" data-half="am">AM</span>
+          <span class="sw-track crayon-box"><span class="sw-knob"></span></span>
+          <span class="sw-label" data-half="pm">PM</span>
+        </button>
+      </div>
       <p class="crowd-sub" id="crowdSub"></p>
       <div class="filters" id="filters" role="group" aria-label="Show"></div>
-      <div class="half-toggle" role="group" aria-label="Show AM or PM answers">
-        <button type="button" class="pill" data-half="am">AM</button>
-        <button type="button" class="pill" data-half="pm">PM</button>
-      </div>
       <div class="clock-holder">
         <svg class="clock" id="crowdClock" viewBox="-112 -112 624 624" role="img" aria-label="Crowd clock of stop-working times"></svg>
       </div>
@@ -195,8 +198,8 @@
 
 </main>
 
-<script src="config.js?v=19"></script>
-<script src="data.js?v=19"></script>
-<script src="app.js?v=19"></script>
+<script src="config.js?v=20"></script>
+<script src="data.js?v=20"></script>
+<script src="app.js?v=20"></script>
 </body>
 </html>

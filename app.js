@@ -417,11 +417,7 @@
       ? `No answers from ${who} yet.`
       : `${subset.length} ${subset.length === 1 ? 'answer' : 'answers'} from ${who}, ${shown} in the ${half.toUpperCase()}. Their average is ${fmt(a)}${inHalf(a) ? ' (the red hand)' : ''}.`;
     document.querySelectorAll('#filters .pill').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.f === filter)));
-    document.querySelectorAll('.half-toggle .pill').forEach(b => {
-      const n = subset.filter(x => (x.minutes >= 720) === (b.dataset.half === 'pm')).length;
-      b.textContent = `${b.dataset.half.toUpperCase()} · ${n}`;
-      b.setAttribute('aria-pressed', String(b.dataset.half === half));
-    });
+    $('halfSwitch').setAttribute('aria-checked', String(half === 'pm'));
   }
 
   function board(listEl, key, latest) {
@@ -488,10 +484,8 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  document.querySelector('.half-toggle').addEventListener('click', e => {
-    const b = e.target.closest('.pill');
-    if (!b) return;
-    half = b.dataset.half;
+  $('halfSwitch').addEventListener('click', () => {
+    half = half === 'pm' ? 'am' : 'pm';
     renderCrowdClock();
   });
 

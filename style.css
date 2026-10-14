@@ -242,8 +242,32 @@ button { font: inherit; color: inherit; }
 .filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
 .filters .pill { font-size: 19px; }
 
-.half-toggle { display: flex; justify-content: center; gap: 8px; margin: 14px 0 0; }
-.half-toggle .pill { font-size: 20px; padding: 5px 18px; }
+.crowd-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.crowd-head h2 { margin-bottom: 14px; }
+
+/* AM/PM switch: a sliding crayon toggle, deliberately unlike the filter buttons */
+.ampm-switch {
+  display: inline-flex; align-items: center; gap: 10px;
+  border: 0; background: none; cursor: pointer; padding: 4px 2px; margin-bottom: 14px;
+  font-family: var(--hand); font-size: 24px;
+}
+.ampm-switch:focus-visible { outline: 3px dashed var(--blue); outline-offset: 4px; border-radius: 10px; }
+.sw-label { color: #9a9488; transition: color .15s; }
+.ampm-switch[aria-checked="false"] .sw-label[data-half="am"],
+.ampm-switch[aria-checked="true"] .sw-label[data-half="pm"] { color: var(--ink); }
+.sw-track {
+  position: relative; display: inline-block; width: 66px; height: 36px;
+  --fill: #2a3263;
+  transition: --fill .2s;
+}
+.ampm-switch[aria-checked="true"] .sw-track { --fill: var(--yellow); }
+.sw-track::before { border-radius: 20px 22px 18px 21px / 21px 18px 22px 20px; border-width: 3px; }
+.sw-knob {
+  position: absolute; top: 6px; left: 7px; width: 24px; height: 24px;
+  border-radius: 50%; background: var(--grain), #fffdf8; border: 3px solid var(--ink);
+  filter: url(#wobble); transition: left .2s ease;
+}
+.ampm-switch[aria-checked="true"] .sw-knob { left: 35px; }
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
 .stat { padding: 16px; text-align: center; display: flex; flex-direction: column; justify-content: center; }
 .stat .label { font-size: 18px; }
