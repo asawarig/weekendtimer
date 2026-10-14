@@ -6,6 +6,6 @@ A website that looks like a work document, with a countdown to the weekend hidde
 - During the weekend it switches to "Out of office" and counts down to Monday 9:00 AM.
 - The page is editable, so you can type in it like a real doc.
 
-There is also a spreadsheet version, `sheet.html`.
+There are also spreadsheet (`sheet.html`) and email (`email.html`) versions.
 
 Open `index.html` in a browser, or host it with GitHub Pages.
