@@ -34,7 +34,6 @@ body {
 .btn .icon, .pill .icon { width: .95em; height: .95em; }
 .night-label .icon { vertical-align: -0.18em; }
 .privacy .icon { width: 1.15em; height: 1.15em; vertical-align: -0.2em; }
-.board h3 .icon { width: 1.05em; height: 1.05em; vertical-align: -0.12em; margin-right: 2px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .hint { margin: -6px 0 6px; color: #555; font-size: 18px; }
 
@@ -42,6 +41,7 @@ body {
   position: relative;
   z-index: 1;
   max-width: 760px;
+  transition: max-width .2s;
   margin: 0 auto;
   padding: 28px 16px 48px;
 }
@@ -104,6 +104,53 @@ body {
 .nav-plum { display: flex; align-items: center; gap: 6px; color: #555; text-decoration: none; font-size: 17px; }
 .nav-plum img { display: block; height: 25px; width: auto; }
 .nav-cta { font-size: 20px; padding: 6px 16px; text-decoration: none; display: inline-block; }
+
+/* ---------- Explore ---------- */
+.explore[hidden] { display: none; }
+.wrap:has(.explore:not([hidden])) { max-width: 960px; }
+.ex-back { font-size: 20px; padding: 6px 16px; margin-bottom: 16px; }
+.ex-hero { --fill: var(--yellow); padding: 20px 22px; margin-bottom: 8px; text-align: center; }
+.ex-hero h2 { font-family: var(--hand); font-weight: normal; font-size: clamp(32px, 7vw, 46px); margin: 0; line-height: 1.1; }
+.ex-hero p { margin: 6px 0 0; font-size: 18px; }
+.ex-title {
+  font-family: var(--hand); font-weight: normal; font-size: 30px; margin: 26px 0 12px;
+  display: inline-block; padding: 4px 14px; position: relative; isolation: isolate;
+}
+.ex-title::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; background: var(--grain), #fffdf8;
+  border: 3px solid var(--ink); border-radius: 14px 20px 12px 18px / 18px 12px 20px 14px; filter: url(#wobble);
+}
+.ex-title .icon { width: 1em; height: 1em; vertical-align: -0.12em; }
+.ex-empty { color: #fff; }
+.clock-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+}
+.clock-card {
+  position: relative; padding: 16px 12px 14px; text-align: center; color: var(--ink);
+  display: flex; flex-direction: column; align-items: center;
+}
+.clock-card::before { background: var(--grain), var(--fill); }
+.clock-card.dark { color: #fffdf8; }
+.clock-card.first { grid-column: span 2; grid-row: span 2; justify-content: center; }
+.clock-card.mine::before { border-color: var(--red); border-width: 6px; }
+.mini-clock { width: 78%; max-width: 150px; height: auto; overflow: visible; margin: 8px 0 6px; }
+.clock-card.first .mini-clock { max-width: 280px; }
+.cc-rank {
+  position: absolute; top: -12px; left: -10px; width: 42px; height: 42px; display: grid; place-items: center;
+  font-family: var(--hand); font-size: 24px; color: var(--ink);
+  background: var(--grain), var(--yellow); border: 3px solid var(--ink); border-radius: 50% 46% 52% 48%;
+  filter: url(#wobble);
+}
+.clock-card.first .cc-rank { width: 56px; height: 56px; font-size: 32px; }
+.cc-tag {
+  position: absolute; top: -12px; right: -6px; padding: 2px 10px; font-size: 15px; color: #fff;
+  background: var(--red); border: 3px solid var(--ink); border-radius: 12px 16px 10px 14px; filter: url(#wobble);
+}
+.cc-name { font-family: var(--hand); font-size: 22px; line-height: 1.1; }
+.cc-time { font-family: var(--hand); font-size: 30px; line-height: 1.1; }
+.clock-card.first .cc-name { font-size: 32px; }
+.clock-card.first .cc-time { font-size: 50px; }
+.cc-n { font-size: 16px; opacity: .8; }
 
 @media (max-width: 640px) {
   .nav-brand span, .nav-plum .by { display: none; }
@@ -274,15 +321,7 @@ button { font: inherit; color: inherit; }
 .stat .big { font-family: var(--hand); font-size: 38px; line-height: 1.1; }
 .stat .small { font-size: 16px; }
 
-.boards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
-.board { padding: 18px 20px; }
-.board h3 { font-family: var(--hand); font-weight: normal; font-size: 26px; margin: 0 0 8px; }
-.board ol { margin: 0; padding-left: 26px; }
-.board li { margin: 3px 0; }
-.board li b { font-family: var(--hand); font-weight: normal; font-size: 22px; }
-.board .none { list-style: none; margin-left: -26px; color: #555; }
 
-.share-status { text-align: center; min-height: 1.4em; margin: 10px 0 0; }
 
 .privacy[hidden] { display: none; }
 .privacy {
@@ -302,6 +341,11 @@ button { font: inherit; color: inherit; }
   .crowd-head .ampm-switch { order: 10; align-self: center; margin: 6px 0 0; }
   .privacy { font-size: 14.5px; padding: 5px 12px; }
   .step { padding: 20px 16px; }
-  .stats, .boards { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: 1fr; }
+  .clock-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .clock-card.first { grid-row: span 1; }
+  .ex-title { font-size: 23px; }
+  .clock-card .cc-time { font-size: 24px; }
+  .clock-card.first .cc-time { font-size: 34px; }
   .time-readout { font-size: 44px; }
 }

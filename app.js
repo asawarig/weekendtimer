@@ -180,12 +180,16 @@
   };
   const lum = c => { const [r, g, b] = [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16)); return (0.299 * r + 0.587 * g + 0.114 * b) / 255; };
 
-  function setSky(t) {
+  function skyAt(t) {
     let i = 0;
     while (SKY[i + 1][0] <= t) i++;
     const [t0, a0, b0] = SKY[i], [t1, a1, b1] = SKY[i + 1];
     const f = (t - t0) / (t1 - t0);
-    const skyTop = mix(a0, a1, f), bottom = mix(b0, b1, f);
+    return [mix(a0, a1, f), mix(b0, b1, f)];
+  }
+
+  function setSky(t) {
+    const [skyTop, bottom] = skyAt(t);
     const root = document.documentElement.style;
     root.setProperty('--sky-top', skyTop);
     root.setProperty('--sky-bottom', bottom);
@@ -424,17 +428,73 @@
     $('halfSwitch').setAttribute('aria-checked', String(half === 'pm'));
   }
 
-  function board(listEl, key, latest) {
+  // Groups (cities or jobs) with at least 3 answers, ranked by their typical log-off time.
+  function ranking(key, latest) {
     const groups = {}, start = startFor();
     peers().forEach(a => (groups[a[key]] ||= []).push(a.minutes));
-    const rows = Object.entries(groups)
+    return Object.entries(groups)
       .filter(([name, v]) => v.length >= 3 && !name.startsWith('Other'))
       .map(([name, v]) => ({ name, t: avg(v, start), n: v.length }))
-      .sort((x, y) => latest ? norm(y.t, start) - norm(x.t, start) : norm(x.t, start) - norm(y.t, start))
-      .slice(0, 5);
-    listEl.innerHTML = rows.length
-      ? rows.map(r => `<li>${escapeHtml(r.name)} · <b>${fmt(r.t)}</b></li>`).join('')
-      : '<li class="none">Needs a few more answers. Check back soon!</li>';
+      .sort((x, y) => latest ? norm(y.t, start) - norm(x.t, start) : norm(x.t, start) - norm(y.t, start));
+  }
+
+  // ---------- Explore: a wall of crayon clocks ----------
+  function miniClock(t) {
+    const svg = document.createElementNS(SVG, 'svg');
+    svg.setAttribute('viewBox', '-8 -8 416 416');
+    svg.setAttribute('class', 'mini-clock');
+    svg.setAttribute('aria-hidden', 'true');
+    drawFace(svg);
+    const h12 = (t % 720) / 60, m = t % 60;
+    hand(svg, h12 * 30, 92, 18, '#e2352b');
+    hand(svg, m * 6, 136, 12, '#3a9bd9');
+    el('circle', { cx: 200, cy: 200, r: 16, fill: '#161616', filter: 'url(#crayon)' }, svg);
+    return svg;
+  }
+
+  const exShowAll = { city: false, job: false };
+
+  function clockCards(gridEl, moreBtn, key, latest, noun) {
+    const rows = ranking(key, latest);
+    const mine = key === 'city' ? me.city : me.job;
+    const shown = exShowAll[key] ? rows : rows.slice(0, 5);
+    gridEl.innerHTML = '';
+    if (!rows.length) {
+      gridEl.innerHTML = '<p class="ex-empty">Needs a few more answers. Check back soon!</p>';
+    }
+    shown.forEach((row, i) => {
+      const [top, bottom] = skyAt(row.t);
+      const card = document.createElement('div');
+      card.className = 'clock-card crayon-box' + (i === 0 ? ' first' : '') + (row.name === mine ? ' mine' : '')
+        + (lum(top) < 0.45 ? ' dark' : '');
+      card.style.setProperty('--fill', `linear-gradient(${top}, ${bottom})`);
+      card.innerHTML = `
+        <span class="cc-rank">${i + 1}</span>
+        ${row.name === mine ? `<span class="cc-tag">your ${noun}</span>` : ''}
+        <div class="cc-name">${escapeHtml(row.name)}</div>
+        <div class="cc-time">${fmt(row.t)}</div>
+        <div class="cc-n">${row.n} answers</div>`;
+      card.insertBefore(miniClock(row.t), card.querySelector('.cc-name'));
+      gridEl.appendChild(card);
+    });
+    moreBtn.hidden = rows.length <= 5;
+    moreBtn.innerHTML = exShowAll[key]
+      ? `Show top 5 only`
+      : `See all ${rows.length} ${noun === 'city' ? 'cities' : 'jobs'}`;
+  }
+
+  function renderExplore() {
+    const pool = peers();
+    $('exSub').textContent = `${pool.length} ${me.night ? 'night-shift ' : ''}answers. Each clock shows the typical time that group logs off; the card is coloured like the sky at that hour.`;
+    clockCards($('exCities'), $('exMoreCities'), 'city', true, 'city');
+    clockCards($('exJobs'), $('exMoreJobs'), 'job', false, 'job');
+  }
+
+  function showExplore(on) {
+    $('results').hidden = on;
+    $('explore').hidden = !on;
+    if (on) renderExplore();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function youLine(pool, start) {
@@ -478,8 +538,6 @@
     ].map(([f, label]) => `<button type="button" class="pill" data-f="${f}">${escapeHtml(label)}</button>`).join('');
 
     half = me.minutes >= 720 ? 'pm' : 'am';
-    board($('boardCities'), 'city', true);
-    board($('boardJobs'), 'job', false);
     renderCrowdClock();
 
     setSky(me.minutes);
@@ -522,19 +580,10 @@
     }
   });
 
-  $('shareBtn').addEventListener('click', async () => {
-    const cityAvg = avg(peers().filter(a => a.city === me.city).map(a => a.minutes), startFor());
-    const shiftNote = me.night ? ' after a night shift' : '';
-    const text = `Log your logoff: I'm logging off at ${fmt(me.minutes)}${shiftNote} today. ${me.city}${me.night ? ' night shifts log' : ' logs'} off around ${fmt(cityAvg)}. When do you stop working?`;
-    const url = location.href.split('#')[0];
-    try {
-      if (navigator.share) await navigator.share({ title: "Log your logoff", text, url });
-      else {
-        await navigator.clipboard.writeText(`${text} ${url}`);
-        $('shareStatus').textContent = 'Copied! Paste it anywhere.';
-      }
-    } catch { /* share sheet closed */ }
-  });
+  $('exploreBtn').addEventListener('click', () => showExplore(true));
+  $('exBack').addEventListener('click', () => showExplore(false));
+  $('exMoreCities').addEventListener('click', () => { exShowAll.city = !exShowAll.city; renderExplore(); });
+  $('exMoreJobs').addEventListener('click', () => { exShowAll.job = !exShowAll.job; renderExplore(); });
 
   // Start over: forget today's answer and go back to step 1.
   $('resetBtn').addEventListener('click', () => {
@@ -547,7 +596,7 @@
     $('jobInput').value = '';
     job = null;
     $('submitBtn').disabled = true;
-    $('shareStatus').textContent = '';
+    $('explore').hidden = true;
     renderPicker();
     $('results').hidden = true;
     $('privacyNote').hidden = false;

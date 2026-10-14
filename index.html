@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Patrick+Hand&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=24">
+<link rel="stylesheet" href="style.css?v=26">
 </head>
 <body>
 
@@ -174,33 +174,38 @@
       <div class="stat crayon-box fill-purple"><span class="label" id="statJobLabel">Your job</span><span class="big" id="statJob">–</span></div>
     </div>
 
-    <div class="boards">
-      <div class="board crayon-box">
-        <h3><svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg> Cities that log off latest</h3>
-        <ol id="boardCities"></ol>
-      </div>
-      <div class="board crayon-box">
-        <h3><svg class="icon" aria-hidden="true"><use href="#i-sun"/></svg> Jobs that log off earliest</h3>
-        <ol id="boardJobs"></ol>
-      </div>
-    </div>
-
     <div class="you crayon-box" id="youCard"></div>
 
     <div class="actions center">
       <button type="button" class="btn btn-ghost" id="resetBtn"><svg class="icon" aria-hidden="true"><use href="#i-reset"/></svg> Start over</button>
-      <button type="button" class="btn btn-red" id="shareBtn">Share my log-off time</button>
+      <button type="button" class="btn btn-red" id="exploreBtn">Explore more <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
     </div>
-    <p class="share-status" id="shareStatus" aria-live="polite"></p>
     <div class="preview-note crayon-box" id="previewNote" hidden>
     Preview mode: the crowd below is made-up sample data. Real answers start once the database is connected.
     </div>
   </section>
 
+  <!-- Explore -->
+  <section class="explore" id="explore" hidden>
+    <button type="button" class="btn btn-ghost ex-back" id="exBack"><svg class="icon" aria-hidden="true"><use href="#i-arrow-l"/></svg> Back to my results</button>
+    <header class="ex-hero crayon-box">
+      <h2>Explore the crowd</h2>
+      <p id="exSub"></p>
+    </header>
+
+    <h3 class="ex-title"><svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg> Cities that log off latest</h3>
+    <div class="clock-grid" id="exCities"></div>
+    <div class="actions center"><button type="button" class="btn btn-ghost" id="exMoreCities" hidden></button></div>
+
+    <h3 class="ex-title"><svg class="icon" aria-hidden="true"><use href="#i-sun"/></svg> Jobs that log off earliest</h3>
+    <div class="clock-grid" id="exJobs"></div>
+    <div class="actions center"><button type="button" class="btn btn-ghost" id="exMoreJobs" hidden></button></div>
+  </section>
+
 </main>
 
-<script src="config.js?v=24"></script>
-<script src="data.js?v=24"></script>
-<script src="app.js?v=24"></script>
+<script src="config.js?v=26"></script>
+<script src="data.js?v=26"></script>
+<script src="app.js?v=26"></script>
 </body>
 </html>
