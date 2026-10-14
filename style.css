@@ -291,7 +291,7 @@ button { font: inherit; color: inherit; }
 
 .actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
 .actions.center { justify-content: center; }
-.step-time .actions, #step-time .actions { justify-content: flex-end; }
+.step-time .actions, #step-time .actions { justify-content: center; }
 
 /* ---------- City chips ---------- */
 .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
@@ -397,10 +397,8 @@ button { font: inherit; color: inherit; }
   body { font-size: 19px; }
   /* Keep each step's Next/Back buttons on screen: pinned to the bottom while the step scrolls. */
   .step .actions {
-    position: sticky; bottom: 0; z-index: 4;
-    margin: 14px -16px -20px; padding: 12px 16px 14px;
-    background: linear-gradient(rgba(255, 253, 248, 0), #fffdf8 30%);
-    border-radius: 0 0 22px 22px;
+    position: sticky; bottom: 12px; z-index: 4;
+    margin-top: 16px;
   }
   /* Smaller clock on short phones so the whole first step fits. */
   #pickClock { width: min(100%, 37vh); }
