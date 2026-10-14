@@ -175,7 +175,7 @@ body.modal-open { overflow: hidden; }
   padding: 22px 22px 18px; display: flex; flex-direction: column;
 }
 .dt-close {
-  position: absolute; top: 10px; right: 12px; width: 44px; height: 44px; border: 0; background: none;
+  position: absolute; top: 10px; right: 12px; z-index: 5; width: 44px; height: 44px; border: 0; background: #fffdf8; border-radius: 50%;
   cursor: pointer; font-size: 28px; color: var(--ink); display: grid; place-items: center;
 }
 .dt-close:focus-visible { outline: 3px dashed var(--blue); border-radius: 10px; }
@@ -208,8 +208,9 @@ body.modal-open { overflow: hidden; }
 
 @media (max-width: 640px) {
   .detail-backdrop { padding: 8px; place-items: stretch; }
-  .detail { max-height: calc(100vh - 16px); padding: 16px 14px 12px; overflow-y: auto; }
-  .dt-body { grid-template-columns: 1fr; display: block; }
+  /* The pop-up box stays fixed; only its body scrolls, so the crayon background never scrolls away. */
+  .detail { max-height: calc(100dvh - 16px); padding: 16px 6px 12px 14px; overflow: visible; }
+  .dt-body { grid-template-columns: 1fr; display: block; overflow-y: auto; overscroll-behavior: contain; padding-right: 8px; -webkit-overflow-scrolling: touch; }
   .dt-left { overflow: visible; padding-top: 6px; }
   .dt-left h2 { font-size: 26px; }
   .dt-left .clock-card .mini-clock { max-width: 170px; }
