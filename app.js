@@ -342,7 +342,8 @@
   }
 
   // ---------- Results ----------
-  let crowd = [], me = null, filter = 'all', half = 'pm';
+  // Filters: city and job can be combined; with neither on, it shows everyone.
+  let crowd = [], me = null, filter = { city: false, job: false }, half = 'pm';
   // People are only compared with others on the same kind of shift.
   const peers = () => crowd.filter(a => !!a.night === !!me.night);
   const startFor = () => (me.night ? NIGHT_START : DAY_START);
@@ -352,7 +353,7 @@
     const svg = $('crowdClock');
     drawFace(svg, { fill: '#cfe8fa' });
     const dots = el('g', { filter: 'url(#crayon)' }, svg);
-    const match = a => filter === 'all' || (filter === 'city' ? a.city === me.city : a.job === me.job);
+    const match = a => (!filter.city || a.city === me.city) && (!filter.job || a.job === me.job);
     const inHalf = t => (t >= 720) === (half === 'pm');
     const pool = peers();
     const subset = pool.filter(match);
@@ -411,12 +412,15 @@
     }
 
     const night = me.night ? 'night-shift ' : '';
-    const who = filter === 'all' ? groupName() : filter === 'city' ? `${night}people in ${me.city}` : `${night}${me.job}s`;
+    const who = filter.city && filter.job ? `${night}${me.job}s in ${me.city}`
+      : filter.city ? `${night}people in ${me.city}`
+      : filter.job ? `${night}${me.job}s` : groupName();
     const shown = subset.filter(x => inHalf(x.minutes)).length;
     $('crowdSub').textContent = a === null
       ? `No answers from ${who} yet.`
       : `${subset.length} ${subset.length === 1 ? 'answer' : 'answers'} from ${who}, ${shown} in the ${half.toUpperCase()}. Their average is ${fmt(a)}${inHalf(a) ? ' (the red hand)' : ''}.`;
-    document.querySelectorAll('#filters .pill').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.f === filter)));
+    document.querySelectorAll('#filters .pill').forEach(b => b.setAttribute('aria-pressed', String(
+      b.dataset.f === 'all' ? !filter.city && !filter.job : filter[b.dataset.f])));
     $('halfSwitch').setAttribute('aria-checked', String(half === 'pm'));
   }
 
@@ -470,7 +474,7 @@
     $('statJob').textContent = jobTimes.length ? fmt(avg(jobTimes, start)) : '–';
 
     $('filters').innerHTML = [
-      ['all', me.night ? 'All night shifts' : 'Everyone'], ['city', `Only ${me.city}`], ['job', `Only ${me.job}`],
+      ['all', me.night ? 'All night shifts' : 'Everyone'], ['city', me.city], ['job', me.job],
     ].map(([f, label]) => `<button type="button" class="pill" data-f="${f}">${escapeHtml(label)}</button>`).join('');
 
     half = me.minutes >= 720 ? 'pm' : 'am';
@@ -492,7 +496,9 @@
   $('filters').addEventListener('click', e => {
     const b = e.target.closest('.pill');
     if (!b) return;
-    filter = b.dataset.f;
+    const f = b.dataset.f;
+    if (f === 'all') filter = { city: false, job: false };
+    else filter[f] = !filter[f];
     renderCrowdClock();
   });
 
@@ -532,7 +538,7 @@
   // Start over: forget today's answer and go back to step 1.
   $('resetBtn').addEventListener('click', () => {
     try { localStorage.removeItem(STORE_KEY); } catch {}
-    me = null; crowd = []; filter = 'all';
+    me = null; crowd = []; filter = { city: false, job: false };
     minutes = 18 * 60;
     nightShift = false;
     setCity(null);
