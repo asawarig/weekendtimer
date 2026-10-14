@@ -260,11 +260,14 @@
       const ang = ((a.minutes % 720) / 720) * Math.PI * 2;
       const pm = a.minutes >= 720;
       const r = (pm ? 196 : 72) + ((h % 1000) / 1000) * (pm ? 30 : 34);
-      el('circle', {
-        cx: 200 + Math.sin(ang) * r, cy: 200 - Math.cos(ang) * r, r: 6.5,
+      const x = 200 + Math.sin(ang) * r, y = 200 - Math.cos(ang) * r;
+      const style = {
         fill: COLORS[h % COLORS.length], stroke: '#161616', 'stroke-width': 2,
         opacity: match(a) ? 1 : 0.12,
-      }, dots);
+      };
+      // PM answers are circles, AM answers are diamonds.
+      if (pm) el('circle', { cx: x, cy: y, r: 6.5, ...style }, dots);
+      else el('polygon', { points: `${x},${y - 8.5} ${x + 8.5},${y} ${x},${y + 8.5} ${x - 8.5},${y}`, ...style }, dots);
     });
     const a = avg(subset.map(x => x.minutes));
     if (a !== null) {

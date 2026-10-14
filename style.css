@@ -187,9 +187,9 @@ button { font: inherit; color: inherit; }
 .filters .pill { font-size: 19px; }
 
 .legend { text-align: center; font-size: 17px; color: #444; margin: 8px 0 0; }
-.dot-sample { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--ink); margin: 0 4px 0 12px; vertical-align: -1px; }
-.dot-sample.outer { background: var(--blue); }
-.dot-sample.inner { background: var(--brown); }
+.shape-sample { display: inline-block; width: 14px; height: 14px; border: 2.5px solid var(--ink); background: #fffdf8; margin: 0 6px 0 14px; vertical-align: -1px; }
+.shape-sample.circle { border-radius: 50%; }
+.shape-sample.diamond { width: 12px; height: 12px; transform: rotate(45deg); margin-left: 16px; }
 .star-sample { color: var(--red); margin-left: 12px; font-size: 20px; -webkit-text-stroke: 1px var(--ink); }
 
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
