@@ -295,6 +295,10 @@ button { font: inherit; color: inherit; }
 
 @media (max-width: 640px) {
   body { font-size: 19px; }
+  /* On phones the AM/PM switch sits under the crowd clock. */
+  .crowd { display: flex; flex-direction: column; }
+  .crowd-head { display: contents; }
+  .crowd-head .ampm-switch { order: 10; align-self: center; margin: 6px 0 0; }
   .privacy { font-size: 14.5px; padding: 5px 12px; }
   .step { padding: 20px 16px; }
   .stats, .boards { grid-template-columns: 1fr; }
