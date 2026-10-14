@@ -449,10 +449,10 @@
 
   $('shareBtn').addEventListener('click', async () => {
     const cityAvg = avg(crowd.filter(a => a.city === me.city).map(a => a.minutes));
-    const text = `I'm logging off at ${fmt(me.minutes)} today. ${me.city} logs off around ${fmt(cityAvg)}. When do you stop working?`;
+    const text = `Log your logoff: I'm logging off at ${fmt(me.minutes)} today. ${me.city} logs off around ${fmt(cityAvg)}. When do you stop working?`;
     const url = location.href.split('#')[0];
     try {
-      if (navigator.share) await navigator.share({ title: "Log-off O'Clock", text, url });
+      if (navigator.share) await navigator.share({ title: "Log your logoff", text, url });
       else {
         await navigator.clipboard.writeText(`${text} ${url}`);
         $('shareStatus').textContent = 'Copied! Paste it anywhere.';

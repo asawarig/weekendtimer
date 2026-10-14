@@ -1,4 +1,4 @@
-// Log-off O'Clock: stores answers in this Google Sheet.
+// Log your logoff: stores answers in this Google Sheet.
 // Paste into Extensions → Apps Script, then Deploy → New deployment → Web app
 // (Execute as: Me, Who has access: Anyone). See README.md.
 

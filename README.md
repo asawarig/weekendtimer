@@ -1,4 +1,4 @@
-# Log-off O'Clock
+# Log your logoff
 
 A crowd-sourced clock, drawn in crayon. Visitors:
 
@@ -25,7 +25,7 @@ and leaderboards of the cities that log off latest and the jobs that log off ear
 
 Until this is done the site runs in **preview mode** with made-up sample answers and a banner saying so.
 
-1. Create a new Google Sheet (any name, e.g. "Log-off O'Clock answers").
+1. Create a new Google Sheet (any name, e.g. "Log your logoff answers").
 2. In the sheet, open **Extensions → Apps Script**. Delete what's there, paste in `apps-script.gs`, and click **Save**.
 3. Click **Deploy → New deployment**. Click the gear next to "Select type" and choose **Web app**.
    - **Execute as:** Me

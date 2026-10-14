@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Log-off O'Clock</title>
+<title>Log your logoff</title>
 <meta name="description" content="What time will you stop working today? Add yours and see when the rest of India logs off.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23f5b82e' stroke='%23111' stroke-width='3'/%3E%3Cpath d='M16 16V7M16 16l6 4' stroke='%23e2352b' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"%3E %3Ccircle cx="60" cy="64" r="40" fill="%23f5b82e"/%3E %3Cpath d="M83.3 26.7A44 44 0 1 1 36.7 26.7" fill="none" stroke="%23161616" stroke-width="11" stroke-linecap="round"/%3E %3Cg stroke="%23161616" stroke-width="5" stroke-linecap="round"%3E %3Cpath d="M97 64h-7M60 101v-7M23 64h7"/%3E %3C/g%3E %3Cpath d="M60 64L80 76" stroke="%23161616" stroke-width="12" stroke-linecap="round"/%3E %3Cpath d="M60 64L80 76" stroke="%233a9bd9" stroke-width="6" stroke-linecap="round"/%3E %3Cpath d="M60 64V12" stroke="%23161616" stroke-width="15" stroke-linecap="round"/%3E %3Cpath d="M60 64V12" stroke="%23e2352b" stroke-width="8" stroke-linecap="round"/%3E %3Ccircle cx="60" cy="64" r="7" fill="%23161616"/%3E %3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Patrick+Hand&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=9">
+<link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
 
@@ -27,14 +27,47 @@
       <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.4 2.1" result="grainMask"/>
       <feComposite in="wobbly" in2="grainMask" operator="in"/>
     </filter>
+    <symbol id="logoMark" viewBox="0 0 120 120">
+      <g filter="url(#crayon)">
+        <circle cx="60" cy="64" r="40" fill="#f5b82e"/>
+          <path d="M83.3 26.7A44 44 0 1 1 36.7 26.7" fill="none" stroke="#161616" stroke-width="11" stroke-linecap="round"/>
+          <g stroke="#161616" stroke-width="5" stroke-linecap="round">
+            <path d="M97 64h-7M60 101v-7M23 64h7"/>
+          </g>
+          <path d="M60 64L80 76" stroke="#161616" stroke-width="12" stroke-linecap="round"/>
+          <path d="M60 64L80 76" stroke="#3a9bd9" stroke-width="6" stroke-linecap="round"/>
+          <path d="M60 64V12" stroke="#161616" stroke-width="15" stroke-linecap="round"/>
+          <path d="M60 64V12" stroke="#e2352b" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="60" cy="64" r="7" fill="#161616"/>
+      </g>
+    </symbol>
   </defs>
 </svg>
 
 <svg class="sky" id="sky" aria-hidden="true"></svg>
 
+<nav class="topnav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="./" aria-label="Log your logoff, home">
+      <svg class="nav-mark" viewBox="0 0 120 120" aria-hidden="true"><use href="#logoMark"/></svg>
+      <span>Log your logoff</span>
+    </a>
+    <div class="nav-right">
+      <a class="nav-plum" href="https://www.plumhq.com" target="_blank" rel="noopener">
+        <span class="by">by</span>
+        <img src="assets/plum-logo.svg?v=10" alt="Plum" height="28">
+      </a>
+      <a class="btn btn-purple nav-cta" href="https://www.plumhq.com" target="_blank" rel="noopener">Visit Plum ↗</a>
+    </div>
+  </div>
+</nav>
+
 <main class="wrap">
   <header class="masthead">
-    <h1>Log-off O'Clock</h1>
+    <h1 class="lockup" aria-label="Log your logoff">
+      <svg class="mark" viewBox="0 0 120 120" aria-hidden="true"><use href="#logoMark"/></svg>
+      <span class="wordmark" aria-hidden="true"><span class="w1">Log your</span><span class="w2">logoff</span></span>
+    </h1>
     <p class="tagline">When are <em>you</em> stopping work today?</p>
   </header>
 
@@ -143,8 +176,8 @@
   <footer class="foot">Answers are anonymous: only time, city and job are saved.</footer>
 </main>
 
-<script src="config.js?v=9"></script>
-<script src="data.js?v=9"></script>
-<script src="app.js?v=9"></script>
+<script src="config.js?v=10"></script>
+<script src="data.js?v=10"></script>
+<script src="app.js?v=10"></script>
 </body>
 </html>

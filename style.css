@@ -66,16 +66,81 @@ body.night .tagline em { color: var(--ink); }
 .fill-red    { --fill: var(--red); color: #fff; }
 
 /* ---------- Header ---------- */
-.masthead { text-align: center; margin: 8px 0 22px; }
-.masthead h1 {
-  font-family: var(--hand);
-  font-weight: normal;
-  font-size: clamp(44px, 10vw, 76px);
-  line-height: 1;
+.masthead { text-align: center; margin: 10px 0 22px; }
+/* ---------- Logo ---------- */
+.lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
   margin: 0;
+  font-weight: normal;
+  transform: rotate(-2deg);
+}
+.lockup .mark { width: clamp(78px, 17vw, 118px); height: auto; flex: none; overflow: visible; }
+.wordmark { display: flex; flex-direction: column; align-items: flex-start; font-family: var(--hand); line-height: 1; }
+.wordmark .w1 { font-size: clamp(26px, 6vw, 38px); color: var(--ink); margin-left: 4px; }
+.wordmark .w2 {
+  position: relative;
+  isolation: isolate;
+  font-size: clamp(60px, 15vw, 96px);
+  line-height: .85;
   color: var(--red);
   text-shadow: 3px 3px 0 var(--ink);
-  transform: rotate(-2deg);
+  padding: 0 6px;
+}
+/* Yellow crayon swash under "logoff" */
+.wordmark .w2::after {
+  content: '';
+  position: absolute;
+  left: 0; right: -4px; bottom: 2px;
+  height: 34%;
+  z-index: -1;
+  background: var(--grain), var(--yellow);
+  border-radius: 12px 30px 10px 26px / 14px 8px 16px 10px;
+  transform: rotate(-1.5deg);
+  filter: url(#wobble);
+}
+body.night .wordmark .w1 { color: #f4f1ea; }
+
+/* ---------- Nav ---------- */
+.topnav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  isolation: isolate;
+}
+.topnav::before {
+  content: '';
+  position: absolute;
+  inset: -30px -10px 0;
+  z-index: -1;
+  background: var(--grain), #fffdf8;
+  border-bottom: 4px solid var(--ink);
+  filter: url(#wobble);
+}
+.nav-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.nav-brand {
+  display: flex; align-items: center; gap: 8px;
+  color: var(--ink); text-decoration: none;
+  font-family: var(--hand); font-size: 24px; white-space: nowrap;
+}
+.nav-mark { width: 36px; height: 36px; overflow: visible; }
+.nav-right { display: flex; align-items: center; gap: 14px; }
+.nav-plum { display: flex; align-items: center; gap: 6px; color: #555; text-decoration: none; font-size: 17px; }
+.nav-plum img { display: block; height: 28px; width: auto; }
+.nav-cta { font-size: 20px; padding: 6px 16px; text-decoration: none; display: inline-block; }
+
+@media (max-width: 640px) {
+  .nav-brand span, .nav-plum .by { display: none; }
+  .nav-cta { font-size: 18px; padding: 5px 12px; }
 }
 .tagline { font-size: 24px; margin: 12px 0 0; }
 .tagline em { font-style: normal; background: var(--yellow); padding: 0 6px; border-radius: 6px; }

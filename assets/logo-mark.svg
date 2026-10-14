@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Log your logoff: a clock that is also a power-off button. -->
+  <circle cx="60" cy="64" r="40" fill="#f5b82e"/>
+  <path d="M83.3 26.7A44 44 0 1 1 36.7 26.7" fill="none" stroke="#161616" stroke-width="11" stroke-linecap="round"/>
+  <g stroke="#161616" stroke-width="5" stroke-linecap="round">
+    <path d="M97 64h-7M60 101v-7M23 64h7"/>
+  </g>
+  <path d="M60 64L80 76" stroke="#161616" stroke-width="12" stroke-linecap="round"/>
+  <path d="M60 64L80 76" stroke="#3a9bd9" stroke-width="6" stroke-linecap="round"/>
+  <path d="M60 64V12" stroke="#161616" stroke-width="15" stroke-linecap="round"/>
+  <path d="M60 64V12" stroke="#e2352b" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="60" cy="64" r="7" fill="#161616"/>
+</svg>
