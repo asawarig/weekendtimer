@@ -411,3 +411,9 @@ button { font: inherit; color: inherit; }
   .clock-card.first .cc-time { font-size: 34px; }
   .time-readout { font-size: 44px; }
 }
+
+/* Safari / iPhone fallback: no SVG crayon filters (see index.html). The CSS filter property
+   also overrides SVG filter="" attributes, so this turns them off inside the clocks too. */
+.no-crayon-filter *,
+.no-crayon-filter *::before,
+.no-crayon-filter *::after { filter: none !important; }

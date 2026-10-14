@@ -9,7 +9,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Patrick+Hand&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=32">
+<script>
+  // Safari and every iPhone/iPad browser (all use Apple's WebKit engine) can fail to draw shapes
+  // that use the crayon SVG filters, leaving them invisible. Skip those filters there.
+  (function () {
+    var ua = navigator.userAgent;
+    var apple = /AppleWebKit/.test(ua) && !/Chrome\/|Chromium|Edg\//.test(ua);
+    var ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (apple || ios) document.documentElement.classList.add('no-crayon-filter');
+  })();
+</script>
+<link rel="stylesheet" href="style.css?v=33">
 </head>
 <body>
 
@@ -241,8 +251,8 @@
 </div>
 
 
-<script src="config.js?v=32"></script>
-<script src="data.js?v=32"></script>
-<script src="app.js?v=32"></script>
+<script src="config.js?v=33"></script>
+<script src="data.js?v=33"></script>
+<script src="app.js?v=33"></script>
 </body>
 </html>
