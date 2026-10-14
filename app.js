@@ -342,7 +342,7 @@
   }
 
   // ---------- Results ----------
-  let crowd = [], me = null, filter = 'all';
+  let crowd = [], me = null, filter = 'all', half = 'pm';
   // People are only compared with others on the same kind of shift.
   const peers = () => crowd.filter(a => !!a.night === !!me.night);
   const startFor = () => (me.night ? NIGHT_START : DAY_START);
@@ -353,45 +353,75 @@
     drawFace(svg, { fill: '#cfe8fa' });
     const dots = el('g', { filter: 'url(#crayon)' }, svg);
     const match = a => filter === 'all' || (filter === 'city' ? a.city === me.city : a.job === me.job);
+    const inHalf = t => (t >= 720) === (half === 'pm');
     const pool = peers();
     const subset = pool.filter(match);
+    // Only the chosen half of the day is drawn, as dots on a ring round the clock.
     pool.forEach((a, i) => {
+      if (!inHalf(a.minutes)) return;
       const h = hash(`${a.city}|${a.job}|${i}`);
       const ang = ((a.minutes % 720) / 720) * Math.PI * 2;
-      const pm = a.minutes >= 720;
-      const r = (pm ? 196 : 72) + ((h % 1000) / 1000) * (pm ? 30 : 34);
-      const x = 200 + Math.sin(ang) * r, y = 200 - Math.cos(ang) * r;
-      const style = {
+      const r = 196 + ((h % 1000) / 1000) * 30;
+      el('circle', {
+        cx: 200 + Math.sin(ang) * r, cy: 200 - Math.cos(ang) * r, r: 6.5,
         fill: COLORS[h % COLORS.length], stroke: '#161616', 'stroke-width': 2,
         opacity: match(a) ? 1 : 0.12,
-      };
-      // PM answers are circles, AM answers are diamonds.
-      if (pm) el('circle', { cx: x, cy: y, r: 6.5, ...style }, dots);
-      else el('polygon', { points: `${x},${y - 8.5} ${x + 8.5},${y} ${x},${y + 8.5} ${x - 8.5},${y}`, ...style }, dots);
+      }, dots);
     });
     const a = avg(subset.map(x => x.minutes), startFor());
-    if (a !== null) {
+    if (a !== null && inHalf(a)) {
       hand(svg, ((a % 720) / 60) * 30, 120, 12, '#e2352b');
-      el('circle', { cx: 200, cy: 200, r: 13, fill: '#161616', filter: 'url(#crayon)' }, svg);
     }
-    // You
-    const ang = ((me.minutes % 720) / 720) * Math.PI * 2;
-    const r = me.minutes >= 720 ? 240 : 52;
-    const sx = 200 + Math.sin(ang) * r, sy = 200 - Math.cos(ang) * r;
-    const pts = [];
-    for (let k = 0; k < 10; k++) {
-      const a = k * Math.PI / 5, rr = k % 2 ? 9 : 21;
-      pts.push(`${(sx + Math.sin(a) * rr).toFixed(1)},${(sy - Math.cos(a) * rr).toFixed(1)}`);
+    el('circle', { cx: 200, cy: 200, r: 13, fill: '#161616', filter: 'url(#crayon)' }, svg);
+
+    // You: a star on the ring, with a crayon arrow and a "you" label pointing at it.
+    if (inHalf(me.minutes)) {
+      const ang = ((me.minutes % 720) / 720) * Math.PI * 2;
+      const ux = Math.sin(ang), uy = -Math.cos(ang);
+      const at = rr => [200 + ux * rr, 200 + uy * rr];
+      const [sx, sy] = at(246);
+      const pts = [];
+      for (let k = 0; k < 10; k++) {
+        const t = k * Math.PI / 5, rr = k % 2 ? 9 : 21;
+        pts.push(`${(sx + Math.sin(t) * rr).toFixed(1)},${(sy - Math.cos(t) * rr).toFixed(1)}`);
+      }
+      el('polygon', { points: pts.join(' '), fill: '#e2352b', stroke: '#161616', 'stroke-width': 3,
+        'stroke-linejoin': 'round', filter: 'url(#crayon)' }, svg);
+
+      // "you" sits beside the star (along the ring, a little outward), with a curved arrow to it.
+      const tx = Math.cos(ang), ty = Math.sin(ang);
+      const lx = sx + tx * 80 + ux * 34, ly = sy + ty * 80 + uy * 34;
+      const vx = sx - lx, vy = sy - ly, vl = Math.hypot(vx, vy);
+      const x0 = lx + vx / vl * 22, y0 = ly + vy / vl * 22;
+      const x1 = sx - vx / vl * 25, y1 = sy - vy / vl * 25;
+      const cx = (x0 + x1) / 2 + ux * 16, cy = (y0 + y1) / 2 + uy * 16;
+      const g = el('g', { filter: 'url(#crayon)', fill: 'none', stroke: '#161616', 'stroke-width': 4,
+        'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, svg);
+      el('path', { d: `M${x0.toFixed(1)} ${y0.toFixed(1)} Q${cx.toFixed(1)} ${cy.toFixed(1)} ${x1.toFixed(1)} ${y1.toFixed(1)}` }, g);
+      const dx = x1 - cx, dy = y1 - cy, len = Math.hypot(dx, dy) || 1;
+      const bx = dx / len, by = dy / len, head = 11;
+      const wing = k => `${(x1 - bx * head - by * head * 0.65 * k).toFixed(1)} ${(y1 - by * head + bx * head * 0.65 * k).toFixed(1)}`;
+      el('path', { d: `M${wing(1)} L${x1.toFixed(1)} ${y1.toFixed(1)} L${wing(-1)}` }, g);
+
+      const label = el('text', {
+        x: lx.toFixed(1), y: (ly + 11).toFixed(1), 'font-size': 34, fill: '#e2352b',
+        stroke: '#161616', 'stroke-width': 1.2, 'paint-order': 'stroke', 'text-anchor': 'middle',
+      }, svg);
+      label.textContent = 'you';
     }
-    el('polygon', { points: pts.join(' '), fill: '#e2352b', stroke: '#161616', 'stroke-width': 3,
-      'stroke-linejoin': 'round', filter: 'url(#crayon)' }, svg);
 
     const night = me.night ? 'night-shift ' : '';
     const who = filter === 'all' ? groupName() : filter === 'city' ? `${night}people in ${me.city}` : `${night}${me.job}s`;
+    const shown = subset.filter(x => inHalf(x.minutes)).length;
     $('crowdSub').textContent = a === null
       ? `No answers from ${who} yet.`
-      : `${subset.length} ${subset.length === 1 ? 'answer' : 'answers'} from ${who}. The red hand is their average: ${fmt(a)}.`;
+      : `${subset.length} ${subset.length === 1 ? 'answer' : 'answers'} from ${who}, ${shown} in the ${half.toUpperCase()}. Their average is ${fmt(a)}${inHalf(a) ? ' (the red hand)' : ''}.`;
     document.querySelectorAll('#filters .pill').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.f === filter)));
+    document.querySelectorAll('.half-toggle .pill').forEach(b => {
+      const n = subset.filter(x => (x.minutes >= 720) === (b.dataset.half === 'pm')).length;
+      b.textContent = `${b.dataset.half.toUpperCase()} · ${n}`;
+      b.setAttribute('aria-pressed', String(b.dataset.half === half));
+    });
   }
 
   function board(listEl, key, latest) {
@@ -447,6 +477,7 @@
       ['all', me.night ? 'All night shifts' : 'Everyone'], ['city', `Only ${me.city}`], ['job', `Only ${me.job}`],
     ].map(([f, label]) => `<button type="button" class="pill" data-f="${f}">${escapeHtml(label)}</button>`).join('');
 
+    half = me.minutes >= 720 ? 'pm' : 'am';
     board($('boardCities'), 'city', true);
     board($('boardJobs'), 'job', false);
     renderCrowdClock();
@@ -456,6 +487,13 @@
     $('results').hidden = false;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  document.querySelector('.half-toggle').addEventListener('click', e => {
+    const b = e.target.closest('.pill');
+    if (!b) return;
+    half = b.dataset.half;
+    renderCrowdClock();
+  });
 
   $('filters').addEventListener('click', e => {
     const b = e.target.closest('.pill');

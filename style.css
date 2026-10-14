@@ -242,9 +242,8 @@ button { font: inherit; color: inherit; }
 .filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
 .filters .pill { font-size: 19px; }
 
-.legend { text-align: center; font-size: 17px; color: #444; margin: 8px 0 0; }
-.legend-icon { display: inline-block; margin: 0 4px 0 14px; }
-.legend-icon .icon { width: 18px; height: 18px; vertical-align: -0.2em; }
+.half-toggle { display: flex; justify-content: center; gap: 8px; margin: 14px 0 0; }
+.half-toggle .pill { font-size: 20px; padding: 5px 18px; }
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
 .stat { padding: 16px; text-align: center; display: flex; flex-direction: column; justify-content: center; }
 .stat .label { font-size: 18px; }

@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Patrick+Hand&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=18">
+<link rel="stylesheet" href="style.css?v=19">
 </head>
 <body>
 
@@ -43,8 +43,6 @@
     <symbol id="i-moon" viewBox="0 0 24 24"><g filter="url(#crayon-icon)"><path d="M15.5 3.5a8.5 8.5 0 1 0 5 15A7 7 0 0 1 15.5 3.5z" fill="#fff3c4" stroke="#161616" stroke-width="2.2" stroke-linejoin="round"/></g></symbol>
     <symbol id="i-sun" viewBox="0 0 24 24"><g filter="url(#crayon-icon)" stroke-linecap="round"><g stroke="#f5b82e" stroke-width="2.6"><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></g><circle cx="12" cy="12" r="5.2" fill="#f5b82e" stroke="#161616" stroke-width="2"/></g></symbol>
     <symbol id="i-star" viewBox="0 0 24 24"><g filter="url(#crayon-icon)"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z" fill="#e2352b" stroke="#161616" stroke-width="2" stroke-linejoin="round"/></g></symbol>
-    <symbol id="i-circle" viewBox="0 0 24 24"><g filter="url(#crayon-icon)"><circle cx="12" cy="12" r="8" fill="#fffdf8" stroke="#161616" stroke-width="2.6"/></g></symbol>
-    <symbol id="i-diamond" viewBox="0 0 24 24"><g filter="url(#crayon-icon)"><path d="M12 2.5l9.5 9.5-9.5 9.5L2.5 12z" fill="#fffdf8" stroke="#161616" stroke-width="2.6" stroke-linejoin="round"/></g></symbol>
     <symbol id="logoMark" viewBox="0 0 120 120">
       <g filter="url(#crayon)">
         <circle cx="60" cy="64" r="40" fill="#f5b82e"/>
@@ -73,7 +71,7 @@
     <div class="nav-right">
       <a class="nav-plum" href="https://www.plumhq.com" target="_blank" rel="noopener">
         <span class="by">by</span>
-        <img src="assets/plum-logo.svg?v=18" alt="Plum" height="28">
+        <img src="assets/plum-logo.svg?v=19" alt="Plum" height="28">
       </a>
       <a class="btn btn-purple nav-cta" href="https://www.plumhq.com" target="_blank" rel="noopener">Visit Plum <svg class="icon" aria-hidden="true"><use href="#i-ext"/></svg></a>
     </div>
@@ -162,14 +160,13 @@
       <h2>The crowd clock</h2>
       <p class="crowd-sub" id="crowdSub"></p>
       <div class="filters" id="filters" role="group" aria-label="Show"></div>
-      <div class="clock-holder">
-        <svg class="clock" id="crowdClock" viewBox="-62 -62 524 524" role="img" aria-label="Crowd clock of stop-working times"></svg>
+      <div class="half-toggle" role="group" aria-label="Show AM or PM answers">
+        <button type="button" class="pill" data-half="am">AM</button>
+        <button type="button" class="pill" data-half="pm">PM</button>
       </div>
-      <p class="legend">
-        <span class="legend-icon"><svg class="icon" aria-hidden="true"><use href="#i-circle"/></svg></span> PM answers on the outside ring
-        <span class="legend-icon"><svg class="icon" aria-hidden="true"><use href="#i-diamond"/></svg></span> AM answers inside
-        <span class="legend-icon"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></span> you
-      </p>
+      <div class="clock-holder">
+        <svg class="clock" id="crowdClock" viewBox="-112 -112 624 624" role="img" aria-label="Crowd clock of stop-working times"></svg>
+      </div>
     </div>
 
     <div class="stats">
@@ -198,8 +195,8 @@
 
 </main>
 
-<script src="config.js?v=18"></script>
-<script src="data.js?v=18"></script>
-<script src="app.js?v=18"></script>
+<script src="config.js?v=19"></script>
+<script src="data.js?v=19"></script>
+<script src="app.js?v=19"></script>
 </body>
 </html>
