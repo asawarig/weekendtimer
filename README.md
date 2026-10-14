@@ -2,7 +2,7 @@
 
 A crowd-sourced clock, drawn in crayon. Visitors:
 
-1. Drag a clock (or type) the time they'll stop working today, and say if they're on a night shift.
+1. Drag a clock (or type) the time they'll stop working today, and pick their shift.
 2. Pick their city in India (popular cities as buttons, or search the full list).
 3. Pick their occupation from a searchable list.
 
@@ -34,7 +34,7 @@ Until this is done the site runs in **preview mode** with made-up sample answers
    (Google may warn the app isn't verified: click **Advanced → Go to … (unsafe)**. It's your own script.)
 5. Copy the **Web app URL** (ends in `/exec`), put it in `config.js` as `sheetUrl`, and push.
 
-Answers appear as rows in an **Answers** tab (time, city, occupation, night shift).
-Night-shift workers are compared only with other night-shift workers. Regular times are compared on a day that starts at 10 AM, so 2 AM counts as very late, not early.
-If you set up the sheet before the night-shift column existed, add a **Night shift** header in column F. Only answers whose city and job are in `data.js` are shown on the site.
+Answers appear as rows in an **Answers** tab (time, city, occupation, shift).
+Shifts: Day / General, Morning / Early, Evening / US-late, Night, Rotational, 12-hour. People are compared only with others on the same shift, and each shift has its own day boundary (set in `SHIFTS` in `app.js`), so 2 AM after a day shift counts as very late, not early.
+If you set up the sheet before the shift column existed, add a **Shift** header in column F. Only answers whose city and job are in `data.js` are shown on the site.
 If you change the script later, use **Deploy → Manage deployments → Edit → New version** so the URL stays the same.

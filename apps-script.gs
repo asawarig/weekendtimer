@@ -11,7 +11,7 @@ function getSheet_() {
   let sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME);
-    sheet.appendRow(['Submitted at', 'Stop minutes', 'Stop time', 'City', 'Occupation', 'Night shift']);
+    sheet.appendRow(['Submitted at', 'Stop minutes', 'Stop time', 'City', 'Occupation', 'Shift']);
     sheet.setFrozenRows(1);
   }
   return sheet;
@@ -33,7 +33,8 @@ function doPost(e) {
     const minutes = Number(data.minutes);
     const city = clean_(data.city);
     const job = clean_(data.job);
-    const night = data.night === true;
+    const SHIFTS = ['day', 'morning', 'evening', 'night', 'rotational', 'long'];
+    const shift = SHIFTS.indexOf(data.shift) >= 0 ? data.shift : 'day';
     if (!Number.isInteger(minutes) || minutes < 0 || minutes > 1439 || !city || !job) {
       return json_({ ok: false, error: 'invalid answer' });
     }
@@ -47,7 +48,7 @@ function doPost(e) {
     const lock = LockService.getScriptLock();
     lock.waitLock(10000);
     try {
-      getSheet_().appendRow([new Date(), minutes, label, city, job, night]);
+      getSheet_().appendRow([new Date(), minutes, label, city, job, shift]);
     } finally {
       lock.releaseLock();
     }
@@ -67,6 +68,6 @@ function doGet() {
   const since = Date.now() - DAYS_SHOWN * 864e5;
   const rows = values
     .filter(r => r[0] instanceof Date && r[0].getTime() >= since)
-    .map(r => [r[1], r[3], r[4], r[5] === true]);
+    .map(r => [r[1], r[3], r[4], r[5] || 'day']);
   return json_({ ok: true, rows });
 }

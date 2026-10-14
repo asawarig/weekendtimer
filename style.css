@@ -30,6 +30,10 @@ body {
 .sky { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
 
 /* Text that sits straight on the sky turns light at night. */
+.icon { width: 1em; height: 1em; vertical-align: -0.14em; overflow: visible; flex: none; }
+.btn .icon, .pill .icon { width: .95em; height: .95em; }
+.privacy .icon { width: 1.15em; height: 1.15em; vertical-align: -0.2em; }
+.board h3 .icon { width: 1.05em; height: 1.05em; vertical-align: -0.12em; margin-right: 2px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .hint { margin: -6px 0 6px; color: #555; font-size: 18px; }
 
@@ -126,18 +130,20 @@ body {
 .clock text { font-family: var(--hand); }
 
 .time-row { display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; margin-top: 8px; }
+.time-field { --fill: #fffdf8; padding: 2px 4px; }
+.time-field:focus-within { --fill: #fff4c2; }
+.time-field:has(.bad) { color: var(--red); }
+.time-field:has(.bad)::before { border-color: var(--red); }
 .time-readout {
-  font-family: var(--hand); font-size: 52px; line-height: 1.1; color: var(--ink);
+  font-family: var(--hand); font-size: 52px; line-height: 1.1; color: inherit;
   width: 5.2em; text-align: center; padding: 2px 6px;
-  border: 0; border-bottom: 3px dashed #b9b2a3; background: transparent; outline: none;
+  border: 0; background: transparent; outline: none;
 }
-.time-readout:hover { border-bottom-color: var(--ink); }
-.time-readout:focus { border-bottom: 3px solid var(--blue); background: #fff8e1; border-radius: 6px 6px 0 0; }
-.time-readout.bad { border-bottom-color: var(--red); color: var(--red); }
 .ampm { display: flex; gap: 8px; }
-.shift-row { display: flex; justify-content: center; margin-top: 14px; }
-.shift-toggle { font-size: 20px; }
-.shift-toggle[aria-pressed="true"] { --fill: #2a3263; color: #fff6c9; }
+.shift-block { margin-top: 18px; text-align: center; }
+.shift-q { font-family: var(--hand); font-size: 24px; margin: 0 0 8px; }
+.shift-picker { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.shift-picker .pill { font-size: 18px; padding: 5px 13px; }
 .shift-hint { text-align: center; color: #555; font-size: 17px; margin: 8px auto 0; max-width: 460px; }
 
 /* ---------- Buttons ---------- */
@@ -192,35 +198,34 @@ button { font: inherit; color: inherit; }
 /* ---------- Searchable dropdowns ---------- */
 .combo { position: relative; }
 .combo label { display: block; font-size: 18px; color: #444; margin-bottom: 6px; }
+.field { --fill: #fffdf8; }
+.field:focus-within { --fill: #fff4c2; }
 .combo input {
   width: 100%;
   font: inherit;
   font-size: 22px;
-  padding: 12px 16px;
-  border: 3px solid var(--ink);
-  border-radius: 12px 18px 10px 16px / 16px 10px 18px 12px;
-  background: #fffdf8;
+  padding: 12px 18px;
+  border: 0;
+  background: transparent;
   outline: none;
 }
-.combo input:focus { box-shadow: 0 0 0 3px var(--yellow); }
-.options {
+.options-wrap {
   position: absolute;
-  left: 0; right: 0; top: calc(100% + 6px);
+  left: 0; right: 0; top: calc(100% + 8px);
   z-index: 5;
+  padding: 8px 6px;
+}
+.options {
   list-style: none;
   margin: 0;
-  padding: 8px;
-  max-height: 260px;
+  padding: 0 4px;
+  max-height: 250px;
   overflow-y: auto;
   overscroll-behavior: contain;
-  /* Drawn on the list itself (not a pseudo-element) so it stays put while scrolling. */
-  background: var(--grain), #fffdf8;
-  border: 3px solid var(--ink);
-  border-radius: 14px 18px 12px 16px / 16px 12px 18px 14px;
-  box-shadow: 4px 4px 0 rgba(22, 22, 22, .18);
 }
 .options li { padding: 7px 12px; border-radius: 8px; cursor: pointer; }
-.options li[aria-selected="true"], .options li:hover { background: var(--yellow); }
+.options li { border-radius: 10px 14px 8px 12px / 12px 8px 14px 10px; }
+.options li[aria-selected="true"], .options li:hover { background: var(--grain), var(--yellow); }
 .options .empty { color: #666; cursor: default; }
 .options .empty:hover { background: none; }
 
@@ -238,11 +243,8 @@ button { font: inherit; color: inherit; }
 .filters .pill { font-size: 19px; }
 
 .legend { text-align: center; font-size: 17px; color: #444; margin: 8px 0 0; }
-.shape-sample { display: inline-block; width: 14px; height: 14px; border: 2.5px solid var(--ink); background: #fffdf8; margin: 0 6px 0 14px; vertical-align: -1px; }
-.shape-sample.circle { border-radius: 50%; }
-.shape-sample.diamond { width: 12px; height: 12px; transform: rotate(45deg); margin-left: 16px; }
-.star-sample { color: var(--red); margin-left: 12px; font-size: 20px; -webkit-text-stroke: 1px var(--ink); }
-
+.legend-icon { display: inline-block; margin: 0 4px 0 14px; }
+.legend-icon .icon { width: 18px; height: 18px; vertical-align: -0.2em; }
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
 .stat { padding: 16px; text-align: center; display: flex; flex-direction: column; justify-content: center; }
 .stat .label { font-size: 18px; }

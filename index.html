@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Patrick+Hand&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=14">
+<link rel="stylesheet" href="style.css?v=17">
 </head>
 <body>
 
@@ -27,6 +27,24 @@
       <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.4 2.1" result="grainMask"/>
       <feComposite in="wobbly" in2="grainMask" operator="in"/>
     </filter>
+    <filter id="crayon-icon" filterUnits="userSpaceOnUse" x="-50" y="-50" width="150" height="150">
+      <feTurbulence type="fractalNoise" baseFrequency="0.25" numOctaves="2" seed="4" result="warp"/>
+      <feDisplacementMap in="SourceGraphic" in2="warp" scale="1.4" xChannelSelector="R" yChannelSelector="G" result="wobbly"/>
+      <feTurbulence type="fractalNoise" baseFrequency="3" numOctaves="2" seed="9" result="grain"/>
+      <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 2.05" result="grainMask"/>
+      <feComposite in="wobbly" in2="grainMask" operator="in"/>
+    </filter>
+    <!-- Crayon icons (24x24) -->
+    <symbol id="i-arrow-r" viewBox="0 0 24 24"><g filter="url(#crayon-icon)" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5h15M13.5 6.5l6 6-6 6"/></g></symbol>
+    <symbol id="i-arrow-l" viewBox="0 0 24 24"><g filter="url(#crayon-icon)" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12.5H5M10.5 6.5l-6 6 6 6"/></g></symbol>
+    <symbol id="i-ext" viewBox="0 0 24 24"><g filter="url(#crayon-icon)" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M9 6h9v9"/></g></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><g filter="url(#crayon-icon)" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 9.5A7.5 7.5 0 1 1 5 14"/><path d="M4.5 4.5v5h5"/></g></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><g filter="url(#crayon-icon)" stroke="#161616" stroke-width="2.4" stroke-linejoin="round"><path d="M7.5 10.5V8a4.5 4.5 0 0 1 9 0v2.5" fill="none" stroke-linecap="round"/><rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5" fill="#f5b82e"/><path d="M12 14.5v2.5" stroke-linecap="round"/></g></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><g filter="url(#crayon-icon)"><path d="M15.5 3.5a8.5 8.5 0 1 0 5 15A7 7 0 0 1 15.5 3.5z" fill="#fff3c4" stroke="#161616" stroke-width="2.2" stroke-linejoin="round"/></g></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><g filter="url(#crayon-icon)" stroke-linecap="round"><g stroke="#f5b82e" stroke-width="2.6"><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></g><circle cx="12" cy="12" r="5.2" fill="#f5b82e" stroke="#161616" stroke-width="2"/></g></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><g filter="url(#crayon-icon)"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z" fill="#e2352b" stroke="#161616" stroke-width="2" stroke-linejoin="round"/></g></symbol>
+    <symbol id="i-circle" viewBox="0 0 24 24"><g filter="url(#crayon-icon)"><circle cx="12" cy="12" r="8" fill="#fffdf8" stroke="#161616" stroke-width="2.6"/></g></symbol>
+    <symbol id="i-diamond" viewBox="0 0 24 24"><g filter="url(#crayon-icon)"><path d="M12 2.5l9.5 9.5-9.5 9.5L2.5 12z" fill="#fffdf8" stroke="#161616" stroke-width="2.6" stroke-linejoin="round"/></g></symbol>
     <symbol id="logoMark" viewBox="0 0 120 120">
       <g filter="url(#crayon)">
         <circle cx="60" cy="64" r="40" fill="#f5b82e"/>
@@ -55,15 +73,15 @@
     <div class="nav-right">
       <a class="nav-plum" href="https://www.plumhq.com" target="_blank" rel="noopener">
         <span class="by">by</span>
-        <img src="assets/plum-logo.svg?v=14" alt="Plum" height="28">
+        <img src="assets/plum-logo.svg?v=17" alt="Plum" height="28">
       </a>
-      <a class="btn btn-purple nav-cta" href="https://www.plumhq.com" target="_blank" rel="noopener">Visit Plum ↗</a>
+      <a class="btn btn-purple nav-cta" href="https://www.plumhq.com" target="_blank" rel="noopener">Visit Plum <svg class="icon" aria-hidden="true"><use href="#i-ext"/></svg></a>
     </div>
   </div>
 </nav>
 
 <main class="wrap">
-  <p class="privacy crayon-box">🔒 Answers are anonymous: only your time, city, job and shift type are saved.</p>
+  <p class="privacy crayon-box"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg> Answers are anonymous: only your time, city, job and shift are saved.</p>
 
 
 
@@ -78,18 +96,21 @@
     </div>
     <div class="time-row">
       <label class="sr-only" for="timeReadout">Type your log-off time</label>
+      <div class="time-field crayon-box">
       <input class="time-readout" id="timeReadout" type="text" inputmode="text" autocomplete="off" spellcheck="false" value="6:00 PM">
+      </div>
       <div class="ampm" role="group" aria-label="AM or PM">
         <button type="button" class="pill" data-ampm="am">AM</button>
         <button type="button" class="pill" data-ampm="pm">PM</button>
       </div>
     </div>
-    <div class="shift-row">
-      <button type="button" class="pill shift-toggle" id="nightShift" aria-pressed="false">🌙 I'm on a night shift</button>
+    <div class="shift-block">
+      <p class="shift-q">Which shift are you on?</p>
+      <div class="shift-picker" id="shiftPicker" role="group" aria-label="Your shift"></div>
+      <p class="shift-hint" id="shiftHint" hidden>Logging off in the morning? If you work nights, pick Night so we compare you with the right people.</p>
     </div>
-    <p class="shift-hint" id="shiftHint" hidden>Logging off in the morning? If you work nights, tap 🌙 so we compare you with other night-shift workers.</p>
     <div class="actions">
-      <button type="button" class="btn btn-red" data-next="2">Next →</button>
+      <button type="button" class="btn btn-red" data-next="2">Next <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
     </div>
   </section>
 
@@ -100,13 +121,15 @@
     <div class="chips" id="cityChips"></div>
     <div class="combo" id="cityCombo">
       <label for="cityInput">Or search all cities</label>
-      <input id="cityInput" type="text" autocomplete="off" placeholder="Type a city…"
-             role="combobox" aria-expanded="false" aria-controls="cityList" aria-autocomplete="list">
-      <ul class="options" id="cityList" role="listbox" hidden></ul>
+      <div class="field crayon-box">
+        <input id="cityInput" type="text" autocomplete="off" placeholder="Type a city…"
+               role="combobox" aria-expanded="false" aria-controls="cityList" aria-autocomplete="list">
+      </div>
+      <div class="options-wrap crayon-box" hidden><ul class="options" id="cityList" role="listbox"></ul></div>
     </div>
     <div class="actions">
-      <button type="button" class="btn btn-ghost" data-next="1">← Back</button>
-      <button type="button" class="btn btn-blue" data-next="3" id="cityNext" disabled>Next →</button>
+      <button type="button" class="btn btn-ghost" data-next="1"><svg class="icon" aria-hidden="true"><use href="#i-arrow-l"/></svg> Back</button>
+      <button type="button" class="btn btn-blue" data-next="3" id="cityNext" disabled>Next <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
     </div>
   </section>
 
@@ -116,13 +139,15 @@
     <h2>What do you do?</h2>
     <div class="combo" id="jobCombo">
       <label for="jobInput">Search or pick from the list</label>
-      <input id="jobInput" type="text" autocomplete="off" placeholder="e.g. Teacher, Designer…"
-             role="combobox" aria-expanded="false" aria-controls="jobList" aria-autocomplete="list">
-      <ul class="options" id="jobList" role="listbox" hidden></ul>
+      <div class="field crayon-box">
+        <input id="jobInput" type="text" autocomplete="off" placeholder="e.g. Teacher, Designer…"
+               role="combobox" aria-expanded="false" aria-controls="jobList" aria-autocomplete="list">
+      </div>
+      <div class="options-wrap crayon-box" hidden><ul class="options" id="jobList" role="listbox"></ul></div>
     </div>
     <div class="actions">
-      <button type="button" class="btn btn-ghost" data-next="2">← Back</button>
-      <button type="button" class="btn btn-purple" id="submitBtn" disabled>Add me to the clock ✦</button>
+      <button type="button" class="btn btn-ghost" data-next="2"><svg class="icon" aria-hidden="true"><use href="#i-arrow-l"/></svg> Back</button>
+      <button type="button" class="btn btn-purple" id="submitBtn" disabled>Add me to the clock</button>
     </div>
     <p class="error" id="submitError" hidden></p>
   </section>
@@ -142,9 +167,9 @@
         <svg class="clock" id="crowdClock" viewBox="-62 -62 524 524" role="img" aria-label="Crowd clock of stop-working times"></svg>
       </div>
       <p class="legend">
-        <span class="shape-sample circle"></span> PM answers on the outside ring
-        <span class="shape-sample diamond"></span> AM answers inside
-        <span class="star-sample">★</span> you
+        <span class="legend-icon"><svg class="icon" aria-hidden="true"><use href="#i-circle"/></svg></span> PM answers on the outside ring
+        <span class="legend-icon"><svg class="icon" aria-hidden="true"><use href="#i-diamond"/></svg></span> AM answers inside
+        <span class="legend-icon"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></span> you
       </p>
     </div>
 
@@ -156,17 +181,17 @@
 
     <div class="boards">
       <div class="board crayon-box">
-        <h3>🌙 Cities that log off latest</h3>
+        <h3><svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg> Cities that log off latest</h3>
         <ol id="boardCities"></ol>
       </div>
       <div class="board crayon-box">
-        <h3>☀️ Jobs that log off earliest</h3>
+        <h3><svg class="icon" aria-hidden="true"><use href="#i-sun"/></svg> Jobs that log off earliest</h3>
         <ol id="boardJobs"></ol>
       </div>
     </div>
 
     <div class="actions center">
-      <button type="button" class="btn btn-ghost" id="resetBtn">↺ Start over</button>
+      <button type="button" class="btn btn-ghost" id="resetBtn"><svg class="icon" aria-hidden="true"><use href="#i-reset"/></svg> Start over</button>
       <button type="button" class="btn btn-red" id="shareBtn">Share my log-off time</button>
     </div>
     <p class="share-status" id="shareStatus" aria-live="polite"></p>
@@ -174,8 +199,8 @@
 
 </main>
 
-<script src="config.js?v=14"></script>
-<script src="data.js?v=14"></script>
-<script src="app.js?v=14"></script>
+<script src="config.js?v=17"></script>
+<script src="data.js?v=17"></script>
+<script src="app.js?v=17"></script>
 </body>
 </html>

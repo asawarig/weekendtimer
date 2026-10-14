@@ -2,9 +2,18 @@
   const $ = id => document.getElementById(id);
   const SVG = 'http://www.w3.org/2000/svg';
   const COLORS = ['#e2352b', '#3a9bd9', '#6a4ce0', '#f5b82e', '#a2482a', '#1f6b6b', '#2fa35a', '#ef7d2d'];
-  // Where a "work day" starts when comparing times. Logging off at 6 AM is very late, not early.
-  const DAY_START = 600;    // 10:00 AM for regular workers
-  const NIGHT_START = 1080; // 6:00 PM for night-shift workers
+  // People are compared only with others on the same shift. "start" is where that shift's
+  // day begins when ordering times, far from its usual log-off, so e.g. 2 AM after a day shift
+  // counts as very late rather than early.
+  const SHIFTS = {
+    day:        { label: 'Day / General',     short: 'day',        start: 600,  phrase: 'after a day shift' },
+    morning:    { label: 'Morning / Early',   short: 'morning',    start: 300,  phrase: 'after a morning shift' },
+    evening:    { label: 'Evening / US-late', short: 'evening',    start: 780,  phrase: 'after an evening shift' },
+    night:      { label: 'Night',             short: 'night',      start: 1080, phrase: 'after a night shift' },
+    rotational: { label: 'Rotational',        short: 'rotational', start: 600,  phrase: 'on a rotational shift' },
+    long:       { label: '12-hour',           short: '12-hour',    start: 600,  phrase: 'after a 12-hour shift' },
+  };
+  const DAY_START = SHIFTS.day.start;
   const STORE_KEY = 'logoff-clock-answer';
 
   const cfg = window.CLOCK_CONFIG || {};
@@ -25,10 +34,14 @@
     return `${h}:${String(m).padStart(2, '0')} ${h24 < 12 ? 'AM' : 'PM'}`;
   };
   const norm = (t, start = DAY_START) => (t - start + 1440) % 1440;
+  // The typical (middle) log-off time. A median rather than a mean, so groups that mix
+  // daytime and night-time finishers (rotational, 12-hour) don't average to a time nobody picked.
   const avg = (list, start = DAY_START) => {
     if (!list.length) return null;
-    const s = list.reduce((a, t) => a + norm(t, start), 0) / list.length;
-    return Math.round((s + start) % 1440);
+    const v = list.map(t => norm(t, start)).sort((a, b) => a - b);
+    const mid = v.length >> 1;
+    const m = v.length % 2 ? v[mid] : (v[mid - 1] + v[mid]) / 2;
+    return Math.round(m + start) % 1440;
   };
   const diffText = (mine, other, start = DAY_START) => {
     const d = norm(mine, start) - norm(other, start);
@@ -99,11 +112,17 @@
     pick.setAttribute('aria-valuetext', fmt(minutes));
     document.querySelectorAll('[data-ampm]').forEach(b =>
       b.setAttribute('aria-pressed', String((b.dataset.ampm === 'pm') === (minutes >= 720))));
-    $('nightShift').setAttribute('aria-pressed', String(nightShift));
-    $('shiftHint').hidden = nightShift || minutes >= DAY_START;
+    document.querySelectorAll('#shiftPicker .pill').forEach(b =>
+      b.setAttribute('aria-pressed', String(b.dataset.shift === shift)));
+    $('shiftHint').hidden = !(shift === 'day' && minutes < DAY_START);
   }
-  let nightShift = false;
-  $('nightShift').addEventListener('click', () => { nightShift = !nightShift; renderPicker(); });
+  let shift = 'day';
+  $('shiftPicker').innerHTML = Object.entries(SHIFTS)
+    .map(([k, v]) => `<button type="button" class="pill" data-shift="${k}">${v.label}</button>`).join('');
+  $('shiftPicker').addEventListener('click', e => {
+    const b = e.target.closest('.pill');
+    if (b) { shift = b.dataset.shift; renderPicker(); }
+  });
 
   function setFromPointer(e) {
     const r = pick.getBoundingClientRect();
@@ -235,7 +254,7 @@
   // ---------- Searchable dropdown ----------
   function combo({ input, list, options, onPick }) {
     let shown = [], active = -1;
-    const open = v => { list.hidden = !v; input.setAttribute('aria-expanded', String(v)); };
+    const open = v => { list.parentElement.hidden = !v; input.setAttribute('aria-expanded', String(v)); };
     function render() {
       const q = input.value.trim().toLowerCase();
       shown = options.filter(o => o.toLowerCase().includes(q));
@@ -301,7 +320,7 @@
     const res = await fetch(cfg.sheetUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ minutes: a.minutes, city: a.city, job: a.job, night: a.night }),
+      body: JSON.stringify({ minutes: a.minutes, city: a.city, job: a.job, shift: a.shift }),
     });
     const out = await res.json();
     if (!out.ok) throw new Error(out.error || 'save failed');
@@ -313,8 +332,8 @@
     const out = await res.json();
     if (!out.ok) throw new Error(out.error || 'load failed');
     return out.rows
-      .map(([minutes, city, job, night]) => ({
-        minutes: Number(minutes), city, job, night: night === true || String(night).toUpperCase() === 'TRUE',
+      .map(([minutes, city, job, sh]) => ({
+        minutes: Number(minutes), city, job, shift: SHIFTS[sh] ? sh : 'day',
       }))
       .filter(r => Number.isInteger(r.minutes) && r.minutes >= 0 && r.minutes < 1440
         && CITY_SET.has(r.city) && JOB_SET.has(r.job));
@@ -333,10 +352,17 @@
       const j = jobs[Math.floor(rnd() * jobs.length)];
       const bias = (hash(c) % 60) - 20 + (hash(j) % 90) - 40;
       let m = Math.round((18 * 60 + 30 + bias + gauss() * 75) / 5) * 5;
-      let night = false;
-      if (rnd() < 0.05) m = Math.round((60 + rnd() * 360) / 5) * 5; // a few working through the night
-      else if (rnd() < 0.09) { night = true; m = Math.round((7 * 60 + gauss() * 60) / 5) * 5; } // night shifts
-      out.push({ minutes: (m + 1440) % 1440, city: c, job: j, night });
+      // Roughly: most on day shifts, the rest spread over the other shifts.
+      const roll = rnd();
+      let sh = 'day';
+      if (roll < 0.08) { sh = 'morning'; m = 15 * 60 + gauss() * 45; }
+      else if (roll < 0.18) { sh = 'evening'; m = 24 * 60 + 30 + gauss() * 60; }
+      else if (roll < 0.27) { sh = 'night'; m = 7 * 60 + gauss() * 50; }
+      else if (roll < 0.34) { sh = 'rotational'; m = [15 * 60, 23 * 60 + 30, 7 * 60][Math.floor(rnd() * 3)] + gauss() * 50; }
+      else if (roll < 0.39) { sh = 'long'; m = (rnd() < 0.6 ? 20 * 60 : 8 * 60) + gauss() * 40; }
+      else if (roll < 0.42) m = 60 + rnd() * 300; // day shift that ran into the night
+      m = Math.round(m / 5) * 5;
+      out.push({ minutes: ((m % 1440) + 1440) % 1440, city: c, job: j, shift: sh });
     }
     return out;
   }
@@ -344,9 +370,10 @@
   // ---------- Results ----------
   let crowd = [], me = null, filter = 'all';
   // People are only compared with others on the same kind of shift.
-  const peers = () => crowd.filter(a => !!a.night === !!me.night);
-  const startFor = () => (me.night ? NIGHT_START : DAY_START);
-  const groupName = () => (me.night ? 'night-shift workers' : 'everyone');
+  const myShift = () => SHIFTS[me.shift] || SHIFTS.day;
+  const peers = () => crowd.filter(a => (a.shift || 'day') === (me.shift || 'day'));
+  const startFor = () => myShift().start;
+  const groupName = () => `people on ${myShift().short} shifts`;
 
   function renderCrowdClock() {
     const svg = $('crowdClock');
@@ -377,18 +404,20 @@
     // You
     const ang = ((me.minutes % 720) / 720) * Math.PI * 2;
     const r = me.minutes >= 720 ? 240 : 52;
-    const star = el('text', {
-      x: 200 + Math.sin(ang) * r, y: 200 - Math.cos(ang) * r + 12,
-      'text-anchor': 'middle', 'font-size': 38, fill: '#e2352b', stroke: '#161616', 'stroke-width': 2,
-      'font-family': 'Arial, sans-serif',
-    }, svg);
-    star.textContent = '★';
+    const sx = 200 + Math.sin(ang) * r, sy = 200 - Math.cos(ang) * r;
+    const pts = [];
+    for (let k = 0; k < 10; k++) {
+      const a = k * Math.PI / 5, rr = k % 2 ? 9 : 21;
+      pts.push(`${(sx + Math.sin(a) * rr).toFixed(1)},${(sy - Math.cos(a) * rr).toFixed(1)}`);
+    }
+    el('polygon', { points: pts.join(' '), fill: '#e2352b', stroke: '#161616', 'stroke-width': 3,
+      'stroke-linejoin': 'round', filter: 'url(#crayon)' }, svg);
 
-    const night = me.night ? 'night-shift ' : '';
-    const who = filter === 'all' ? groupName() : filter === 'city' ? `${night}people in ${me.city}` : `${night}${me.job}s`;
+    const sh = myShift().short;
+    const who = filter === 'all' ? groupName() : filter === 'city' ? `${sh}-shift people in ${me.city}` : `${me.job}s on ${sh} shifts`;
     $('crowdSub').textContent = a === null
       ? `No answers from ${who} yet.`
-      : `${subset.length} ${subset.length === 1 ? 'answer' : 'answers'} from ${who}. The red hand is their average: ${fmt(a)}.`;
+      : `${subset.length} ${subset.length === 1 ? 'answer' : 'answers'} from ${who}. The red hand shows the typical time: ${fmt(a)}.`;
     document.querySelectorAll('#filters .pill').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.f === filter)));
   }
 
@@ -408,18 +437,16 @@
   function youLine(pool, start) {
     const others = pool.length - 1;
     if (others < 4) {
-      return me.night
-        ? 'Not many night-shift answers yet. Check back soon to see how you compare.'
-        : 'Not many answers yet. Check back soon to see how you compare.';
+      return `Not many answers from ${groupName()} yet. Check back soon to see how you compare.`;
     }
     const everyone = avg(pool.map(a => a.minutes), start);
     const later = pool.filter(a => norm(a.minutes, start) > norm(me.minutes, start)).length;
     const pct = Math.round(later / pool.length * 100);
-    const vs = me.night ? 'other night-shift workers' : 'everyone else';
-    const lead = !me.night && me.minutes < DAY_START ? 'Burning the midnight oil! ' : '';
+    const vs = `others on ${myShift().short} shifts`;
+    const lead = norm(me.minutes, start) - norm(everyone, start) > 240 ? 'Burning the midnight oil! ' : '';
     const tail = pct === 0
-      ? `Hardly anyone ${me.night ? 'on nights ' : ''}works later than you. Get some rest! 😴`
-      : `${pct}% of ${me.night ? 'night-shift workers' : 'people'} are still working after you.`;
+      ? 'Hardly anyone on your shift works later than you. Get some rest!'
+      : `${pct}% of ${groupName()} are still working after you.`;
     return `${lead}That's ${diffText(me.minutes, everyone, start)} ${vs}. ${tail}`;
   }
 
@@ -428,21 +455,21 @@
     $('youCard').innerHTML = `
       <span class="label">You're logging off at</span>
       <span class="big">${fmt(me.minutes)}</span>
-      ${me.night ? '<span class="label">🌙 after a night shift</span>' : ''}
+      <span class="label">${myShift().phrase}</span>
       <p class="line">${youLine(pool, start)}</p>`;
 
     const cityTimes = pool.filter(a => a.city === me.city).map(a => a.minutes);
     const jobTimes = pool.filter(a => a.job === me.job).map(a => a.minutes);
-    const nightLabel = me.night ? ' on nights' : '';
-    $('statAllLabel').textContent = me.night ? 'Night shifts log off around' : 'Everyone logs off around';
+    const sh = myShift().short;
+    $('statAllLabel').textContent = `${sh[0].toUpperCase()}${sh.slice(1)} shifts log off around`;
     $('statAll').textContent = pool.length ? fmt(avg(pool.map(a => a.minutes), start)) : '–';
-    $('statCityLabel').textContent = `${me.city}${nightLabel} logs off around`;
+    $('statCityLabel').textContent = `${me.city} ${sh} shifts log off around`;
     $('statCity').textContent = cityTimes.length ? fmt(avg(cityTimes, start)) : '–';
-    $('statJobLabel').textContent = `${me.job}${nightLabel} logs off around`;
+    $('statJobLabel').textContent = `${me.job}s on ${sh} shifts log off around`;
     $('statJob').textContent = jobTimes.length ? fmt(avg(jobTimes, start)) : '–';
 
     $('filters').innerHTML = [
-      ['all', me.night ? 'All night shifts' : 'Everyone'], ['city', `Only ${me.city}`], ['job', `Only ${me.job}`],
+      ['all', `All ${sh} shifts`], ['city', `Only ${me.city}`], ['job', `Only ${me.job}`],
     ].map(([f, label]) => `<button type="button" class="pill" data-f="${f}">${escapeHtml(label)}</button>`).join('');
 
     board($('boardCities'), 'city', true);
@@ -466,12 +493,12 @@
     const btn = $('submitBtn');
     btn.disabled = true;
     $('submitError').hidden = true;
-    me = { minutes, city, job, night: nightShift, date: today() };
+    me = { minutes, city, job, shift, date: today() };
     try {
       await saveAnswer(me);
       try { localStorage.setItem(STORE_KEY, JSON.stringify(me)); } catch {}
       crowd = await loadCrowd();
-      if (!LIVE) crowd.push({ minutes: me.minutes, city: me.city, job: me.job, night: !!me.night });
+      if (!LIVE) crowd.push({ minutes: me.minutes, city: me.city, job: me.job, shift: me.shift || 'day' });
       renderResults();
     } catch (err) {
       console.error(err);
@@ -483,8 +510,8 @@
 
   $('shareBtn').addEventListener('click', async () => {
     const cityAvg = avg(peers().filter(a => a.city === me.city).map(a => a.minutes), startFor());
-    const shiftNote = me.night ? ' after a night shift' : '';
-    const text = `Log your logoff: I'm logging off at ${fmt(me.minutes)}${shiftNote} today. ${me.city}${me.night ? ' night shifts log' : ' logs'} off around ${fmt(cityAvg)}. When do you stop working?`;
+    const sh = myShift().short;
+    const text = `Log your logoff: I'm logging off at ${fmt(me.minutes)} today, ${myShift().phrase}. ${me.city} ${sh} shifts log off around ${fmt(cityAvg)}. When do you stop working?`;
     const url = location.href.split('#')[0];
     try {
       if (navigator.share) await navigator.share({ title: "Log your logoff", text, url });
@@ -500,7 +527,7 @@
     try { localStorage.removeItem(STORE_KEY); } catch {}
     me = null; crowd = []; filter = 'all';
     minutes = 18 * 60;
-    nightShift = false;
+    shift = 'day';
     setCity(null);
     cityCombo.set('');
     $('jobInput').value = '';
@@ -523,7 +550,7 @@
     me = saved;
     loadCrowd().then(c => {
       crowd = c;
-      if (!LIVE) crowd.push({ minutes: me.minutes, city: me.city, job: me.job, night: !!me.night });
+      if (!LIVE) crowd.push({ minutes: me.minutes, city: me.city, job: me.job, shift: me.shift || 'day' });
       renderResults();
     }).catch(err => console.error(err));
   }
