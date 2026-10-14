@@ -9,18 +9,25 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Patrick+Hand&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=30">
+<link rel="stylesheet" href="style.css?v=32">
 </head>
 <body>
 
 <!-- Crayon effects shared by the whole page -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
-    <filter id="wobble" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000">
+    <filter id="wobble" x="-4%" y="-6%" width="108%" height="112%">
       <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="4" result="warp"/>
       <feDisplacementMap in="SourceGraphic" in2="warp" scale="6" xChannelSelector="R" yChannelSelector="G"/>
     </filter>
-    <filter id="crayon" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000">
+    <filter id="crayon" filterUnits="userSpaceOnUse" x="-200" y="-200" width="800" height="800">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="4" result="warp"/>
+      <feDisplacementMap in="SourceGraphic" in2="warp" scale="6" xChannelSelector="R" yChannelSelector="G" result="wobbly"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="2" seed="9" result="grain"/>
+      <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.4 2.1" result="grainMask"/>
+      <feComposite in="wobbly" in2="grainMask" operator="in"/>
+    </filter>
+    <filter id="crayon-sky" x="-10%" y="-10%" width="120%" height="120%">
       <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="4" result="warp"/>
       <feDisplacementMap in="SourceGraphic" in2="warp" scale="6" xChannelSelector="R" yChannelSelector="G" result="wobbly"/>
       <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="2" seed="9" result="grain"/>
@@ -234,8 +241,8 @@
 </div>
 
 
-<script src="config.js?v=30"></script>
-<script src="data.js?v=30"></script>
-<script src="app.js?v=30"></script>
+<script src="config.js?v=32"></script>
+<script src="data.js?v=32"></script>
+<script src="app.js?v=32"></script>
 </body>
 </html>

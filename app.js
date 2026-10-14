@@ -223,7 +223,7 @@
     const y = horizon - (horizon - top) * Math.sin(Math.PI * p);
     sky.setAttribute('viewBox', `0 0 ${w} ${window.innerHeight}`);
     sky.innerHTML = '';
-    const g = el('g', { filter: 'url(#crayon)' }, sky);
+    const g = el('g', { filter: 'url(#crayon-sky)' }, sky);
     if (isDay) {
       for (let k = 0; k < 12; k++) {
         const a = k / 12 * Math.PI * 2;

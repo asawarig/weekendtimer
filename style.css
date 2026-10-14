@@ -15,7 +15,7 @@
 }
 
 * { box-sizing: border-box; }
-html { background: var(--sky-bottom, var(--paper)); }
+html { background: var(--sky-bottom, var(--paper)); overflow-x: hidden; }
 body {
   margin: 0;
   min-height: 100vh;
@@ -79,7 +79,7 @@ body {
 .topnav::before {
   content: '';
   position: absolute;
-  inset: -30px -10px 0;
+  inset: -30px 0 0;
   z-index: -1;
   background: var(--grain), #fffdf8;
   border-bottom: 4px solid var(--ink);
