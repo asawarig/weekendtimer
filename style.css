@@ -112,6 +112,14 @@ body {
 .ex-hero { --fill: var(--yellow); padding: 20px 22px; margin-bottom: 8px; text-align: center; }
 .ex-hero h2 { font-family: var(--hand); font-weight: normal; font-size: clamp(32px, 7vw, 46px); margin: 0; line-height: 1.1; }
 .ex-hero p { margin: 6px 0 0; font-size: 18px; }
+.ex-search { margin: 20px 0 0; }
+.ex-search.combo label { color: var(--ink); font-family: var(--hand); font-size: 26px; margin-bottom: 8px; }
+body.night .ex-search.combo label { color: #fffdf8; }
+.ex-result { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 18px; }
+.ex-result:empty { display: none; }
+.ex-result .clock-card.first { grid-column: 2 / span 2; grid-row: auto; }
+.ex-none { --fill: #fffdf8; grid-column: 1 / -1; text-align: center; padding: 14px; margin: 0; }
+.cc-note { margin-top: 6px; font-size: 17px; font-weight: bold; }
 .ex-title {
   font-family: var(--hand); font-weight: normal; font-size: 30px; margin: 26px 0 12px;
   display: inline-block; padding: 4px 14px; position: relative; isolation: isolate;
@@ -345,6 +353,8 @@ button { font: inherit; color: inherit; }
   .clock-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
   .clock-card.first { grid-row: span 1; }
   .ex-title { font-size: 23px; }
+  .ex-result { grid-template-columns: 1fr; }
+  .ex-result .clock-card.first { grid-column: auto; }
   .clock-card .cc-time { font-size: 24px; }
   .clock-card.first .cc-time { font-size: 34px; }
   .time-readout { font-size: 44px; }

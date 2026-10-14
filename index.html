@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Patrick+Hand&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=26">
+<link rel="stylesheet" href="style.css?v=28">
 </head>
 <body>
 
@@ -193,6 +193,16 @@
       <p id="exSub"></p>
     </header>
 
+    <div class="ex-search combo">
+      <label for="exSearch">Look up any city or job</label>
+      <div class="field crayon-box">
+        <input id="exSearch" type="text" autocomplete="off" placeholder="e.g. Kochi, Nurse, Teacher…"
+               role="combobox" aria-expanded="false" aria-controls="exSearchList" aria-autocomplete="list">
+      </div>
+      <div class="options-wrap crayon-box" hidden><ul class="options" id="exSearchList" role="listbox"></ul></div>
+    </div>
+    <div class="ex-result" id="exResult" aria-live="polite"></div>
+
     <h3 class="ex-title"><svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg> Cities that log off latest</h3>
     <div class="clock-grid" id="exCities"></div>
     <div class="actions center"><button type="button" class="btn btn-ghost" id="exMoreCities" hidden></button></div>
@@ -204,8 +214,8 @@
 
 </main>
 
-<script src="config.js?v=26"></script>
-<script src="data.js?v=26"></script>
-<script src="app.js?v=26"></script>
+<script src="config.js?v=28"></script>
+<script src="data.js?v=28"></script>
+<script src="app.js?v=28"></script>
 </body>
 </html>

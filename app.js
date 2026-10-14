@@ -454,6 +454,46 @@
 
   const exShowAll = { city: false, job: false };
 
+  function clockCard(row, { rank, first = false, tag = '', note = '' }) {
+    const [top, bottom] = skyAt(row.t);
+    const card = document.createElement('div');
+    card.className = 'clock-card crayon-box' + (first ? ' first' : '') + (tag ? ' mine' : '')
+      + (lum(top) < 0.45 ? ' dark' : '');
+    card.style.setProperty('--fill', `linear-gradient(${top}, ${bottom})`);
+    card.innerHTML = `
+      ${rank ? `<span class="cc-rank">${rank}</span>` : ''}
+      ${tag ? `<span class="cc-tag">${escapeHtml(tag)}</span>` : ''}
+      <div class="cc-name">${escapeHtml(row.name)}</div>
+      <div class="cc-time">${fmt(row.t)}</div>
+      <div class="cc-n">${row.n} ${row.n === 1 ? 'answer' : 'answers'}</div>
+      ${note ? `<div class="cc-note">${note}</div>` : ''}`;
+    card.insertBefore(miniClock(row.t), card.querySelector('.cc-name'));
+    return card;
+  }
+
+  // Look up any city or job and show its clock.
+  function showLookup(name) {
+    const out = $('exResult');
+    out.innerHTML = '';
+    if (!name) return;
+    const key = CITY_SET.has(name) ? 'city' : 'job';
+    const latest = key === 'city';
+    const times = peers().filter(a => a[key] === name).map(a => a.minutes);
+    if (!times.length) {
+      out.innerHTML = `<p class="ex-none crayon-box">No answers from ${escapeHtml(name)} yet. Check back soon!</p>`;
+      return;
+    }
+    const row = { name, t: avg(times, startFor()), n: times.length };
+    const rows = ranking(key, latest);
+    const pos = rows.findIndex(x => x.name === name);
+    const list = key === 'city' ? 'cities' : 'jobs';
+    const note = pos >= 0
+      ? `#${pos + 1} of ${rows.length} ${list} that log off ${latest ? 'latest' : 'earliest'}`
+      : 'Not ranked yet: needs at least 3 answers';
+    const mine = (key === 'city' ? me.city : me.job) === name;
+    out.appendChild(clockCard(row, { tag: mine ? `your ${key}` : '', note, first: true }));
+  }
+
   function clockCards(gridEl, moreBtn, key, latest, noun) {
     const rows = ranking(key, latest);
     const mine = key === 'city' ? me.city : me.job;
@@ -463,19 +503,7 @@
       gridEl.innerHTML = '<p class="ex-empty">Needs a few more answers. Check back soon!</p>';
     }
     shown.forEach((row, i) => {
-      const [top, bottom] = skyAt(row.t);
-      const card = document.createElement('div');
-      card.className = 'clock-card crayon-box' + (i === 0 ? ' first' : '') + (row.name === mine ? ' mine' : '')
-        + (lum(top) < 0.45 ? ' dark' : '');
-      card.style.setProperty('--fill', `linear-gradient(${top}, ${bottom})`);
-      card.innerHTML = `
-        <span class="cc-rank">${i + 1}</span>
-        ${row.name === mine ? `<span class="cc-tag">your ${noun}</span>` : ''}
-        <div class="cc-name">${escapeHtml(row.name)}</div>
-        <div class="cc-time">${fmt(row.t)}</div>
-        <div class="cc-n">${row.n} answers</div>`;
-      card.insertBefore(miniClock(row.t), card.querySelector('.cc-name'));
-      gridEl.appendChild(card);
+      gridEl.appendChild(clockCard(row, { rank: i + 1, first: i === 0, tag: row.name === mine ? `your ${noun}` : '' }));
     });
     moreBtn.hidden = rows.length <= 5;
     moreBtn.innerHTML = exShowAll[key]
@@ -493,7 +521,7 @@
   function showExplore(on) {
     $('results').hidden = on;
     $('explore').hidden = !on;
-    if (on) renderExplore();
+    if (on) { renderExplore(); $('exSearch').value = ''; showLookup(null); }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -580,6 +608,11 @@
     }
   });
 
+  combo({
+    input: $('exSearch'), list: $('exSearchList'),
+    options: [...window.CITIES, ...window.OCCUPATIONS].filter(o => !o.startsWith('Other')),
+    onPick: showLookup,
+  });
   $('exploreBtn').addEventListener('click', () => showExplore(true));
   $('exBack').addEventListener('click', () => showExplore(false));
   $('exMoreCities').addEventListener('click', () => { exShowAll.city = !exShowAll.city; renderExplore(); });
