@@ -130,11 +130,8 @@
     pick.setAttribute('aria-valuetext', fmt(minutes));
     document.querySelectorAll('[data-ampm]').forEach(b =>
       b.setAttribute('aria-pressed', String((b.dataset.ampm === 'pm') === (minutes >= 720))));
-    $('nightShift').setAttribute('aria-pressed', String(nightShift));
-    $('shiftHint').hidden = nightShift || minutes >= DAY_START;
   }
   let nightShift = false;
-  $('nightShift').addEventListener('click', () => { nightShift = !nightShift; renderPicker(); });
 
   function setFromPointer(e) {
     const r = pick.getBoundingClientRect();
@@ -286,7 +283,31 @@
     $('privacyNote').hidden = String(n) === '1';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-  document.querySelectorAll('[data-next]').forEach(b => b.addEventListener('click', () => showStep(b.dataset.next)));
+  document.querySelectorAll('[data-next]').forEach(b => b.addEventListener('click', () => {
+    // Leaving step 1 with a time between midnight and 10 AM: ask whether it's a night shift first.
+    if (b.closest('#step-time') && b.dataset.next === '2') {
+      if (minutes < DAY_START) { openNightAsk(); return; }
+      nightShift = false;
+    }
+    showStep(b.dataset.next);
+  }));
+
+  function openNightAsk() {
+    $('nightAsk').hidden = false;
+    document.body.classList.add('modal-open');
+    $('nightYes').focus();
+  }
+  function answerNight(yes) {
+    nightShift = yes;
+    $('nightAsk').hidden = true;
+    document.body.classList.remove('modal-open');
+    showStep(2);
+  }
+  $('nightYes').addEventListener('click', () => answerNight(true));
+  $('nightNo').addEventListener('click', () => answerNight(false));
+  $('nightAsk').addEventListener('keydown', e => {
+    if (e.key === 'Escape') { $('nightAsk').hidden = true; document.body.classList.remove('modal-open'); }
+  });
 
   // ---------- Searchable dropdown ----------
   function combo({ input, list, options, onPick }) {

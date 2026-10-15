@@ -160,6 +160,14 @@ body.night .ex-search.combo label { color: #fffdf8; }
 .clock-card.first .cc-time { font-size: 50px; }
 .cc-n { font-size: 16px; opacity: .8; }
 
+/* ---------- Night-shift question ---------- */
+.night-ask { --fill: #fffdf8; width: min(460px, 100%); padding: 26px 24px 22px; text-align: center; }
+.night-ask-moon { width: 54px; height: 54px; display: block; margin: 0 auto 8px; overflow: visible; }
+.night-ask p { font-family: var(--hand); font-size: 26px; line-height: 1.25; margin: 0 0 20px; }
+.night-ask-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.night-ask-actions .btn { font-size: 21px; }
+#nightAsk { place-items: center; }
+
 /* ---------- Clickable clocks + detail pop-up ---------- */
 .clock-card.clickable { cursor: pointer; transition: transform .12s; }
 .clock-card.clickable:hover { transform: rotate(-1deg) scale(1.02); }
@@ -411,8 +419,6 @@ button { font: inherit; color: inherit; }
   #step-time .time-row { gap: 10px; margin-top: 4px; flex-wrap: nowrap; }
   #step-time .time-readout { font-size: 34px; width: 4.9em; }
   #step-time .ampm .pill { font-size: 18px; padding: 4px 11px; }
-  #step-time .shift-row { margin-top: 10px; }
-  #step-time .shift-toggle { font-size: 18px; padding: 5px 14px; }
   .privacy { margin-bottom: 10px; }
   .step h2 { margin-bottom: 8px; }
   .step-count { font-size: 15px; }

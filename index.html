@@ -19,7 +19,7 @@
     if (apple || ios) document.documentElement.classList.add('no-crayon-filter');
   })();
 </script>
-<link rel="stylesheet" href="style.css?v=45">
+<link rel="stylesheet" href="style.css?v=46">
 </head>
 <body>
 
@@ -89,7 +89,7 @@
     <div class="nav-right">
       <a class="nav-plum" href="https://www.plumhq.com" target="_blank" rel="noopener">
         <span class="by">by</span>
-        <img src="assets/plum-logo.png?v=45" alt="Plum" width="80" height="25">
+        <img src="assets/plum-logo.png?v=46" alt="Plum" width="80" height="25">
       </a>
     </div>
   </div>
@@ -119,10 +119,6 @@
         <button type="button" class="pill" data-ampm="pm">PM</button>
       </div>
     </div>
-    <div class="shift-row">
-      <button type="button" class="pill shift-toggle" id="nightShift" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg> I'm on a night shift</button>
-    </div>
-    <p class="shift-hint" id="shiftHint" hidden>Finishing in the morning? If you work nights, tap the button above.</p>
     <div class="actions">
       <button type="button" class="btn btn-red" data-next="2">Next <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
     </div>
@@ -231,6 +227,18 @@
 
 </main>
 
+<!-- Night-shift check, shown on Next when the time is between midnight and 10 AM -->
+<div class="detail-backdrop" id="nightAsk" hidden>
+  <div class="night-ask crayon-box" role="dialog" aria-modal="true" aria-labelledby="nightAskQ">
+    <svg class="night-ask-moon" aria-hidden="true"><use href="#i-moon"/></svg>
+    <p id="nightAskQ">Oh, seems like it's a little too late to log off from work, do you work the night shift?</p>
+    <div class="night-ask-actions">
+      <button type="button" class="btn btn-ghost" id="nightNo">No, just a long day</button>
+      <button type="button" class="btn btn-purple" id="nightYes">Yes, I work nights</button>
+    </div>
+  </div>
+</div>
+
 <!-- Detail pop-up for one city or job -->
 <div class="detail-backdrop" id="detail" hidden>
   <div class="detail crayon-box" role="dialog" aria-modal="true" aria-labelledby="dtTitle">
@@ -251,8 +259,8 @@
 </div>
 
 
-<script src="config.js?v=45"></script>
-<script src="data.js?v=45"></script>
-<script src="app.js?v=45"></script>
+<script src="config.js?v=46"></script>
+<script src="data.js?v=46"></script>
+<script src="app.js?v=46"></script>
 </body>
 </html>
