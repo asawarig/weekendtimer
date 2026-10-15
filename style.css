@@ -161,10 +161,28 @@ body.night .ex-search.combo label { color: #fffdf8; }
 .cc-n { font-size: 16px; opacity: .8; }
 
 /* ---------- 'Curious?' invite after the first crowd view ---------- */
-.curious { --fill: var(--yellow); padding: 20px 22px; margin: 0 0 20px; text-align: center; }
+.curious {
+  /* Pinned to the bottom of the screen so it's seen without scrolling. */
+  position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 30;
+  width: min(720px, calc(100% - 24px));
+  --fill: var(--purple); color: #fffdf8; padding: 12px 14px 12px 20px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  box-shadow: 0 6px 18px rgba(22, 22, 22, .25); border-radius: 24px;
+  animation: curious-in .35s ease-out .4s both;
+}
+@keyframes curious-in { from { transform: translate(-50%, 140%); } to { transform: translate(-50%, 0); } }
 .curious[hidden] { display: none; }
-.curious p { font-family: var(--hand); font-size: 28px; line-height: 1.2; margin: 0 0 14px; }
-.curious .btn { font-size: 24px; }
+.curious p { font-family: var(--hand); font-size: 24px; line-height: 1.15; margin: 0; text-align: left; }
+.curious p b { font-weight: normal; color: var(--yellow); }
+.curious .btn-purple { --fill: var(--yellow); color: var(--ink); }
+.curious .btn { font-size: 21px; padding: 8px 16px; white-space: nowrap; flex: none; }
+/* Leave room so the bar never hides the bottom of the page. */
+.results.partial { padding-bottom: 110px; }
+@media (max-width: 640px) {
+  .curious { padding: 10px 10px 10px 14px; }
+  .curious p { font-size: 19px; }
+  .curious .btn { font-size: 18px; padding: 7px 12px; }
+}
 .stat[hidden], .btn[hidden] { display: none; }
 .results.partial .stats { grid-template-columns: 1fr; }
 
