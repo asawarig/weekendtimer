@@ -530,7 +530,8 @@
     if (key === 'city') Object.keys(window.CITY_REFERENCE).forEach(c => { if (cityRef(c)) groups[c] ||= []; });
     return Object.entries(groups)
       .map(([name, v]) => key === 'city' ? { name, ...(cityTime(name, v, start) || {}), v } : { name, t: v.length ? avg(v, start) : null, n: v.length, v })
-      .filter(x => x.t != null && (x.ref || x.n >= 3) && !x.name.startsWith('Other'))
+      // In preview mode only researched cities are ranked; other cities' sample answers are made up.
+      .filter(x => x.t != null && (x.ref || (x.n >= 3 && (LIVE || key !== 'city'))) && !x.name.startsWith('Other'))
       .sort((x, y) => latest ? norm(y.t, start) - norm(x.t, start) : norm(x.t, start) - norm(y.t, start));
   }
 
