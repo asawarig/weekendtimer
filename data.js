@@ -31,3 +31,12 @@ window.OCCUPATIONS = [
   'Software Engineer', 'Student', 'Supply Chain / Logistics', 'Teacher', 'Video Creator',
   'Veterinarian', 'Other',
 ];
+
+// Research-based reference log-off times by city, drawn as markers on the crowd clock.
+// Traffic/metro peaks are when most people are heading home, so these are estimates (see README).
+window.CITY_REFERENCE = [
+  { minutes: 18 * 60, cities: ['Delhi', 'Gurugram', 'Noida', 'Chennai', 'Hyderabad', 'Kolkata', 'Jaipur'],
+    source: 'MoveInSync 2019 & TomTom Traffic Index 2025' },
+  { minutes: 18 * 60 + 40, cities: ['Bengaluru'], source: 'Namma Metro hourly ridership, Aug–Sep 2025' },
+  { minutes: 19 * 60, cities: ['Mumbai', 'Pune', 'Ahmedabad'], source: 'MoveInSync 2019 & TomTom Traffic Index 2025' },
+];

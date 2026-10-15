@@ -38,3 +38,14 @@ Answers appear as rows in an **Answers** tab (time, city, occupation, night shif
 Night-shift workers are compared only with other night-shift workers. Regular times are compared on a day that starts at 10 AM, so 2 AM counts as very late, not early.
 If you set up the sheet before the night-shift column existed, add a **Night shift** header in column F. Only answers whose city and job are in `data.js` are shown on the site.
 If you change the script later, use **Deploy → Manage deployments → Edit → New version** so the URL stays the same.
+
+## City reference markers
+
+The crowd clock shows research-based reference log-off times for big cities as blue pins on the rim
+(your own city in red), from `CITY_REFERENCE` in `data.js`:
+
+- 6:00 PM: Delhi, Gurugram, Noida, Chennai, Hyderabad, Kolkata, Jaipur (MoveInSync 2019, TomTom 2025 evening peaks)
+- 6:40 PM: Bengaluru (median weekday evening boarding, Namma Metro hourly data Aug–Sep 2025)
+- 7:00 PM: Mumbai, Pune, Ahmedabad (MoveInSync 2019, TomTom 2025)
+
+Traffic and metro peaks mark when most people are heading home, so these are estimates.

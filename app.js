@@ -510,6 +510,35 @@
     document.querySelectorAll('#filters .pill').forEach(b => b.setAttribute('aria-pressed', String(
       b.dataset.f === 'all' ? !filter.city && !filter.job : filter[b.dataset.f])));
     $('halfSwitch').setAttribute('aria-checked', String(half === 'pm'));
+    drawCityRefs(svg);
+  }
+
+  // Research reference times for big cities: small pins on the rim with the city names
+  // listed inside the face, joined by a thin line. Your own city is picked out in red.
+  function drawCityRefs(svg) {
+    const refs = (me && me.night) ? [] : window.CITY_REFERENCE.filter(r => (r.minutes >= 720) === (half === 'pm'));
+    if (!refs.length) return;
+    const g = el('g', { class: 'city-refs' }, svg);
+    const rowsY = [232, 256, 280];
+    refs.forEach((ref, i) => {
+      const ang = ((ref.minutes % 720) / 720) * Math.PI * 2;
+      const px = 200 + Math.sin(ang) * 164, py = 200 - Math.cos(ang) * 164;
+      const ty = rowsY[i % rowsY.length];
+      const mine = me && me.city && ref.cities.includes(me.city);
+      const names = mine ? [me.city, ...ref.cities.filter(c => c !== me.city)] : ref.cities;
+      const shown = names.slice(0, 2).join(', ') + (names.length > 2 ? ` +${names.length - 2}` : '');
+      el('path', { d: `M${px.toFixed(1)} ${py.toFixed(1)} L${(200 + (px - 200) * 0.25).toFixed(1)} ${ty - 5}`,
+        stroke: mine ? '#e2352b' : '#3a9bd9', 'stroke-width': 1.6, 'stroke-dasharray': '3 3' }, g);
+      el('circle', { cx: px, cy: py, r: 7, fill: mine ? '#e2352b' : '#3a9bd9', stroke: '#161616', 'stroke-width': 2.5 }, g);
+      const t = el('text', { x: 200, y: ty, 'text-anchor': 'middle', 'font-size': 17,
+        fill: mine ? '#e2352b' : '#1f4f7a', stroke: '#fffdf8', 'stroke-width': 4, 'paint-order': 'stroke' }, g);
+      t.textContent = `${fmt(ref.minutes)} · ${shown}`;
+      const tip = el('title', {}, t);
+      tip.textContent = `${ref.cities.join(', ')}: about ${fmt(ref.minutes)} (research estimate: ${ref.source})`;
+    });
+    const note = el('text', { x: 200, y: 304, 'text-anchor': 'middle', 'font-size': 11, fill: '#555',
+      stroke: '#fffdf8', 'stroke-width': 3, 'paint-order': 'stroke' }, g);
+    note.textContent = 'city estimates from traffic & metro data';
   }
 
   // Groups (cities or jobs) with at least 3 answers, ranked by their typical log-off time.
