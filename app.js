@@ -840,6 +840,16 @@
     showStep(1);
   });
 
+  // The logo always takes you back to the first screen.
+  document.querySelector('.nav-brand').addEventListener('click', e => {
+    e.preventDefault();
+    if (detail) closeDetail();
+    $('nightAsk').hidden = true;
+    document.body.classList.remove('modal-open');
+    $('resetBtn').click();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
   // ---------- Start ----------
   $('privacyNote').hidden = true;
   $('previewNote').hidden = LIVE;
