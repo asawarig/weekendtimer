@@ -19,7 +19,7 @@
     if (apple || ios) document.documentElement.classList.add('no-crayon-filter');
   })();
 </script>
-<link rel="stylesheet" href="style.css?v=50">
+<link rel="stylesheet" href="style.css?v=51">
 </head>
 <body>
 
@@ -89,7 +89,7 @@
     <div class="nav-right">
       <a class="nav-plum" href="https://www.plumhq.com" target="_blank" rel="noopener">
         <span class="by">by</span>
-        <img src="assets/plum-logo.png?v=50" alt="Plum" width="80" height="25">
+        <img src="assets/plum-logo.png?v=51" alt="Plum" width="80" height="25">
       </a>
     </div>
   </div>
@@ -176,6 +176,10 @@
       </div>
       <p class="crowd-sub" id="crowdSub"></p>
       <div class="filters" id="filters" role="group" aria-label="Show"></div>
+      <div class="curious crayon-box" id="curious" hidden>
+        <p>Curious how you compare in your <b>city</b> and <b>job</b>?</p>
+        <button type="button" class="btn btn-purple" id="curiousBtn">Yes, show me <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+      </div>
       <div class="clock-holder">
         <svg class="clock" id="crowdClock" viewBox="-112 -112 624 624" role="img" aria-label="Crowd clock of stop-working times"></svg>
       </div>
@@ -188,11 +192,6 @@
     </div>
 
     <div class="you crayon-box" id="youCard"></div>
-
-    <div class="curious crayon-box" id="curious" hidden>
-      <p>Curious how you compare in your <b>city</b> and <b>job</b>?</p>
-      <button type="button" class="btn btn-purple" id="curiousBtn">Yes, show me <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
-    </div>
 
     <div class="actions center">
       <button type="button" class="btn btn-ghost" id="resetBtn"><svg class="icon" aria-hidden="true"><use href="#i-reset"/></svg> Start over</button>
@@ -264,8 +263,8 @@
 </div>
 
 
-<script src="config.js?v=50"></script>
-<script src="data.js?v=50"></script>
-<script src="app.js?v=50"></script>
+<script src="config.js?v=51"></script>
+<script src="data.js?v=51"></script>
+<script src="app.js?v=51"></script>
 </body>
 </html>
