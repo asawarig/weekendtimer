@@ -514,7 +514,7 @@
   }
 
   // India reference: the average of the big-city research estimates (each city counted once),
-  // marked as a pin on the rim with its label curving along the inside of the circumference.
+  // marked by a dashed line running outward from the rim with a label at its end.
   function drawCityRefs(svg) {
     if (me && me.night) return;
     const all = window.CITY_REFERENCE.flatMap(r => r.cities.map(() => r.minutes));
@@ -523,19 +523,18 @@
     const deg = ((t % 720) / 720) * 360, ang = deg * Math.PI / 180;
     const g = el('g', { class: 'india-ref' }, svg);
     const at = r => [200 + Math.sin(ang) * r, 200 - Math.cos(ang) * r];
-    const [x1, y1] = at(150), [x2, y2] = at(182);
-    el('path', { d: `M${x1.toFixed(1)} ${y1.toFixed(1)} L${x2.toFixed(1)} ${y2.toFixed(1)}`, stroke: '#161616', 'stroke-width': 9, 'stroke-linecap': 'round' }, g);
-    el('path', { d: `M${x1.toFixed(1)} ${y1.toFixed(1)} L${x2.toFixed(1)} ${y2.toFixed(1)}`, stroke: '#2fa35a', 'stroke-width': 5, 'stroke-linecap': 'round' }, g);
-    const [px, py] = at(182);
-    el('circle', { cx: px, cy: py, r: 9, fill: '#2fa35a', stroke: '#161616', 'stroke-width': 3 }, g);
-    // Curved label just inside the rim, centred on the marker and always reading left to right.
-    const R = 104, span = 70, bottom = Math.cos(ang) < 0;
-    const p = d => { const a = d * Math.PI / 180; return `${(200 + Math.sin(a) * R).toFixed(1)} ${(200 - Math.cos(a) * R).toFixed(1)}`; };
-    const id = 'indiaArc' + Math.random().toString(36).slice(2, 7);
-    el('path', { id, d: bottom ? `M${p(deg + span)} A${R} ${R} 0 0 0 ${p(deg - span)}` : `M${p(deg - span)} A${R} ${R} 0 0 1 ${p(deg + span)}`, fill: 'none' }, g);
-    const text = el('text', { 'font-size': 17, fill: '#1d6b3a', stroke: '#fffdf8', 'stroke-width': 4, 'paint-order': 'stroke' }, g);
-    const tp = el('textPath', { href: '#' + id, startOffset: '50%', 'text-anchor': 'middle' }, text);
-    tp.textContent = `India avg ${fmt(t)} (research)`;
+    // A line running outward from the rim, past the crowd's dots, with the label at its end.
+    const [x1, y1] = at(178), [x2, y2] = at(262);
+    const line = `M${x1.toFixed(1)} ${y1.toFixed(1)} L${x2.toFixed(1)} ${y2.toFixed(1)}`;
+    el('path', { d: line, stroke: '#161616', 'stroke-width': 7, 'stroke-linecap': 'round' }, g);
+    el('path', { d: line, stroke: '#2fa35a', 'stroke-width': 3.5, 'stroke-linecap': 'round', 'stroke-dasharray': '7 5' }, g);
+    el('circle', { cx: x2, cy: y2, r: 6, fill: '#2fa35a', stroke: '#161616', 'stroke-width': 2.5 }, g);
+    // Label beside the end of the line, on the side away from the 'you' label (which sits clockwise-back).
+    const dir = -Math.sign(Math.cos(ang)) || 1; // 'you' label goes along +cos(ang) in x, so go the other way
+    const lx = x2 + dir * 12, ly = y2 + 6;
+    const text = el('text', { x: lx.toFixed(1), y: ly.toFixed(1), 'text-anchor': dir > 0 ? 'start' : 'end', 'font-size': 19, fill: '#1d6b3a',
+      stroke: '#fffdf8', 'stroke-width': 4, 'paint-order': 'stroke' }, g);
+    text.textContent = `India avg ${fmt(t)}`;
     const tip = el('title', {}, g);
     tip.textContent = `Average of research estimates for ${all.length} big cities (traffic & metro data): ${fmt(t)}`;
   }

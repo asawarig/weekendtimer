@@ -41,7 +41,7 @@ If you change the script later, use **Deploy → Manage deployments → Edit →
 
 ## India average marker
 
-The crowd clock shows a green "India avg" marker on the rim: the average of these big-city research estimates
+The crowd clock shows a green "India avg" line running outward from the rim: the average of these big-city research estimates
 (each city counted once, 6:20 PM), from `CITY_REFERENCE` in `data.js`:
 
 - 6:00 PM: Delhi, Gurugram, Noida, Chennai, Hyderabad, Kolkata, Jaipur (MoveInSync 2019, TomTom 2025 evening peaks)
