@@ -714,6 +714,42 @@
     return `${lead}That's ${diffText(me.minutes, everyone, start)} ${vs}. ${tail}`;
   }
 
+  // The 'you' card as a tilted crayon hourglass: sand left on top = people still working after
+  // you, sand at the bottom = people who've already logged off. You sit at the neck.
+  function hourglass(pctLater, timeText) {
+    const f = pctLater / 100, id = 'hg' + Math.random().toString(36).slice(2, 7);
+    const top = 'M24 22 L96 22 C96 62 64 84 62 100 L58 100 C56 84 24 62 24 22 Z';
+    const bot = 'M58 100 L62 100 C64 116 96 138 96 178 L24 178 C24 138 56 116 58 100 Z';
+    const topY = 100 - 74 * f, botY = 178 - 74 * (1 - f);
+    const marks = [0.25, 0.5, 0.75].map(m => `<path d="M28 ${100 - 74 * m}h8M28 ${178 - 74 * m}h8" stroke="#161616" stroke-width="2.5" stroke-linecap="round" opacity=".5"/>`).join('');
+    return `<svg class="hourglass" viewBox="0 0 400 230" role="img" aria-label="${pctLater}% still working, ${100 - pctLater}% already logged off">
+      <defs><clipPath id="${id}t"><path d="${top}"/></clipPath><clipPath id="${id}b"><path d="${bot}"/></clipPath></defs>
+      <g transform="translate(140 15) rotate(-14 60 100)" filter="url(#crayon)">
+        <path d="${top}" fill="#fffdf8" fill-opacity=".6"/>
+        <path d="${bot}" fill="#fffdf8" fill-opacity=".6"/>
+        <rect x="18" y="${topY}" width="84" height="${100 - topY + 2}" fill="#f5b82e" clip-path="url(#${id}t)"/>
+        <rect x="18" y="${botY}" width="84" height="${178 - botY}" fill="#f5b82e" clip-path="url(#${id}b)"/>
+        ${f > 0 && f < 1 ? `<path d="M60 100 L60 ${botY}" stroke="#f5b82e" stroke-width="3" stroke-dasharray="3 4"/>` : ''}
+        ${marks}
+        <path d="${top}" fill="none" stroke="#161616" stroke-width="4" stroke-linejoin="round"/>
+        <path d="${bot}" fill="none" stroke="#161616" stroke-width="4" stroke-linejoin="round"/>
+        <rect x="10" y="10" width="100" height="14" rx="4" fill="#a2482a" stroke="#161616" stroke-width="4"/>
+        <rect x="10" y="176" width="100" height="14" rx="4" fill="#a2482a" stroke="#161616" stroke-width="4"/>
+        <path d="M18 24 V176 M102 24 V176" stroke="#161616" stroke-width="4" stroke-linecap="round"/>
+      </g>
+      <g font-family="'Gochi Hand', cursive" fill="#fff">
+        <text x="128" y="62" font-size="36" text-anchor="end">${pctLater}%</text>
+        <text x="128" y="84" font-size="17" text-anchor="end">still working</text>
+        <text x="282" y="172" font-size="36">${100 - pctLater}%</text>
+        <text x="282" y="194" font-size="17">already logged off</text>
+        <text x="282" y="104" font-size="17">you</text>
+        <text x="282" y="132" font-size="30">${timeText}</text>
+      </g>
+      <path d="M276 112 Q246 108 214 118" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+      <path d="M224 110 L212 118 L225 124" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
+  }
+
   function renderResults() {
     const pool = peers(), start = startFor();
     $('youCard').innerHTML = `
@@ -721,6 +757,17 @@
       <span class="big">${fmt(me.minutes)}</span>
       ${me.night ? '<span class="label night-label"><svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg> after a night shift</span>' : ''}
       <p class="line">${youLine(pool, start)}</p>`;
+    if (pool.length - 1 >= 4) {
+      // Enough answers: the hourglass carries the numbers; keep just the comparison line.
+      const later = pool.filter(a => norm(a.minutes, start) > norm(me.minutes, start)).length;
+      const everyone = avg(pool.map(a => a.minutes), start);
+      const lead = !me.night && me.minutes < DAY_START ? 'Burning the midnight oil! ' : '';
+      $('youCard').innerHTML = `
+        ${hourglass(Math.round(later / pool.length * 100), fmt(me.minutes))}
+        ${me.night ? '<span class="label night-label"><svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg> after a night shift</span>' : ''}
+        <p class="line">${lead}That's ${diffText(me.minutes, everyone, start)} ${me.night ? 'other night-shift workers' : 'everyone else'}.</p>`;
+      $('youCard').classList.add('has-glass');
+    } else $('youCard').classList.remove('has-glass');
 
     const partial = !!me.partial;
     $('results').classList.toggle('partial', partial);

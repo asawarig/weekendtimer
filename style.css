@@ -381,6 +381,10 @@ button { font: inherit; color: inherit; }
 .you .label { font-size: 20px; }
 .you .big { display: block; font-family: var(--hand); font-size: clamp(48px, 12vw, 72px); line-height: 1.05; }
 .you .line { font-size: 22px; margin: 6px 0 0; }
+.you.has-glass { padding: 14px 18px 20px; }
+.you.has-glass .hourglass { display: block; width: min(100%, 520px); height: auto; margin: 0 auto; overflow: visible; }
+.you.has-glass .line { margin-top: 2px; }
+
 
 .crowd { padding: 22px 20px; margin-bottom: 20px; }
 .crowd-sub { margin: -8px 0 12px; color: #444; }
