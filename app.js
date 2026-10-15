@@ -716,7 +716,7 @@
 
   // The 'you' card as a tilted crayon hourglass: sand left on top = people still working after
   // you, sand at the bottom = people who've already logged off. You sit at the neck.
-  function hourglass(pctLater, timeText) {
+  function hourglass(pctLater, timeText, avgText, avgLabel) {
     const f = pctLater / 100, id = 'hg' + Math.random().toString(36).slice(2, 7);
     const top = 'M24 22 L96 22 C96 62 64 84 62 100 L58 100 C56 84 24 62 24 22 Z';
     const bot = 'M58 100 L62 100 C64 116 96 138 96 178 L24 178 C24 138 56 116 58 100 Z';
@@ -742,6 +742,8 @@
         <text x="128" y="84" font-size="17" text-anchor="end">still working</text>
         <text x="282" y="172" font-size="36">${100 - pctLater}%</text>
         <text x="282" y="194" font-size="17">already logged off</text>
+        <text x="128" y="128" font-size="17" text-anchor="end">${avgLabel}</text>
+        <text x="128" y="156" font-size="30" text-anchor="end">${avgText}</text>
         <text x="282" y="104" font-size="17">you</text>
         <text x="282" y="132" font-size="30">${timeText}</text>
       </g>
@@ -763,7 +765,7 @@
       const everyone = avg(pool.map(a => a.minutes), start);
       const lead = !me.night && me.minutes < DAY_START ? 'Burning the midnight oil! ' : '';
       $('youCard').innerHTML = `
-        ${hourglass(Math.round(later / pool.length * 100), fmt(me.minutes))}
+        ${hourglass(Math.round(later / pool.length * 100), fmt(me.minutes), fmt(everyone), me.night ? 'night shifts avg' : 'everyone avg')}
         ${me.night ? '<span class="label night-label"><svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg> after a night shift</span>' : ''}
         <p class="line">${lead}That's ${diffText(me.minutes, everyone, start)} ${me.night ? 'other night-shift workers' : 'everyone else'}.</p>`;
       $('youCard').classList.add('has-glass');
@@ -774,6 +776,9 @@
     $('curious').hidden = !partial;
     $('exploreBtn').hidden = partial;
     $('statCity').parentElement.hidden = partial;
+    // The hourglass already shows the overall average, so its separate box goes.
+    $('statAll').parentElement.hidden = $('youCard').classList.contains('has-glass');
+    document.querySelector('.stats').hidden = [...document.querySelectorAll('.stat')].every(x => x.hidden);
     $('statJob').parentElement.hidden = partial;
     const cityTimes = pool.filter(a => a.city === me.city).map(a => a.minutes);
     const jobTimes = pool.filter(a => a.job === me.job).map(a => a.minutes);
