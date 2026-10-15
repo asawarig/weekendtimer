@@ -19,7 +19,7 @@
     if (apple || ios) document.documentElement.classList.add('no-crayon-filter');
   })();
 </script>
-<link rel="stylesheet" href="style.css?v=47">
+<link rel="stylesheet" href="style.css?v=48">
 </head>
 <body>
 
@@ -89,7 +89,7 @@
     <div class="nav-right">
       <a class="nav-plum" href="https://www.plumhq.com" target="_blank" rel="noopener">
         <span class="by">by</span>
-        <img src="assets/plum-logo.png?v=47" alt="Plum" width="80" height="25">
+        <img src="assets/plum-logo.png?v=48" alt="Plum" width="80" height="25">
       </a>
     </div>
   </div>
@@ -102,7 +102,7 @@
 
   <!-- Step 1: time -->
   <section class="step crayon-box" id="step-time" data-step="1">
-    <p class="step-count">Step 1 of 3</p>
+    
     <h2>When do you get off work today?</h2>
     <p class="sr-only">Wind the crown on the right up or down, drag the hands, or tap the time below and type it.</p>
     <div class="clock-holder">
@@ -126,7 +126,7 @@
 
   <!-- Step 2: city -->
   <section class="step crayon-box" id="step-city" data-step="2" hidden>
-    <p class="step-count">Step 2 of 3</p>
+    <p class="step-count">Almost there: 1 of 2</p>
     <h2>Where are you working from?</h2>
     <div class="chips" id="cityChips"></div>
     <div class="combo" id="cityCombo">
@@ -138,14 +138,14 @@
       <div class="options-wrap crayon-box" hidden><ul class="options" id="cityList" role="listbox"></ul></div>
     </div>
     <div class="actions">
-      <button type="button" class="btn btn-ghost" data-next="1"><svg class="icon" aria-hidden="true"><use href="#i-arrow-l"/></svg> Back</button>
+      <button type="button" class="btn btn-ghost" id="cityBack"><svg class="icon" aria-hidden="true"><use href="#i-arrow-l"/></svg> Back</button>
       <button type="button" class="btn btn-blue" data-next="3" id="cityNext" disabled>Next <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
     </div>
   </section>
 
   <!-- Step 3: occupation -->
   <section class="step crayon-box" id="step-job" data-step="3" hidden>
-    <p class="step-count">Step 3 of 3</p>
+    <p class="step-count">Last one: 2 of 2</p>
     <h2>What do you do?</h2>
     <div class="combo" id="jobCombo">
       <label for="jobInput">Search or pick from the list</label>
@@ -188,6 +188,11 @@
     </div>
 
     <div class="you crayon-box" id="youCard"></div>
+
+    <div class="curious crayon-box" id="curious" hidden>
+      <p>Curious where you stand among people in your city and in your job?</p>
+      <button type="button" class="btn btn-purple" id="curiousBtn">Yes, show me <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+    </div>
 
     <div class="actions center">
       <button type="button" class="btn btn-ghost" id="resetBtn"><svg class="icon" aria-hidden="true"><use href="#i-reset"/></svg> Start over</button>
@@ -259,8 +264,8 @@
 </div>
 
 
-<script src="config.js?v=47"></script>
-<script src="data.js?v=47"></script>
-<script src="app.js?v=47"></script>
+<script src="config.js?v=48"></script>
+<script src="data.js?v=48"></script>
+<script src="app.js?v=48"></script>
 </body>
 </html>

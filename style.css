@@ -160,6 +160,14 @@ body.night .ex-search.combo label { color: #fffdf8; }
 .clock-card.first .cc-time { font-size: 50px; }
 .cc-n { font-size: 16px; opacity: .8; }
 
+/* ---------- 'Curious?' invite after the first crowd view ---------- */
+.curious { --fill: var(--yellow); padding: 20px 22px; margin: 0 0 20px; text-align: center; }
+.curious[hidden] { display: none; }
+.curious p { font-family: var(--hand); font-size: 28px; line-height: 1.2; margin: 0 0 14px; }
+.curious .btn { font-size: 24px; }
+.stat[hidden], .btn[hidden] { display: none; }
+.results.partial .stats { grid-template-columns: 1fr; }
+
 /* ---------- Night-shift question ---------- */
 .night-ask { --fill: #fffdf8; width: min(460px, 100%); padding: 26px 24px 22px; text-align: center; }
 .night-ask-moon { width: 54px; height: 54px; display: block; margin: 0 auto 8px; overflow: visible; }

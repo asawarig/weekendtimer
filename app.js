@@ -288,6 +288,8 @@
     if (b.closest('#step-time') && b.dataset.next === '2') {
       if (minutes < DAY_START) { openNightAsk(); return; }
       nightShift = false;
+      showTeaser();
+      return;
     }
     showStep(b.dataset.next);
   }));
@@ -301,7 +303,7 @@
     nightShift = yes;
     $('nightAsk').hidden = true;
     document.body.classList.remove('modal-open');
-    showStep(2);
+    showTeaser();
   }
   $('nightYes').addEventListener('click', () => answerNight(true));
   $('nightNo').addEventListener('click', () => answerNight(false));
@@ -720,6 +722,12 @@
       ${me.night ? '<span class="label night-label"><svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg> after a night shift</span>' : ''}
       <p class="line">${youLine(pool, start)}</p>`;
 
+    const partial = !!me.partial;
+    $('results').classList.toggle('partial', partial);
+    $('curious').hidden = !partial;
+    $('exploreBtn').hidden = partial;
+    $('statCity').parentElement.hidden = partial;
+    $('statJob').parentElement.hidden = partial;
     const cityTimes = pool.filter(a => a.city === me.city).map(a => a.minutes);
     const jobTimes = pool.filter(a => a.job === me.job).map(a => a.minutes);
     const nightLabel = me.night ? ' on nights' : '';
@@ -730,9 +738,9 @@
     $('statJobLabel').textContent = `${me.job}${nightLabel} logs off around`;
     $('statJob').textContent = jobTimes.length ? fmt(avg(jobTimes, start)) : '–';
 
-    $('filters').innerHTML = [
-      ['all', me.night ? 'All night shifts' : 'Everyone'], ['city', me.city], ['job', me.job],
-    ].map(([f, label]) => `<button type="button" class="pill" data-f="${f}">${escapeHtml(label)}</button>`).join('');
+    $('filters').innerHTML = (partial
+      ? [['all', me.night ? 'All night shifts' : 'Everyone']]
+      : [['all', me.night ? 'All night shifts' : 'Everyone'], ['city', me.city], ['job', me.job]]).map(([f, label]) => `<button type="button" class="pill" data-f="${f}">${escapeHtml(label)}</button>`).join('');
 
     half = me.minutes >= 720 ? 'pm' : 'am';
     renderCrowdClock();
@@ -756,6 +764,28 @@
     if (f === 'all') filter = { city: false, job: false };
     else filter[f] = !filter[f];
     renderCrowdClock();
+  });
+
+  // After the time only: show where they stand among everyone, then invite them to add city and job.
+  async function showTeaser() {
+    me = { minutes, city: null, job: null, night: nightShift, partial: true };
+    filter = { city: false, job: false };
+    try {
+      crowd = await loadCrowd();
+      if (!LIVE) crowd.push({ minutes, city: null, job: null, night: nightShift });
+    } catch (err) {
+      console.error(err);
+      crowd = [];
+    }
+    renderResults();
+  }
+
+  $('cityBack').addEventListener('click', () => renderResults());
+
+  $('curiousBtn').addEventListener('click', () => {
+    $('results').hidden = true;
+    $('explore').hidden = true;
+    showStep(2);
   });
 
   $('submitBtn').addEventListener('click', async () => {
