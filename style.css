@@ -422,7 +422,8 @@ button { font: inherit; color: inherit; }
 .stat { padding: 16px; text-align: center; display: flex; flex-direction: column; justify-content: center; }
 .stat .label { font-size: 18px; }
 .stat .big { font-family: var(--hand); font-size: 38px; line-height: 1.1; }
-.stat .small { font-size: 16px; }
+.stat .small { font-size: 14px; }
+.stat .small a, .cc-n a { color: inherit; }
 
 
 
