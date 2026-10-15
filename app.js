@@ -419,8 +419,7 @@
     for (let i = 0; i < 220; i++) {
       const c = cityWeights[Math.floor(rnd() * cityWeights.length)];
       const j = jobs[Math.floor(rnd() * jobs.length)];
-      const ref = window.CITY_REFERENCE[c];
-      const bias = (ref ? ref.minutes - 18 * 60 - 30 : (hash(c) % 60) - 20) + (hash(j) % 90) - 40;
+      const bias = (hash(c) % 60) - 20 + (hash(j) % 90) - 40;
       let m = Math.round((18 * 60 + 30 + bias + gauss() * 75) / 5) * 5;
       let night = false;
       if (rnd() < 0.05) m = Math.round((60 + rnd() * 360) / 5) * 5; // a few working through the night
@@ -514,22 +513,12 @@
   }
 
   // Groups (cities or jobs) with at least 3 answers, ranked by their typical log-off time.
-  // Until a city has this many answers, its research reference time stands in (day shifts only).
-  const MIN_REAL = 5;
-  const cityRef = name => (!me || !me.night) ? window.CITY_REFERENCE[name] : null;
-  function cityTime(name, times, start) {
-    const ref = cityRef(name);
-    if (ref && times.length < MIN_REAL) return { t: ref.minutes, n: times.length, ref };
-    return times.length ? { t: avg(times, start), n: times.length } : null;
-  }
-
   function ranking(key, latest) {
     const groups = {}, start = startFor();
     peers().forEach(a => (groups[a[key]] ||= []).push(a.minutes));
-    if (key === 'city') Object.keys(window.CITY_REFERENCE).forEach(c => { if (cityRef(c)) groups[c] ||= []; });
     return Object.entries(groups)
-      .map(([name, v]) => key === 'city' ? { name, ...(cityTime(name, v, start) || {}), v } : { name, t: v.length ? avg(v, start) : null, n: v.length, v })
-      .filter(x => x.t != null && (x.ref || x.n >= 3) && !x.name.startsWith('Other'))
+      .filter(([name, v]) => v.length >= 3 && !name.startsWith('Other'))
+      .map(([name, v]) => ({ name, t: avg(v, start), n: v.length }))
       .sort((x, y) => latest ? norm(y.t, start) - norm(x.t, start) : norm(x.t, start) - norm(y.t, start));
   }
 
@@ -560,9 +549,7 @@
       ${tag ? `<span class="cc-tag">${escapeHtml(tag)}</span>` : ''}
       <div class="cc-name">${escapeHtml(row.name)}</div>
       <div class="cc-time">${fmt(row.t)}</div>
-      <div class="cc-n">${row.ref
-        ? `research estimate · <a href="${row.ref.url}" target="_blank" rel="noopener">source</a>`
-        : `${row.n} ${row.n === 1 ? 'answer' : 'answers'}`}</div>
+      <div class="cc-n">${row.n} ${row.n === 1 ? 'answer' : 'answers'}</div>
       ${note ? `<div class="cc-note">${note}</div>` : ''}`;
     card.insertBefore(miniClock(row.t), card.querySelector('.cc-name'));
     if (key) {
@@ -571,7 +558,7 @@
       card.tabIndex = 0;
       card.setAttribute('role', 'button');
       card.setAttribute('aria-label', `Open ${row.name}: logs off around ${fmt(row.t)}`);
-      const go = e => { if (e && e.target.closest && e.target.closest('a')) return; openDetail(key, row.name); };
+      const go = () => openDetail(key, row.name);
       card.addEventListener('click', go);
       card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
     }
@@ -586,12 +573,11 @@
     const key = CITY_SET.has(name) ? 'city' : 'job';
     const latest = key === 'city';
     const times = peers().filter(a => a[key] === name).map(a => a.minutes);
-    const refd = key === 'city' ? cityTime(name, times, startFor()) : null;
-    if (!times.length && !refd) {
+    if (!times.length) {
       out.innerHTML = `<p class="ex-none crayon-box">No answers from ${escapeHtml(name)} yet. Check back soon!</p>`;
       return;
     }
-    const row = refd ? { name, ...refd } : { name, t: avg(times, startFor()), n: times.length };
+    const row = { name, t: avg(times, startFor()), n: times.length };
     const rows = ranking(key, latest);
     const pos = rows.findIndex(x => x.name === name);
     const list = key === 'city' ? 'cities' : 'jobs';
@@ -800,10 +786,7 @@
     $('statAllLabel').textContent = me.night ? 'Night shifts log off around' : 'Everyone logs off around';
     $('statAll').textContent = pool.length ? fmt(avg(pool.map(a => a.minutes), start)) : '–';
     $('statCityLabel').textContent = `${me.city}${nightLabel} logs off around`;
-    const cityT = cityTime(me.city, cityTimes, start);
-    $('statCity').innerHTML = cityT ? fmt(cityT.t) : '–';
-    $('statCityNote').innerHTML = cityT && cityT.ref
-      ? `research estimate · <a href="${cityT.ref.url}" target="_blank" rel="noopener">${escapeHtml(cityT.ref.source)}</a>` : '';
+    $('statCity').textContent = cityTimes.length ? fmt(avg(cityTimes, start)) : '–';
     $('statJobLabel').textContent = `${me.job}${nightLabel} logs off around`;
     $('statJob').textContent = jobTimes.length ? fmt(avg(jobTimes, start)) : '–';
 

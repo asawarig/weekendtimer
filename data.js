@@ -31,23 +31,3 @@ window.OCCUPATIONS = [
   'Software Engineer', 'Student', 'Supply Chain / Logistics', 'Teacher', 'Video Creator',
   'Veterinarian', 'Other',
 ];
-
-// Research-based reference log-off times, used for a city until it has enough real answers.
-// Traffic/metro peaks are when most people are heading home, so they are estimates, not surveys.
-(() => {
-  const MIS = { source: 'MoveInSync Travel Time Report 2019', url: 'https://www.peoplematters.in/news/organisational-culture/indians-spend-7-of-their-day-in-office-commute-report-22905' };
-  const tt = c => ({ source: 'TomTom Traffic Index 2025', url: `https://www.tomtom.com/traffic-index/${c}-traffic/` });
-  window.CITY_REFERENCE = {
-    Bengaluru: { minutes: 18 * 60 + 40, source: 'Namma Metro hourly ridership, weekdays Aug–Sep 2025', url: 'https://github.com/Vonter/bmrcl-ridership-hourly' },
-    Mumbai: { minutes: 19 * 60, ...MIS },
-    Pune: { minutes: 19 * 60, ...MIS },
-    Ahmedabad: { minutes: 19 * 60, ...tt('ahmedabad') },
-    Delhi: { minutes: 18 * 60, ...MIS },
-    Gurugram: { minutes: 18 * 60, ...MIS },
-    Noida: { minutes: 18 * 60, ...MIS },
-    Chennai: { minutes: 18 * 60, ...MIS },
-    Hyderabad: { minutes: 18 * 60, ...MIS },
-    Kolkata: { minutes: 18 * 60, ...tt('kolkata') },
-    Jaipur: { minutes: 18 * 60, ...tt('jaipur') },
-  };
-})();
