@@ -99,7 +99,20 @@ body {
   color: var(--ink); text-decoration: none;
   font-family: var(--hand); font-size: 24px; white-space: nowrap;
 }
-.nav-mark { width: 36px; height: 36px; overflow: visible; }
+.nav-mark { width: 44px; height: 44px; overflow: visible; transform: rotate(-8deg); transition: transform .3s; }
+.nav-brand:hover .nav-mark { transform: rotate(352deg); }
+
+/* Funky wordmark: chunky bubble letters, tilted, with a crayon-yellow shadow. */
+.wordmark { display: inline-flex; align-items: baseline; gap: 6px; line-height: 1; font-family: 'Bagel Fat One', var(--hand); }
+.wm-small {
+  font-size: 18px; color: var(--ink); transform: rotate(-4deg) translateY(-6px); display: inline-block;
+}
+.wm-big {
+  display: inline-block; font-size: 32px; color: var(--red); letter-spacing: .5px;
+  -webkit-text-stroke: 2px var(--ink); paint-order: stroke fill;
+  text-shadow: 3px 3px 0 var(--yellow), 4px 4px 0 var(--ink);
+  transform: rotate(3deg);
+}
 .nav-right { display: flex; align-items: center; gap: 14px; }
 .nav-plum { display: flex; align-items: center; gap: 6px; color: #555; text-decoration: none; font-size: 17px; }
 .nav-plum img { display: block; height: 25px; width: auto; }
@@ -242,7 +255,9 @@ body.modal-open { overflow: hidden; }
   .dt-left .clock-card .mini-clock { max-width: 170px; }
   .dt-right { padding-top: 18px; }
   .dt-list { max-height: none; overflow: visible; }
-  .nav-brand span { display: none; }
+  .nav-mark { width: 38px; height: 38px; }
+  .wm-small { font-size: 15px; }
+  .wm-big { font-size: 26px; }
   }
 
 .preview-note { --fill: #fff4c2; padding: 12px 18px; margin: 18px 0 0; font-size: 18px; }
