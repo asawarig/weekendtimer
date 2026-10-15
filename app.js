@@ -513,33 +513,33 @@
     drawCityRefs(svg);
   }
 
-  // Research reference times for big cities: small pins on the rim with the city names
-  // listed inside the face, joined by a thin line. Your own city is picked out in red.
+  // India reference: the average of the big-city research estimates (each city counted once),
+  // marked as a pin on the rim with its label curving along the inside of the circumference.
   function drawCityRefs(svg) {
-    const refs = (me && me.night) ? [] : window.CITY_REFERENCE.filter(r => (r.minutes >= 720) === (half === 'pm'));
-    if (!refs.length) return;
-    const g = el('g', { class: 'city-refs' }, svg);
-    const rowsY = [232, 256, 280];
-    refs.forEach((ref, i) => {
-      const ang = ((ref.minutes % 720) / 720) * Math.PI * 2;
-      const px = 200 + Math.sin(ang) * 164, py = 200 - Math.cos(ang) * 164;
-      const ty = rowsY[i % rowsY.length];
-      const mine = me && me.city && ref.cities.includes(me.city);
-      const names = mine ? [me.city, ...ref.cities.filter(c => c !== me.city)] : ref.cities;
-      const shown = names.slice(0, 2).join(', ') + (names.length > 2 ? ` +${names.length - 2}` : '');
-      el('path', { d: `M${px.toFixed(1)} ${py.toFixed(1)} L${(200 + (px - 200) * 0.25).toFixed(1)} ${ty - 5}`,
-        stroke: mine ? '#e2352b' : '#3a9bd9', 'stroke-width': 1.6, 'stroke-dasharray': '3 3' }, g);
-      el('circle', { cx: px, cy: py, r: 7, fill: mine ? '#e2352b' : '#3a9bd9', stroke: '#161616', 'stroke-width': 2.5 }, g);
-      const t = el('text', { x: 200, y: ty, 'text-anchor': 'middle', 'font-size': 17,
-        fill: mine ? '#e2352b' : '#1f4f7a', stroke: '#fffdf8', 'stroke-width': 4, 'paint-order': 'stroke' }, g);
-      t.textContent = `${fmt(ref.minutes)} · ${shown}`;
-      const tip = el('title', {}, t);
-      tip.textContent = `${ref.cities.join(', ')}: about ${fmt(ref.minutes)} (research estimate: ${ref.source})`;
-    });
-    const note = el('text', { x: 200, y: 304, 'text-anchor': 'middle', 'font-size': 11, fill: '#555',
-      stroke: '#fffdf8', 'stroke-width': 3, 'paint-order': 'stroke' }, g);
-    note.textContent = 'city estimates from traffic & metro data';
+    if (me && me.night) return;
+    const all = window.CITY_REFERENCE.flatMap(r => r.cities.map(() => r.minutes));
+    const t = Math.round(all.reduce((a, b) => a + b, 0) / all.length);
+    if ((t >= 720) !== (half === 'pm')) return;
+    const deg = ((t % 720) / 720) * 360, ang = deg * Math.PI / 180;
+    const g = el('g', { class: 'india-ref' }, svg);
+    const at = r => [200 + Math.sin(ang) * r, 200 - Math.cos(ang) * r];
+    const [x1, y1] = at(150), [x2, y2] = at(182);
+    el('path', { d: `M${x1.toFixed(1)} ${y1.toFixed(1)} L${x2.toFixed(1)} ${y2.toFixed(1)}`, stroke: '#161616', 'stroke-width': 9, 'stroke-linecap': 'round' }, g);
+    el('path', { d: `M${x1.toFixed(1)} ${y1.toFixed(1)} L${x2.toFixed(1)} ${y2.toFixed(1)}`, stroke: '#2fa35a', 'stroke-width': 5, 'stroke-linecap': 'round' }, g);
+    const [px, py] = at(182);
+    el('circle', { cx: px, cy: py, r: 9, fill: '#2fa35a', stroke: '#161616', 'stroke-width': 3 }, g);
+    // Curved label just inside the rim, centred on the marker and always reading left to right.
+    const R = 104, span = 70, bottom = Math.cos(ang) < 0;
+    const p = d => { const a = d * Math.PI / 180; return `${(200 + Math.sin(a) * R).toFixed(1)} ${(200 - Math.cos(a) * R).toFixed(1)}`; };
+    const id = 'indiaArc' + Math.random().toString(36).slice(2, 7);
+    el('path', { id, d: bottom ? `M${p(deg + span)} A${R} ${R} 0 0 0 ${p(deg - span)}` : `M${p(deg - span)} A${R} ${R} 0 0 1 ${p(deg + span)}`, fill: 'none' }, g);
+    const text = el('text', { 'font-size': 17, fill: '#1d6b3a', stroke: '#fffdf8', 'stroke-width': 4, 'paint-order': 'stroke' }, g);
+    const tp = el('textPath', { href: '#' + id, startOffset: '50%', 'text-anchor': 'middle' }, text);
+    tp.textContent = `India avg ${fmt(t)} (research)`;
+    const tip = el('title', {}, g);
+    tip.textContent = `Average of research estimates for ${all.length} big cities (traffic & metro data): ${fmt(t)}`;
   }
+
 
   // Groups (cities or jobs) with at least 3 answers, ranked by their typical log-off time.
   function ranking(key, latest) {

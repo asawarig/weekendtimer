@@ -39,10 +39,10 @@ Night-shift workers are compared only with other night-shift workers. Regular ti
 If you set up the sheet before the night-shift column existed, add a **Night shift** header in column F. Only answers whose city and job are in `data.js` are shown on the site.
 If you change the script later, use **Deploy → Manage deployments → Edit → New version** so the URL stays the same.
 
-## City reference markers
+## India average marker
 
-The crowd clock shows research-based reference log-off times for big cities as blue pins on the rim
-(your own city in red), from `CITY_REFERENCE` in `data.js`:
+The crowd clock shows a green "India avg" marker on the rim: the average of these big-city research estimates
+(each city counted once, 6:20 PM), from `CITY_REFERENCE` in `data.js`:
 
 - 6:00 PM: Delhi, Gurugram, Noida, Chennai, Hyderabad, Kolkata, Jaipur (MoveInSync 2019, TomTom 2025 evening peaks)
 - 6:40 PM: Bengaluru (median weekday evening boarding, Namma Metro hourly data Aug–Sep 2025)
