@@ -93,7 +93,7 @@
     el('path', { id: 'ringTop', d: 'M 0 200 A 200 200 0 0 1 400 200' }, defs);
     el('path', { id: 'ringBottom', d: 'M -22 200 A 222 222 0 0 0 422 200' }, defs);
     const style = { 'font-size': 27, fill: '#333', 'text-anchor': 'middle', 'letter-spacing': 0.5 };
-    [['#ringTop', 'Turn the red knob,'], ['#ringBottom', 'or tap the time below and type it.']].forEach(([p, words]) => {
+    [['#ringTop', 'Wind the crown or drag the hands,'], ['#ringBottom', 'or tap the time below and type it.']].forEach(([p, words]) => {
       const t = el('text', style, svg);
       const tp = el('textPath', { href: p, startOffset: '50%' }, t);
       tp.textContent = words;
@@ -109,15 +109,21 @@
     hand(hands, m * 6, 132, 9, '#3a9bd9');
     el('circle', { cx: 200, cy: 200, r: 14, fill: '#161616', filter: 'url(#crayon)' }, hands);
 
-    // The dial knob: sits on the rim where the hour hand points. Drag it round to set the time.
-    const ang = h12 * 30 * Math.PI / 180, R = 160;
-    const kx = 200 + Math.sin(ang) * R, ky = 200 - Math.cos(ang) * R;
-    const knob = el('g', { class: 'dial-knob', filter: 'url(#crayon)' }, pick);
-    el('circle', { cx: kx, cy: ky, r: 30, fill: 'transparent' }, knob); // bigger touch target
-    el('circle', { cx: kx, cy: ky, r: 19, fill: '#e2352b', stroke: '#161616', 'stroke-width': 4.5 }, knob);
-    // Grip lines across the knob, turned to follow the rim.
-    const g = el('g', { transform: `rotate(${h12 * 30} ${kx} ${ky})`, stroke: '#fffdf8', 'stroke-width': 3, 'stroke-linecap': 'round' }, knob);
-    [-6, 0, 6].forEach(dx => el('line', { x1: kx + dx, y1: ky - 8, x2: kx + dx, y2: ky + 8 }, g));
+    // The winding crown on the right edge (3 o'clock), like a watch. Its ridges roll as the time changes.
+    const crown = el('g', { class: 'crown', filter: 'url(#crayon)' }, pick);
+    el('rect', { x: 372, y: 150, width: 80, height: 100, fill: 'transparent' }, crown); // easy touch target
+    el('rect', { x: 382, y: 189, width: 16, height: 22, rx: 3, fill: '#c98b12', stroke: '#161616', 'stroke-width': 4 }, crown);
+    el('rect', { x: 395, y: 170, width: 38, height: 60, rx: 11, fill: '#f5b82e', stroke: '#161616', 'stroke-width': 5 }, crown);
+    const ridges = el('g', { stroke: '#161616', 'stroke-width': 3, 'stroke-linecap': 'round' }, crown);
+    const roll = (minutes / 5) % 3; // ridges shift a little with every 5-minute step
+    for (let k = -1; k < 10; k++) {
+      const y = 176 + (k + roll / 3) * 7;
+      if (y > 174 && y < 226) el('line', { x1: 401, y1: y, x2: 427, y2: y }, ridges);
+    }
+    // Up/down hint arrows above and below the crown.
+    const hint = el('g', { fill: 'none', stroke: '#555', 'stroke-width': 3.5, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, crown);
+    el('path', { d: 'M406 156 L414 147 L422 156' }, hint);
+    el('path', { d: 'M406 244 L414 253 L422 244' }, hint);
     if (!typing) { timeInput.value = fmt(minutes); timeInput.classList.remove('bad'); }
     setSky(minutes);
     pick.setAttribute('aria-valuenow', minutes);
@@ -141,11 +147,30 @@
     minutes = (minutes + delta + 1440) % 1440;
     renderPicker();
   }
-  let dragging = false;
-  pick.addEventListener('pointerdown', e => { dragging = true; pick.setPointerCapture(e.pointerId); setFromPointer(e); });
-  pick.addEventListener('pointermove', e => { if (dragging) setFromPointer(e); });
-  pick.addEventListener('pointerup', () => { dragging = false; });
-  pick.addEventListener('pointercancel', () => { dragging = false; });
+  // Dragging the clock face sets the time by angle; dragging the crown up/down winds it forward/back.
+  let dragging = false, winding = null;
+  pick.addEventListener('pointerdown', e => {
+    pick.setPointerCapture(e.pointerId);
+    if (e.target.closest('.crown')) { winding = { y: e.clientY, carry: 0 }; return; }
+    dragging = true; setFromPointer(e);
+  });
+  pick.addEventListener('pointermove', e => {
+    if (winding) {
+      // Every 8px of drag is one 5-minute step; up = later.
+      const steps = Math.trunc((winding.y - e.clientY) / 8);
+      if (steps) { minutes = (minutes + steps * 5 + 1440) % 1440; winding.y -= steps * 8; renderPicker(); }
+    } else if (dragging) setFromPointer(e);
+  });
+  const stop = () => { dragging = false; winding = null; };
+  pick.addEventListener('pointerup', stop);
+  pick.addEventListener('pointercancel', stop);
+  // Scroll wheel / trackpad over the crown winds it too.
+  pick.addEventListener('wheel', e => {
+    if (!e.target.closest('.crown')) return;
+    e.preventDefault();
+    minutes = (minutes + (e.deltaY < 0 ? 5 : -5) + 1440) % 1440;
+    renderPicker();
+  }, { passive: false });
   pick.addEventListener('keydown', e => {
     const step = { ArrowUp: 5, ArrowRight: 5, ArrowDown: -5, ArrowLeft: -5, PageUp: 60, PageDown: -60 }[e.key];
     if (!step) return;
