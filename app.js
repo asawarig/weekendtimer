@@ -519,7 +519,8 @@
   const cityRef = name => (!me || !me.night) ? window.CITY_REFERENCE[name] : null;
   function cityTime(name, times, start) {
     const ref = cityRef(name);
-    if (ref && times.length < MIN_REAL) return { t: ref.minutes, n: times.length, ref };
+    // Preview-mode sample answers aren't real, so they never replace a reference.
+    if (ref && (!LIVE || times.length < MIN_REAL)) return { t: ref.minutes, n: times.length, ref };
     return times.length ? { t: avg(times, start), n: times.length } : null;
   }
 
