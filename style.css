@@ -236,6 +236,8 @@ body.modal-open { overflow: hidden; }
 .clock { width: min(100%, 400px); height: auto; display: block; overflow: visible; }
 #pickClock { cursor: grab; touch-action: none; outline: none; }
 #pickClock:active { cursor: grabbing; }
+#pickClock .dial-knob { cursor: grab; }
+#pickClock:active .dial-knob { cursor: grabbing; }
 #pickClock:focus-visible { filter: drop-shadow(0 0 6px var(--blue)); }
 .clock text { font-family: var(--hand); }
 

@@ -93,7 +93,7 @@
     el('path', { id: 'ringTop', d: 'M 0 200 A 200 200 0 0 1 400 200' }, defs);
     el('path', { id: 'ringBottom', d: 'M -22 200 A 222 222 0 0 0 422 200' }, defs);
     const style = { 'font-size': 27, fill: '#333', 'text-anchor': 'middle', 'letter-spacing': 0.5 };
-    [['#ringTop', 'Drag the clock around,'], ['#ringBottom', 'or tap the time below and type it.']].forEach(([p, words]) => {
+    [['#ringTop', 'Turn the red knob,'], ['#ringBottom', 'or tap the time below and type it.']].forEach(([p, words]) => {
       const t = el('text', style, svg);
       const tp = el('textPath', { href: p, startOffset: '50%' }, t);
       tp.textContent = words;
@@ -108,6 +108,16 @@
     hand(hands, h12 * 30, 88, 14, '#e2352b');
     hand(hands, m * 6, 132, 9, '#3a9bd9');
     el('circle', { cx: 200, cy: 200, r: 14, fill: '#161616', filter: 'url(#crayon)' }, hands);
+
+    // The dial knob: sits on the rim where the hour hand points. Drag it round to set the time.
+    const ang = h12 * 30 * Math.PI / 180, R = 160;
+    const kx = 200 + Math.sin(ang) * R, ky = 200 - Math.cos(ang) * R;
+    const knob = el('g', { class: 'dial-knob', filter: 'url(#crayon)' }, pick);
+    el('circle', { cx: kx, cy: ky, r: 30, fill: 'transparent' }, knob); // bigger touch target
+    el('circle', { cx: kx, cy: ky, r: 19, fill: '#e2352b', stroke: '#161616', 'stroke-width': 4.5 }, knob);
+    // Grip lines across the knob, turned to follow the rim.
+    const g = el('g', { transform: `rotate(${h12 * 30} ${kx} ${ky})`, stroke: '#fffdf8', 'stroke-width': 3, 'stroke-linecap': 'round' }, knob);
+    [-6, 0, 6].forEach(dx => el('line', { x1: kx + dx, y1: ky - 8, x2: kx + dx, y2: ky + 8 }, g));
     if (!typing) { timeInput.value = fmt(minutes); timeInput.classList.remove('bad'); }
     setSky(minutes);
     pick.setAttribute('aria-valuenow', minutes);
