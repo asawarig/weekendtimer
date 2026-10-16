@@ -283,6 +283,20 @@
     $('privacyNote').hidden = String(n) === '1';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+  // Loading card while we talk to the crowd database. It only appears if the wait passes
+  // a moment, so quick loads don't flash, and the line changes if it takes a while.
+  let loadTimers = [];
+  function showLoading(lines) {
+    hideLoading();
+    $('loadingText').textContent = lines[0];
+    loadTimers.push(setTimeout(() => { $('loading').hidden = false; }, 200));
+    lines.slice(1).forEach((l, i) => loadTimers.push(setTimeout(() => { $('loadingText').textContent = l; }, 1800 * (i + 1))));
+  }
+  function hideLoading() {
+    loadTimers.forEach(clearTimeout); loadTimers = [];
+    $('loading').hidden = true;
+  }
+
   document.querySelectorAll('[data-next]').forEach(b => b.addEventListener('click', () => {
     // Leaving step 1 with a time between midnight and 10 AM: ask whether it's a night shift first.
     if (b.closest('#step-time') && b.dataset.next === '2') {
@@ -949,6 +963,7 @@
     filter = { city: false, job: false };
     // Save the time straight away, so people who stop here still count.
     newAnswerId();
+    showLoading(['Clocking you out…', 'Counting the crowd…', 'Almost there…']);
     const saving = saveAnswer(me).catch(err => console.error(err));
     try {
       await saving;
@@ -958,6 +973,7 @@
       console.error(err);
       crowd = [];
     }
+    hideLoading();
     renderResults();
   }
 
@@ -974,14 +990,17 @@
     btn.disabled = true;
     $('submitError').hidden = true;
     me = { minutes, city, job, night: nightShift, date: today() };
+    showLoading(['Adding your dot…', `Finding people from ${city}…`, 'Almost there…']);
     try {
       await saveAnswer(me);
       try { localStorage.setItem(STORE_KEY, JSON.stringify(me)); } catch {}
       crowd = await loadCrowd();
       if (!LIVE) crowd.push({ minutes: me.minutes, city: me.city, job: me.job, night: !!me.night });
+      hideLoading();
       renderResults();
     } catch (err) {
       console.error(err);
+      hideLoading();
       $('submitError').textContent = "Couldn't reach the crowd clock. Check your connection and try again.";
       $('submitError').hidden = false;
       btn.disabled = false;
@@ -1040,10 +1059,12 @@
   try { saved = JSON.parse(localStorage.getItem(STORE_KEY)); } catch {}
   if (saved && saved.date === today() && CITY_SET.has(saved.city) && JOB_SET.has(saved.job)) {
     me = saved;
+    showLoading(['Counting the crowd…', 'Almost there…']);
     loadCrowd().then(c => {
+      hideLoading();
       crowd = c;
       if (!LIVE) crowd.push({ minutes: me.minutes, city: me.city, job: me.job, night: !!me.night });
       renderResults();
-    }).catch(err => console.error(err));
+    }).catch(err => { hideLoading(); console.error(err); });
   }
 })();

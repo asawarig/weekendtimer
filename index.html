@@ -19,7 +19,7 @@
     if (apple || ios) document.documentElement.classList.add('no-crayon-filter');
   })();
 </script>
-<link rel="stylesheet" href="style.css?v=89">
+<link rel="stylesheet" href="style.css?v=90">
 </head>
 <body>
 
@@ -89,7 +89,7 @@
     <div class="nav-right">
       <a class="nav-plum" href="https://www.plumhq.com" target="_blank" rel="noopener">
         <span class="by">by</span>
-        <img src="assets/plum-logo.png?v=89" alt="Plum" width="80" height="25">
+        <img src="assets/plum-logo.png?v=90" alt="Plum" width="80" height="25">
       </a>
     </div>
   </div>
@@ -234,6 +234,18 @@
 </main>
 
 <!-- Night-shift check, shown on Next when the time is between midnight and 10 AM -->
+<div class="loading" id="loading" hidden role="status" aria-live="polite">
+  <div class="loading-card crayon-box">
+    <svg class="loading-clock" viewBox="0 0 100 100" aria-hidden="true">
+      <circle cx="50" cy="50" r="40" fill="#e4f2fc" stroke="#161616" stroke-width="6"/>
+      <line class="lc-min" x1="50" y1="50" x2="50" y2="20" stroke="#3a9bd9" stroke-width="6" stroke-linecap="round"/>
+      <line class="lc-hour" x1="50" y1="50" x2="68" y2="50" stroke="#e2352b" stroke-width="7" stroke-linecap="round"/>
+      <circle cx="50" cy="50" r="6" fill="#161616"/>
+    </svg>
+    <p class="loading-text" id="loadingText">Counting the crowd…</p>
+  </div>
+</div>
+
 <div class="detail-backdrop" id="nightAsk" hidden>
   <div class="night-ask crayon-box" role="dialog" aria-modal="true" aria-labelledby="nightAskQ">
     <svg class="night-ask-moon" aria-hidden="true"><use href="#i-moon"/></svg>
@@ -265,8 +277,8 @@
 </div>
 
 
-<script src="config.js?v=89"></script>
-<script src="data.js?v=89"></script>
-<script src="app.js?v=89"></script>
+<script src="config.js?v=90"></script>
+<script src="data.js?v=90"></script>
+<script src="app.js?v=90"></script>
 </body>
 </html>
