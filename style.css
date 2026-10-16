@@ -509,4 +509,6 @@ button { font: inherit; color: inherit; }
 
 .ref-legend { display: flex; align-items: center; justify-content: flex-end; gap: 8px; font-size: 17px; color: #1d6b3a; margin: 8px 0 -4px; }
 .ref-legend[hidden] { display: none; }
+.ref-legend.newcomer { justify-content: center; text-align: center; color: var(--red); font-family: var(--hand); font-size: 21px; margin: 12px 0 0; }
+.ref-legend.newcomer .rl-swatch { display: none; }
 .rl-swatch { width: 26px; height: 12px; border-radius: 6px; background: #2fa35a; opacity: .8; border: 2px solid #161616; flex: none; }

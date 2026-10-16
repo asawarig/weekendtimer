@@ -522,10 +522,28 @@
   // known / for cities without data. A green crayon band on the rim, explained by a legend above.
   function refFor(c) {
     const key = c && (window.CITY_LOGOFF[c] ? c : window.CITY_LOGOFF_ALIAS[c]);
-    return key ? { label: `${c}'s`, t: window.CITY_LOGOFF[key] } : { label: "India's", t: window.INDIA_LOGOFF };
+    return key ? { label: `${c}'s`, t: window.CITY_LOGOFF[key] } : { label: "India's", t: window.INDIA_LOGOFF, india: true };
+  }
+  // For a city with no research data: how many other real answers are there from it?
+  function cityNewcomer() {
+    if (!me || !me.city || me.night || me.city.startsWith('Other')) return null;
+    if (!refFor(me.city).india) return null;
+    const others = LIVE ? crowd.filter(a => a.city === me.city).length - 1 : 0;
+    return others < 4 ? Math.max(0, others) : null;
   }
   function drawCityRefs(svg) {
     const legend = $('refLegend');
+    const fresh = cityNewcomer();
+    legend.classList.toggle('newcomer', fresh !== null);
+    if (fresh !== null) {
+      // No data for this city yet: celebrate them instead of showing an average.
+      legend.hidden = false;
+      legend.querySelector('.rl-text').textContent = fresh === 0
+        ? `You're the first from ${me.city}! You just put ${me.city} on the clock.`
+        : `You're one of the first ${fresh + 1} from ${me.city}! ${me.city}'s average unlocks at 5.`;
+      legend.title = '';
+      return;
+    }
     const ref = refFor(me && me.city);
     const show = !(me && me.night) && (ref.t >= 720) === (half === 'pm');
     legend.hidden = !show;
