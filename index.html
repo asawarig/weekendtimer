@@ -19,7 +19,7 @@
     if (apple || ios) document.documentElement.classList.add('no-crayon-filter');
   })();
 </script>
-<link rel="stylesheet" href="style.css?v=71">
+<link rel="stylesheet" href="style.css?v=73">
 </head>
 <body>
 
@@ -89,7 +89,7 @@
     <div class="nav-right">
       <a class="nav-plum" href="https://www.plumhq.com" target="_blank" rel="noopener">
         <span class="by">by</span>
-        <img src="assets/plum-logo.png?v=71" alt="Plum" width="80" height="25">
+        <img src="assets/plum-logo.png?v=73" alt="Plum" width="80" height="25">
       </a>
     </div>
   </div>
@@ -147,14 +147,10 @@
   <section class="step crayon-box" id="step-job" data-step="3" hidden>
     <p class="step-count">Last one: 2 of 2</p>
     <h2>What do you do?</h2>
-    <div class="combo" id="jobCombo">
-      <label for="jobInput">Search or pick from the list</label>
-      <div class="field crayon-box">
-        <input id="jobInput" type="text" autocomplete="off" placeholder="e.g. Teacher, Designer…"
-               role="combobox" aria-expanded="false" aria-controls="jobList" aria-autocomplete="list">
-      </div>
-      <div class="options-wrap crayon-box" hidden><ul class="options" id="jobList" role="listbox"></ul></div>
+    <div class="job-search field crayon-box">
+      <input id="jobInput" type="text" autocomplete="off" placeholder="Search your job, e.g. nurse, CA, developer…" aria-label="Search your job">
     </div>
+    <div class="job-tiles" id="jobTiles" role="group" aria-label="Areas of work"></div>
     <div class="actions">
       <button type="button" class="btn btn-ghost" data-next="2"><svg class="icon" aria-hidden="true"><use href="#i-arrow-l"/></svg> Back</button>
       <button type="button" class="btn btn-purple" id="submitBtn" disabled>Add me to the clock</button>
@@ -225,7 +221,7 @@
     <div class="clock-grid" id="exCities"></div>
     <div class="actions center"><button type="button" class="btn btn-ghost" id="exMoreCities" hidden></button></div>
 
-    <h3 class="ex-title"><svg class="icon" aria-hidden="true"><use href="#i-sun"/></svg> Jobs that log off earliest</h3>
+    <h3 class="ex-title"><svg class="icon" aria-hidden="true"><use href="#i-sun"/></svg> Work that logs off earliest</h3>
     <div class="clock-grid" id="exJobs"></div>
     <div class="actions center"><button type="button" class="btn btn-ghost" id="exMoreJobs" hidden></button></div>
   </section>
@@ -264,8 +260,8 @@
 </div>
 
 
-<script src="config.js?v=71"></script>
-<script src="data.js?v=71"></script>
-<script src="app.js?v=71"></script>
+<script src="config.js?v=73"></script>
+<script src="data.js?v=73"></script>
+<script src="app.js?v=73"></script>
 </body>
 </html>

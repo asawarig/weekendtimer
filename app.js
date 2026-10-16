@@ -376,11 +376,29 @@
     cityCombo.set(b.textContent);
   });
 
-  // Occupation
-  combo({
-    input: $('jobInput'), list: $('jobList'), options: window.OCCUPATIONS,
-    onPick: j => { job = j; $('submitBtn').disabled = !j; },
+  // Occupation: tappable tiles for each area of work; the search box filters them by name,
+  // example or job title (e.g. "nurse" shows Healthcare).
+  function renderJobTiles() {
+    const q = $('jobInput').value.trim().toLowerCase();
+    // Match the start of any word, so "ca" finds "CA" but not "call centre" or "cashier".
+    const words = a => `${a.name} ${a.examples} ${a.keywords}`.toLowerCase().split(/[^a-z0-9]+/);
+    const hits = window.JOB_AREAS.filter(a => !q || (q.length <= 2
+      ? words(a).includes(q)
+      : words(a).some(w => w.startsWith(q)) || `${a.name} ${a.examples} ${a.keywords}`.toLowerCase().includes(q)));
+    $('jobTiles').innerHTML = hits.length ? hits.map(a => `
+      <button type="button" class="job-tile" aria-pressed="${a.name === job}" data-job="${escapeHtml(a.name)}">
+        <span class="jt-name">${escapeHtml(a.name)}</span>
+        ${a.examples ? `<span class="jt-ex">${escapeHtml(a.examples)}</span>` : ''}
+      </button>`).join('')
+      : '<p class="jt-none">No match. Try another word, or pick "Something else".</p>';
+  }
+  function setJob(j) { job = j; $('submitBtn').disabled = !j; renderJobTiles(); }
+  $('jobInput').addEventListener('input', renderJobTiles);
+  $('jobTiles').addEventListener('click', e => {
+    const b = e.target.closest('.job-tile');
+    if (b) setJob(b.dataset.job);
   });
+  renderJobTiles();
 
   // ---------- Data (Google Sheet via Apps Script web app) ----------
   async function saveAnswer(a) {
@@ -414,7 +432,7 @@
     const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
     const gauss = () => Math.sqrt(-2 * Math.log(rnd() + 1e-9)) * Math.cos(2 * Math.PI * rnd());
     const cityWeights = [...window.POPULAR_CITIES, ...window.POPULAR_CITIES, ...window.CITIES.slice(0, -1)];
-    const jobs = window.OCCUPATIONS.slice(0, -1);
+    const jobs = window.OCCUPATIONS.filter(o => o !== 'Something else');
     const out = [];
     for (let i = 0; i < 220; i++) {
       const c = cityWeights[Math.floor(rnd() * cityWeights.length)];
@@ -500,9 +518,9 @@
     }
 
     const night = me.night ? 'night-shift ' : '';
-    const who = filter.city && filter.job ? `${night}${me.job}s in ${me.city}`
+    const who = filter.city && filter.job ? `${night}people in ${me.job} in ${me.city}`
       : filter.city ? `${night}people in ${me.city}`
-      : filter.job ? `${night}${me.job}s` : groupName();
+      : filter.job ? `${night}people in ${me.job}` : groupName();
     const shown = subset.filter(x => inHalf(x.minutes)).length;
     $('crowdSub').textContent = a === null
       ? `No answers from ${who} yet.`
@@ -545,7 +563,7 @@
     const groups = {}, start = startFor();
     peers().forEach(a => (groups[a[key]] ||= []).push(a.minutes));
     return Object.entries(groups)
-      .filter(([name, v]) => v.length >= 3 && !name.startsWith('Other'))
+      .filter(([name, v]) => v.length >= 3 && !name.startsWith('Other') && name !== 'Something else')
       .map(([name, v]) => ({ name, t: avg(v, start), n: v.length }))
       .sort((x, y) => latest ? norm(y.t, start) - norm(x.t, start) : norm(x.t, start) - norm(y.t, start));
   }
@@ -633,7 +651,7 @@
     const inGroup = peers().filter(a => a[key] === name);
     const focus = pick ? inGroup.filter(a => a[other] === pick) : inGroup;
     const title = pick
-      ? (key === 'city' ? `${pick}s in ${name}` : `${name}s in ${pick}`)
+      ? (key === 'city' ? `${pick} in ${name}` : `${name} in ${pick}`)
       : name;
     $('dtTitle').textContent = title;
     const card = $('dtCard');
@@ -656,7 +674,7 @@
       .filter(x => x.name.toLowerCase().includes(q))
       .sort((x, y) => norm(y.t, start) - norm(x.t, start));
     const noun = other === 'job' ? 'Jobs' : 'Cities';
-    $('dtListTitle').textContent = key === 'city' ? `${noun} in ${name}` : `${noun} with ${name}s`;
+    $('dtListTitle').textContent = key === 'city' ? `Areas of work in ${name}` : `Where people in ${name} work`;
     $('dtSearch').placeholder = `Search ${noun.toLowerCase()}…`;
     const list = $('dtList');
     list.innerHTML = '';
@@ -817,7 +835,7 @@
     $('statAll').textContent = pool.length ? fmt(avg(pool.map(a => a.minutes), start)) : '–';
     $('statCityLabel').textContent = `${me.city}${nightLabel} logs off around`;
     $('statCity').textContent = cityTimes.length ? fmt(avg(cityTimes, start)) : '–';
-    $('statJobLabel').textContent = `${me.job}${nightLabel} logs off around`;
+    $('statJobLabel').textContent = `People in ${me.job}${nightLabel} log off around`;
     $('statJob').textContent = jobTimes.length ? fmt(avg(jobTimes, start)) : '–';
 
     $('filters').innerHTML = (partial
@@ -891,7 +909,7 @@
 
   combo({
     input: $('exSearch'), list: $('exSearchList'),
-    options: [...window.CITIES, ...window.OCCUPATIONS].filter(o => !o.startsWith('Other')),
+    options: [...window.CITIES, ...window.OCCUPATIONS].filter(o => !o.startsWith('Other') && o !== 'Something else'),
     onPick: showLookup,
   });
   $('exploreBtn').addEventListener('click', () => showExplore(true));
@@ -913,8 +931,7 @@
     setCity(null);
     cityCombo.set('');
     $('jobInput').value = '';
-    job = null;
-    $('submitBtn').disabled = true;
+    setJob(null);
     $('explore').hidden = true;
     renderPicker();
     $('results').hidden = true;

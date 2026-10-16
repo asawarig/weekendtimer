@@ -377,6 +377,28 @@ button { font: inherit; color: inherit; }
 
 .error { color: var(--red); margin: 12px 0 0; }
 
+/* ---------- Job tiles ---------- */
+.job-search { --fill: #fffdf8; margin-bottom: 12px; }
+.job-search:focus-within { --fill: #fff4c2; }
+.job-search input { width: 100%; font: inherit; font-size: 20px; padding: 10px 16px; border: 0; background: transparent; outline: none; }
+.job-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+.job-tile {
+  position: relative; isolation: isolate; border: 0; background: none; cursor: pointer; text-align: left;
+  padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; color: var(--ink); --fill: #fffdf8;
+}
+.job-tile::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; background: var(--grain), var(--fill);
+  border: 3px solid var(--ink); border-radius: 14px 18px 12px 16px / 16px 12px 18px 14px; filter: url(#wobble);
+}
+.job-tile:nth-child(4n+1) { --fill: #ffe9b0; } .job-tile:nth-child(4n+2) { --fill: #cfe8fa; }
+.job-tile:nth-child(4n+3) { --fill: #e0d8ff; } .job-tile:nth-child(4n+4) { --fill: #ffd6cf; }
+.job-tile:hover::before { transform: rotate(-1deg) scale(1.02); }
+.job-tile[aria-pressed="true"] { --fill: var(--purple); color: #fff; }
+.job-tile:focus-visible { outline: 3px dashed var(--blue); outline-offset: 3px; }
+.jt-name { font-family: var(--hand); font-size: 21px; line-height: 1.1; }
+.jt-ex { font-size: 14px; line-height: 1.25; opacity: .8; }
+.jt-none { color: #555; grid-column: 1 / -1; margin: 4px 0; }
+
 /* ---------- Results ---------- */
 .you { --fill: var(--red); color: #fff; text-shadow: 0 1px 0 rgba(0,0,0,.35); padding: 22px 24px; margin: 4px 0 20px; text-align: center; }
 .you .label { font-size: 20px; }
@@ -445,7 +467,7 @@ button { font: inherit; color: inherit; }
     background: #fffdf8; border-radius: 16px;
   }
   /* While typing (keyboard open) the buttons go back into the page so they don't cover the field. */
-  .step:focus-within .actions { position: static; }
+  #step-city:focus-within .actions { position: static; }
   /* Smaller clock on short phones so the whole first step fits. */
   #pickClock { width: min(100%, 37vh); }
   #step-time .time-row { gap: 10px; margin-top: 4px; flex-wrap: nowrap; }
@@ -464,6 +486,11 @@ button { font: inherit; color: inherit; }
   .clock-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
   .clock-card.first { grid-row: span 1; }
   .ex-title { font-size: 23px; }
+  .job-tiles { grid-template-columns: 1fr 1fr; gap: 8px; }
+  #step-job .actions { flex-wrap: nowrap; gap: 8px; }
+  #step-job .actions .btn { font-size: 19px; padding: 8px 12px; white-space: nowrap; }
+  .jt-name { font-size: 18px; }
+  .jt-ex { font-size: 12.5px; }
   .ex-result { grid-template-columns: 1fr; }
   .ex-result .clock-card.first { grid-column: auto; }
   .clock-card .cc-time { font-size: 24px; }

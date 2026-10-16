@@ -17,20 +17,30 @@ window.CITIES = [
   'Other city in India',
 ];
 
-window.OCCUPATIONS = [
-  'Accountant', 'Actor', 'Architect', 'Artist', 'Banker', 'Beautician / Salon',
-  'Business Analyst', 'Call Centre / BPO', 'Chartered Accountant', 'Chef / Cook', 'Civil Engineer',
-  'Consultant', 'Construction Worker', 'Content Writer', 'Customer Support', 'Data Analyst',
-  'Data Scientist', 'Delivery Partner', 'Dentist', 'Designer', 'DevOps Engineer', 'Doctor',
-  'Driver', 'Electrician', 'Entrepreneur / Founder', 'Factory Worker', 'Finance',
-  'Fitness Trainer', 'Freelancer', 'Government Employee', 'HR', 'Insurance Advisor',
-  'IT Support', 'Journalist', 'Lawyer', 'Marketing', 'Mechanical Engineer', 'Musician', 'Nurse',
-  'Operations', 'Pharmacist', 'Photographer', 'Pilot / Cabin Crew', 'Plumber', 
-  'Product Manager', 'Professor', 'QA / Tester', 'Real Estate Agent', 'Researcher',
-  'Restaurant Staff', 'Retail Staff', 'Sales', 'Scientist', 'Shop Owner', 'Social Worker',
-  'Software Engineer', 'Supply Chain / Logistics', 'Teacher', 'Video Creator',
-  'Veterinarian', 'Other',
+// Areas of work for "What do you do?". Each has an example line shown on its tile, and keywords
+// so a search for a job title ("nurse", "CA") finds the right area.
+window.JOB_AREAS = [
+  { name: 'Tech', examples: 'developer, tester, IT support, data', keywords: 'software engineer developer programmer coder qa tester devops it support data analyst data scientist cloud cyber' },
+  { name: 'Design & Product', examples: 'designer, product manager', keywords: 'ux ui graphic designer product manager pm' },
+  { name: 'Finance', examples: 'accounts, CA, banking, insurance', keywords: 'accountant chartered accountant ca bank banker finance investment insurance audit tax' },
+  { name: 'Sales', examples: 'sales, business development, real estate', keywords: 'sales business development bd account manager real estate agent broker' },
+  { name: 'Marketing & Media', examples: 'marketing, content, journalism, video', keywords: 'marketing brand content writer copywriter journalist reporter social media video creator youtuber pr advertising' },
+  { name: 'Customer Support', examples: 'call centre, BPO, helpdesk', keywords: 'customer support service call centre call center bpo helpdesk' },
+  { name: 'HR & Admin', examples: 'HR, recruitment, office admin', keywords: 'hr human resources recruiter recruitment talent admin office assistant receptionist' },
+  { name: 'Operations & Logistics', examples: 'operations, supply chain, warehouse', keywords: 'operations ops supply chain logistics procurement warehouse inventory' },
+  { name: 'Consulting & Law', examples: 'consultant, lawyer, analyst', keywords: 'consultant consulting strategy business analyst lawyer advocate legal compliance' },
+  { name: 'Engineering & Construction', examples: 'civil, mechanical, architect, site work', keywords: 'civil mechanical electrical engineer architect construction site contractor' },
+  { name: 'Factory & Manufacturing', examples: 'plant, production, assembly', keywords: 'factory plant production assembly manufacturing machine operator worker' },
+  { name: 'Healthcare', examples: 'doctor, nurse, pharmacist, lab', keywords: 'doctor nurse dentist pharmacist lab technician hospital clinic vet veterinarian physiotherapist' },
+  { name: 'Teaching', examples: 'teacher, professor, tutor, trainer', keywords: 'teacher professor lecturer tutor trainer school college education coach' },
+  { name: 'Government', examples: 'government office, PSU', keywords: 'government govt psu public sector civil services clerk officer' },
+  { name: 'Shops & Restaurants', examples: 'retail, shop owner, chef, hotel', keywords: 'retail shop store owner cashier chef cook restaurant cafe hotel hospitality waiter' },
+  { name: 'On the road', examples: 'driver, delivery, pilot, cabin crew', keywords: 'driver delivery partner rider courier pilot cabin crew air hostess transport' },
+  { name: 'Hands-on work', examples: 'electrician, plumber, salon, fitness, tailor', keywords: 'electrician plumber mechanic carpenter tailor salon beautician barber fitness trainer gym technician' },
+  { name: 'Creative & Arts', examples: 'artist, musician, photographer', keywords: 'artist musician actor photographer painter dancer writer' },
+  { name: 'Something else', examples: '', keywords: 'other' },
 ];
+window.OCCUPATIONS = window.JOB_AREAS.map(a => a.name);
 
 // Research-based reference log-off times by city, drawn as markers on the crowd clock.
 // Traffic/metro peaks are when most people are heading home, so these are estimates (see README).
