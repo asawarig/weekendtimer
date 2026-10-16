@@ -312,12 +312,12 @@
   });
 
   // ---------- Searchable dropdown ----------
-  function combo({ input, list, options, onPick }) {
+  function combo({ input, list, options, onPick, match }) {
     let shown = [], active = -1;
     const open = v => { list.parentElement.hidden = !v; input.setAttribute('aria-expanded', String(v)); };
     function render() {
       const q = input.value.trim().toLowerCase();
-      shown = options.filter(o => o.toLowerCase().includes(q));
+      shown = options.filter(o => match ? match(o, q) : o.toLowerCase().includes(q));
       // Starts-with matches first.
       shown.sort((a, b) => (b.toLowerCase().startsWith(q)) - (a.toLowerCase().startsWith(q)));
       list.innerHTML = shown.length
@@ -376,29 +376,16 @@
     cityCombo.set(b.textContent);
   });
 
-  // Occupation: tappable tiles for each area of work; the search box filters them by name,
-  // example or job title (e.g. "nurse" shows Healthcare).
-  function renderJobTiles() {
-    const q = $('jobInput').value.trim().toLowerCase();
-    // Match the start of any word, so "ca" finds "CA" but not "call centre" or "cashier".
-    const words = a => `${a.name} ${a.examples} ${a.keywords}`.toLowerCase().split(/[^a-z0-9]+/);
-    const hits = window.JOB_AREAS.filter(a => !q || (q.length <= 2
-      ? words(a).includes(q)
-      : words(a).some(w => w.startsWith(q)) || `${a.name} ${a.examples} ${a.keywords}`.toLowerCase().includes(q)));
-    $('jobTiles').innerHTML = hits.length ? hits.map(a => `
-      <button type="button" class="job-tile" aria-pressed="${a.name === job}" data-job="${escapeHtml(a.name)}">
-        <span class="jt-name">${escapeHtml(a.name)}</span>
-        ${a.examples ? `<span class="jt-ex">${escapeHtml(a.examples)}</span>` : ''}
-      </button>`).join('')
-      : '<p class="jt-none">No match. Try another word, or pick "Something else".</p>';
-  }
-  function setJob(j) { job = j; $('submitBtn').disabled = !j; renderJobTiles(); }
-  $('jobInput').addEventListener('input', renderJobTiles);
-  $('jobTiles').addEventListener('click', e => {
-    const b = e.target.closest('.job-tile');
-    if (b) setJob(b.dataset.job);
-  });
-  renderJobTiles();
+  // Occupation: searchable dropdown of areas of work. Typing a job title also finds its area
+  // (e.g. "nurse" -> Healthcare), matching the start of words so "ca" finds Finance only.
+  const AREA = Object.fromEntries(window.JOB_AREAS.map(a => [a.name, `${a.name} ${a.examples} ${a.keywords}`.toLowerCase()]));
+  const jobMatch = (o, q) => {
+    if (!q) return true;
+    const text = AREA[o] || o.toLowerCase(), words = text.split(/[^a-z0-9]+/);
+    return q.length <= 2 ? words.includes(q) || o.toLowerCase().startsWith(q) : words.some(w => w.startsWith(q)) || text.includes(q);
+  };
+  function setJob(j) { job = j; $('submitBtn').disabled = !j; }
+  const jobCombo = combo({ input: $('jobInput'), list: $('jobList'), options: window.OCCUPATIONS, onPick: setJob, match: jobMatch });
 
   // ---------- Data (Google Sheet via Apps Script web app) ----------
   async function saveAnswer(a) {
@@ -940,7 +927,7 @@
     nightShift = false;
     setCity(null);
     cityCombo.set('');
-    $('jobInput').value = '';
+    jobCombo.set('');
     setJob(null);
     $('explore').hidden = true;
     renderPicker();
