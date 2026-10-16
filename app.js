@@ -513,31 +513,31 @@
     drawCityRefs(svg);
   }
 
-  // India reference: the average of the big-city research estimates (each city counted once),
-  // marked by a dashed line running outward from the rim with a label at its end.
+  // India reference: research puts the big-city rush home at 6–7 PM (6:20 PM on average).
+  // Drawn as a soft green crayon band on the rim from 6 to 7 PM, with a bold tag inside the face.
   function drawCityRefs(svg) {
-    if (me && me.night) return;
+    if ((me && me.night) || half !== 'pm') return;
     const all = window.CITY_REFERENCE.flatMap(r => r.cities.map(() => r.minutes));
-    const t = Math.round(all.reduce((a, b) => a + b, 0) / all.length);
-    if ((t >= 720) !== (half === 'pm')) return;
-    const deg = ((t % 720) / 720) * 360, ang = deg * Math.PI / 180;
+    const avgT = Math.round(all.reduce((a, b) => a + b, 0) / all.length);
+    const from = Math.min(...all), to = Math.max(...all);
+    const A = m => ((m % 720) / 720) * Math.PI * 2;
+    const P = (a, r) => `${(200 + Math.sin(a) * r).toFixed(1)} ${(200 - Math.cos(a) * r).toFixed(1)}`;
     const g = el('g', { class: 'india-ref' }, svg);
-    const at = r => [200 + Math.sin(ang) * r, 200 - Math.cos(ang) * r];
-    // A line running outward from the rim, past the crowd's dots, with the label at its end.
-    const [x1, y1] = at(178), [x2, y2] = at(262);
-    const line = `M${x1.toFixed(1)} ${y1.toFixed(1)} L${x2.toFixed(1)} ${y2.toFixed(1)}`;
-    el('path', { d: line, stroke: '#161616', 'stroke-width': 7, 'stroke-linecap': 'round' }, g);
-    el('path', { d: line, stroke: '#2fa35a', 'stroke-width': 3.5, 'stroke-linecap': 'round', 'stroke-dasharray': '7 5' }, g);
-    el('circle', { cx: x2, cy: y2, r: 6, fill: '#2fa35a', stroke: '#161616', 'stroke-width': 2.5 }, g);
-    // Label beside the end of the line, on the side away from the 'you' label (which sits clockwise-back).
-    const dir = -Math.sign(Math.cos(ang)) || 1; // 'you' label goes along +cos(ang) in x, so go the other way
-    const lx = x2 + dir * 12, ly = y2 + 6;
-    const text = el('text', { x: lx.toFixed(1), y: ly.toFixed(1), 'text-anchor': dir > 0 ? 'start' : 'end', 'font-size': 19, fill: '#1d6b3a',
-      stroke: '#fffdf8', 'stroke-width': 4, 'paint-order': 'stroke' }, g);
-    text.textContent = `India avg ${fmt(t)}`;
+    const R = 161, a0 = A(from), a1 = A(to);
+    el('path', { d: `M${P(a0, R)} A${R} ${R} 0 0 1 ${P(a1, R)}`, fill: 'none', stroke: '#2fa35a',
+      'stroke-width': 24, 'stroke-opacity': .6, 'stroke-linecap': 'round', filter: 'url(#crayon)' }, g);
+    // Tag inside the face, between the centre and the 6, clear of the numbers.
+    const tag = el('g', { filter: 'url(#crayon)' }, g);
+    el('rect', { x: 136, y: 226, width: 128, height: 58, rx: 14, fill: '#fffdf8', stroke: '#2fa35a', 'stroke-width': 4 }, tag);
+    const t1 = el('text', { x: 200, y: 249, 'text-anchor': 'middle', 'font-size': 15, fill: '#1d6b3a' }, g);
+    t1.textContent = "India's rush home";
+    const t2 = el('text', { x: 200, y: 275, 'text-anchor': 'middle', 'font-size': 25, fill: '#161616' }, g);
+    const hr = m => `${Math.floor(m / 60) % 12 || 12}${m % 60 ? ':' + String(m % 60).padStart(2, '0') : ''}`;
+    t2.textContent = `${hr(from)} to ${hr(to)} PM`;
     const tip = el('title', {}, g);
-    tip.textContent = `Average of research estimates for ${all.length} big cities (traffic & metro data): ${fmt(t)}`;
+    tip.textContent = `Research estimates for ${all.length} big cities (traffic & metro peaks): ${fmt(from)}–${fmt(to)}, average ${fmt(avgT)}`;
   }
+
 
 
   // Groups (cities or jobs) with at least 3 answers, ranked by their typical log-off time.
