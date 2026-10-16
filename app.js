@@ -511,7 +511,7 @@
     const shown = subset.filter(x => inHalf(x.minutes)).length;
     $('crowdSub').textContent = a === null
       ? `No answers from ${who} yet.`
-      : `Each dot is someone logging off. On average, ${who === 'everyone' ? 'people' : who} log off at ${fmt(a)}${inHalf(a) ? ' (the red hand)' : ''}.`;
+      : `On average, ${who === 'everyone' ? 'people' : who} log off at ${fmt(a)}${inHalf(a) ? ' (the red hand)' : ''}.`;
     document.querySelectorAll('#filters .pill').forEach(b => b.setAttribute('aria-pressed', String(
       b.dataset.f === 'all' ? !filter.city && !filter.job : filter[b.dataset.f])));
     $('halfSwitch').setAttribute('aria-checked', String(half === 'pm'));
