@@ -556,6 +556,28 @@
     const R = 161, a0 = A(ref.t - 7), a1 = A(ref.t + 7);
     el('path', { d: `M${P(a0, R)} A${R} ${R} 0 0 1 ${P(a1, R)}`, fill: 'none', stroke: '#2fa35a',
       'stroke-width': 24, 'stroke-opacity': .75, 'stroke-linecap': 'round', filter: 'url(#crayon)' }, g);
+    legend.hidden = true;
+
+    // A dotted path from the band to a little crayon house: "<city> heads home, 6:40 PM".
+    // The house goes on the side away from the visitor's "you" star.
+    const ang = A(ref.t), [rx, ry] = [200 + Math.sin(ang) * 176, 200 - Math.cos(ang) * 176];
+    const youX = me ? 200 + Math.sin(A(me.minutes)) * 246 : 200;
+    const side = youX > rx ? -1 : 1;
+    const hx = Math.max(-25, Math.min(425, 200 + Math.sin(ang) * 300 + side * 60));
+    const hy = Math.min(495, 200 - Math.cos(ang) * 300 + 20);
+    const C = el('g', { class: 'home-mark', filter: 'url(#crayon)' }, g);
+    el('path', { d: `M${rx.toFixed(1)} ${ry.toFixed(1)} Q${(rx + side * 10).toFixed(1)} ${((ry + hy) / 2 + 30).toFixed(1)} ${(hx - side * 30).toFixed(1)} ${(hy + 8).toFixed(1)}`,
+      stroke: '#2fa35a', 'stroke-width': 4, 'stroke-dasharray': '2 8', 'stroke-linecap': 'round', fill: 'none' }, C);
+    el('path', { d: `M${hx - 30} ${hy} L${hx} ${hy - 30} L${hx + 30} ${hy} Z`, fill: '#e2352b', stroke: '#161616', 'stroke-width': 4, 'stroke-linejoin': 'round' }, C);
+    el('rect', { x: hx - 23, y: hy, width: 46, height: 34, fill: '#f5b82e', stroke: '#161616', 'stroke-width': 4 }, C);
+    el('rect', { x: hx - 7, y: hy + 13, width: 14, height: 21, fill: '#a2482a', stroke: '#161616', 'stroke-width': 3 }, C);
+    const name = ref.label.replace(/'s$/, '');
+    const t1 = el('text', { x: hx, y: hy + 60, 'text-anchor': 'middle', 'font-size': 19, fill: '#1d6b3a', stroke: '#fffdf8', 'stroke-width': 4, 'paint-order': 'stroke' }, g);
+    t1.textContent = `${name} heads home`;
+    const t2 = el('text', { x: hx, y: hy + 88, 'text-anchor': 'middle', 'font-size': 26, fill: '#161616', stroke: '#fffdf8', 'stroke-width': 4, 'paint-order': 'stroke' }, g);
+    t2.textContent = fmt(ref.t);
+    const tip = el('title', {}, g);
+    tip.textContent = `Average log-off time estimated from ${window.PLFS_SOURCE.name} weekly hours (9 AM start, 5-day week)`;
   }
 
 
