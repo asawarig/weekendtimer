@@ -512,3 +512,10 @@ button { font: inherit; color: inherit; }
 .ref-legend.newcomer { justify-content: center; text-align: center; color: var(--red); font-family: var(--hand); font-size: 21px; margin: 12px 0 0; }
 .ref-legend.newcomer .rl-swatch { display: none; }
 .rl-swatch { width: 26px; height: 12px; border-radius: 6px; background: #2fa35a; opacity: .8; border: 2px solid #161616; flex: none; }
+
+/* Crowd clock reference: sunset, then the line, then dots popping in one by one. */
+.crowd-dots circle.pop { opacity: 0; transform-box: fill-box; transform-origin: center; animation: dotPop .35s ease-out forwards; }
+@keyframes dotPop { 0% { opacity: 0; transform: scale(0); } 70% { opacity: var(--o, 1); transform: scale(1.35); } 100% { opacity: var(--o, 1); transform: scale(1); } }
+.city-ref.play-sun text { opacity: 0; animation: refIn .6s ease-out 3.5s forwards; }
+.city-ref.play text { opacity: 0; animation: refIn .6s ease-out .1s forwards; }
+@keyframes refIn { to { opacity: 1; } }

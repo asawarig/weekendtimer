@@ -445,7 +445,7 @@
   function renderCrowdClock() {
     const svg = $('crowdClock');
     drawFace(svg, { fill: '#cfe8fa' });
-    const dots = el('g', { filter: 'url(#crayon)' }, svg);
+    const dots = el('g', { class: 'crowd-dots', filter: 'url(#crayon)' }, svg);
     const match = a => (!filter.city || a.city === me.city) && (!filter.job || a.job === me.job);
     const inHalf = t => (t >= 720) === (half === 'pm');
     const pool = peers();
@@ -518,71 +518,101 @@
     drawCityRefs(svg);
   }
 
-  // Reference average log-off time (PLFS-based) for the visitor's city, or India before a city is
-  // known / for cities without data. A green crayon band on the rim, explained by a legend above.
+  // Reference log-off time for the visitor's city: secondary research (PLFS-based) until the city
+  // has CROWD_MIN real answers, then the average of those answers. Shown as a little sunset under
+  // the clock with a line of text; cities without research data get a "you're the first" note.
+  const CROWD_MIN = 10;
+  let sunsetPlayed = '';
   function refFor(c) {
     const key = c && (window.CITY_LOGOFF[c] ? c : window.CITY_LOGOFF_ALIAS[c]);
-    return key ? { label: `${c}'s`, t: window.CITY_LOGOFF[key] } : { label: "India's", t: window.INDIA_LOGOFF, india: true };
+    return key ? { name: c, t: window.CITY_LOGOFF[key] } : { name: 'India', t: window.INDIA_LOGOFF, india: true };
   }
-  // For a city with no research data: how many other real answers are there from it?
+  // Real day-shift answers behind the reference: the visitor's city, or everyone for India.
+  function refCrowd() {
+    if (!LIVE || !me) return [];
+    const day = crowd.filter(a => !a.night);
+    return refFor(me.city).india && !cityHasNoData() ? day : day.filter(a => a.city === me.city);
+  }
+  const cityHasNoData = () => !!(me && me.city && !me.city.startsWith('Other') && refFor(me.city).india);
+  // For a city with no research data and too few answers: how many other answers are there from it?
   function cityNewcomer() {
-    if (!me || !me.city || me.night || me.city.startsWith('Other')) return null;
-    if (!refFor(me.city).india) return null;
-    const others = LIVE ? crowd.filter(a => a.city === me.city).length - 1 : 0;
-    return others < 4 ? Math.max(0, others) : null;
+    if (!me || me.night || !cityHasNoData()) return null;
+    const n = refCrowd().length;
+    return n < CROWD_MIN ? Math.max(0, n - 1) : null;
   }
   function drawCityRefs(svg) {
     const legend = $('refLegend');
     const fresh = cityNewcomer();
     legend.classList.toggle('newcomer', fresh !== null);
+    legend.hidden = fresh === null;
     if (fresh !== null) {
       // No data for this city yet: celebrate them instead of showing an average.
-      legend.hidden = false;
       legend.querySelector('.rl-text').textContent = fresh === 0
         ? `You're the first from ${me.city}! You just put ${me.city} on the clock.`
-        : `You're one of the first ${fresh + 1} from ${me.city}! ${me.city}'s average unlocks at 5.`;
-      legend.title = '';
+        : `You're one of the first ${fresh + 1} from ${me.city}! ${me.city}'s average unlocks at ${CROWD_MIN}.`;
       return;
     }
-    const ref = refFor(me && me.city);
-    const show = !(me && me.night) && (ref.t >= 720) === (half === 'pm');
-    legend.hidden = !show;
-    if (!show) return;
-    legend.querySelector('.rl-text').textContent = `${ref.label} average log-off time (${fmt(ref.t)})`;
-    legend.title = `Estimated from average weekly hours (${window.PLFS_SOURCE.name}), 9 AM start, 5-day week`;
-    const A = m => ((m % 720) / 720) * Math.PI * 2;
-    const P = (a, r) => `${(200 + Math.sin(a) * r).toFixed(1)} ${(200 - Math.cos(a) * r).toFixed(1)}`;
-    const g = el('g', { class: 'india-ref' }, svg);
-    const R = 161, a0 = A(ref.t - 7), a1 = A(ref.t + 7);
-    el('path', { d: `M${P(a0, R)} A${R} ${R} 0 0 1 ${P(a1, R)}`, fill: 'none', stroke: '#2fa35a',
-      'stroke-width': 24, 'stroke-opacity': .75, 'stroke-linecap': 'round', filter: 'url(#crayon)' }, g);
-    legend.hidden = true;
+    if (me && me.night) return;
+    const ref = refFor(me && me.city), real = refCrowd();
+    const all = ref.india && !cityHasNoData(), name = all ? 'India' : me.city;
+    const fromCrowd = real.length >= CROWD_MIN;
+    const t = fromCrowd ? avg(real.map(a => a.minutes), DAY_START) : ref.t;
+    if ((t >= 720) !== (half === 'pm')) return;
+    const where = all ? 'across India' : `from ${name}`;
+    const [top, line] = fromCrowd
+      ? [`According to ${real.length} people ${where},`, `the ${all ? 'country' : 'city'} logs off at ${fmt(t)}`]
+      : ['According to secondary research,', `${name} calls it a day at ${fmt(t)}`];
 
-    // A dotted path from the band to a little crayon house: "<city> heads home, 6:40 PM".
-    // The house goes on the side away from the visitor's "you" star.
-    const ang = A(ref.t), [rx, ry] = [200 + Math.sin(ang) * 176, 200 - Math.cos(ang) * 176];
-    const youX = me ? 200 + Math.sin(A(me.minutes)) * 246 : 200;
-    const side = youX > rx ? -1 : 1;
-    const hx = Math.max(-25, Math.min(425, 200 + Math.sin(ang) * 300 + side * 60));
-    const hy = Math.min(495, 200 - Math.cos(ang) * 300 + 20);
-    const C = el('g', { class: 'home-mark', filter: 'url(#crayon)' }, g);
-    el('path', { d: `M${rx.toFixed(1)} ${ry.toFixed(1)} Q${(rx + side * 10).toFixed(1)} ${((ry + hy) / 2 + 30).toFixed(1)} ${(hx - side * 30).toFixed(1)} ${(hy + 8).toFixed(1)}`,
-      stroke: '#2fa35a', 'stroke-width': 4, 'stroke-dasharray': '2 8', 'stroke-linecap': 'round', fill: 'none' }, C);
-    el('path', { d: `M${hx - 30} ${hy} L${hx} ${hy - 30} L${hx + 30} ${hy} Z`, fill: '#e2352b', stroke: '#161616', 'stroke-width': 4, 'stroke-linejoin': 'round' }, C);
-    el('rect', { x: hx - 23, y: hy, width: 46, height: 34, fill: '#f5b82e', stroke: '#161616', 'stroke-width': 4 }, C);
-    el('rect', { x: hx - 7, y: hy + 13, width: 14, height: 21, fill: '#a2482a', stroke: '#161616', 'stroke-width': 3 }, C);
-    const name = ref.label.replace(/'s$/, '');
-    const t1 = el('text', { x: hx, y: hy + 60, 'text-anchor': 'middle', 'font-size': 19, fill: '#1d6b3a', stroke: '#fffdf8', 'stroke-width': 4, 'paint-order': 'stroke' }, g);
-    t1.textContent = `${name} heads home`;
-    const t2 = el('text', { x: hx, y: hy + 88, 'text-anchor': 'middle', 'font-size': 26, fill: '#161616', stroke: '#fffdf8', 'stroke-width': 4, 'paint-order': 'stroke' }, g);
-    t2.textContent = fmt(ref.t);
-    const tip = el('title', {}, g);
-    tip.textContent = `Average log-off time estimated from ${window.PLFS_SOURCE.name} weekly hours (9 AM start, 5-day week)`;
+    // The sunset plays once per city, the first time its crowd clock is shown, and only before the crowd
+    // has enough answers. After it sets, the line appears and the dots pop in one by one.
+    const key = `${name}|${fromCrowd}`;
+    const animate = sunsetPlayed !== key && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    sunsetPlayed = key;
+    const sun = animate && !fromCrowd;
+    const ang = ((t % 720) / 720) * Math.PI * 2;
+    const youX = me ? 200 + Math.sin(((me.minutes % 720) / 720) * Math.PI * 2) * 246 : 200;
+    const bx = 200 + Math.sin(ang) * 236, side = youX > bx ? -1 : 1;
+    const sx = Math.max(60, Math.min(340, bx + side * 70));
+    const sy = Math.max(200 - Math.cos(ang) * 236 + 10, 478);
+    const g = el('g', { class: 'city-ref' + (animate ? (sun ? ' play-sun' : ' play') : '') }, svg);
+    if (sun) {
+      const C = el('g', { filter: 'url(#crayon)' }, g);
+      const cid = 'sunclip' + Math.random().toString(36).slice(2, 7);
+      el('rect', { x: sx - 70, y: sy - 90, width: 140, height: 90 }, el('clipPath', { id: cid }, el('defs', {}, g)));
+      const s = el('g', {}, el('g', { 'clip-path': `url(#${cid})` }, C));
+      el('circle', { cx: sx, cy: sy - 6, r: 24, fill: '#f5b82e', stroke: '#161616', 'stroke-width': 3.5 }, s);
+      for (let k = 0; k < 8; k++) {
+        const a = Math.PI * 2 * k / 8, c = Math.cos(a), n = Math.sin(a);
+        el('path', { d: `M${sx + c * 31} ${sy - 6 + n * 31} L${sx + c * 41} ${sy - 6 + n * 41}`, stroke: '#f5b82e', 'stroke-width': 4, 'stroke-linecap': 'round' }, s);
+      }
+      const rise = el('animateTransform', { attributeName: 'transform', type: 'translate', values: '0 46; 0 -26; 0 -26; 0 46',
+        keyTimes: '0; 0.33; 0.5; 1', dur: '3.2s', fill: 'freeze', calcMode: 'spline', keySplines: '.2 .6 .4 1; 0 0 1 1; .5 0 .7 1' }, s);
+      // The horizon and its reflection fade away once the sun has gone down.
+      const hz = el('g', {}, C);
+      el('path', { d: `M${sx - 44} ${sy} H${sx + 44}`, stroke: '#161616', 'stroke-width': 4, 'stroke-linecap': 'round' }, hz);
+      el('path', { d: `M${sx - 28} ${sy + 9} H${sx + 28} M${sx - 15} ${sy + 17} H${sx + 15}`, stroke: '#e2352b', 'stroke-width': 3, 'stroke-linecap': 'round' }, hz);
+      const fade = el('animate', { attributeName: 'opacity', values: '1; 1; 0', keyTimes: '0; 0.88; 1', dur: '3.5s', fill: 'freeze' }, hz);
+      try { rise.beginElement(); fade.beginElement(); } catch (e) {}
+    }
+    const txt = (y, str, size, fill) => {
+      const e = el('text', { x: sx, y, 'text-anchor': 'middle', 'font-size': size, fill,
+        stroke: '#fffdf8', 'stroke-width': 4, 'paint-order': 'stroke' }, g);
+      e.textContent = str;
+    };
+    txt(sy - 4, top, 17, '#a2482a');
+    txt(sy + 22, line, 23, '#161616');
+    el('title', {}, g).textContent = fromCrowd
+      ? `Average of ${real.length} answers ${where}`
+      : `Estimated from average weekly hours (${window.PLFS_SOURCE.name}), 9 AM start, 5-day week`;
+    if (animate) {
+      const start = sun ? 3.8 : 0.3;
+      svg.querySelectorAll('.crowd-dots circle').forEach(c => {
+        c.classList.add('pop');
+        c.style.setProperty('--o', c.getAttribute('opacity'));
+        c.style.animationDelay = (start + Math.random() * 2.6).toFixed(2) + 's';
+      });
+    }
   }
-
-
-
-
 
   // Groups (cities or jobs) with at least 3 answers, ranked by their typical log-off time.
   function ranking(key, latest) {
