@@ -996,6 +996,8 @@
       try { localStorage.setItem(STORE_KEY, JSON.stringify(me)); } catch {}
       crowd = await loadCrowd();
       if (!LIVE) crowd.push({ minutes: me.minutes, city: me.city, job: me.job, night: !!me.night });
+      // Start on their own city and job; they can tap "Everyone" to widen it.
+      filter = { city: true, job: true };
       hideLoading();
       renderResults();
     } catch (err) {
@@ -1059,6 +1061,7 @@
   try { saved = JSON.parse(localStorage.getItem(STORE_KEY)); } catch {}
   if (saved && saved.date === today() && CITY_SET.has(saved.city) && JOB_SET.has(saved.job)) {
     me = saved;
+    filter = { city: true, job: true };
     showLoading(['Counting the crowd…', 'Almost there…']);
     loadCrowd().then(c => {
       hideLoading();
