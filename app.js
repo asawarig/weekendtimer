@@ -602,7 +602,7 @@
       : ['According to secondary research,', `${name} calls it a day at ${fmt(t)}`];
 
     // The sunset plays once per city, the first time its crowd clock is shown, and only before the crowd
-    // has enough answers. After it sets, the line appears and the dots pop in one by one.
+    // has enough answers. The dots pop in one by one while it moves; the line appears once it has set.
     const key = `${name}|${fromCrowd}`;
     const animate = sunsetPlayed !== key && !matchMedia('(prefers-reduced-motion: reduce)').matches;
     sunsetPlayed = key;
@@ -640,11 +640,11 @@
       ? `Average of ${real.length} answers ${where}`
       : `Estimated from average weekly hours (${window.PLFS_SOURCE.name}), 9 AM start, 5-day week`;
     if (animate) {
-      const start = sun ? 3.8 : 0.3;
+      const start = sun ? 0.6 : 0.3;
       svg.querySelectorAll('.crowd-dots circle').forEach(c => {
         c.classList.add('pop');
         c.style.setProperty('--o', c.getAttribute('opacity'));
-        c.style.animationDelay = (start + Math.random() * 2.6).toFixed(2) + 's';
+        c.style.animationDelay = (start + Math.random() * (sun ? 3.2 : 2.6)).toFixed(2) + 's';
       });
     }
   }
