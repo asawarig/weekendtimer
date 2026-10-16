@@ -19,7 +19,7 @@
     if (apple || ios) document.documentElement.classList.add('no-crayon-filter');
   })();
 </script>
-<link rel="stylesheet" href="style.css?v=91">
+<link rel="stylesheet" href="style.css?v=92">
 </head>
 <body>
 
@@ -89,7 +89,7 @@
     <div class="nav-right">
       <a class="nav-plum" href="https://www.plumhq.com" target="_blank" rel="noopener">
         <span class="by">by</span>
-        <img src="assets/plum-logo.png?v=91" alt="Plum" width="80" height="25">
+        <img src="assets/plum-logo.png?v=92" alt="Plum" width="80" height="25">
       </a>
     </div>
   </div>
@@ -237,10 +237,15 @@
 <div class="loading" id="loading" hidden role="status" aria-live="polite">
   <div class="loading-card crayon-box">
     <svg class="loading-clock" viewBox="0 0 100 100" aria-hidden="true">
-      <circle cx="50" cy="50" r="40" fill="#e4f2fc" stroke="#161616" stroke-width="6"/>
-      <line class="lc-min" x1="50" y1="50" x2="50" y2="20" stroke="#3a9bd9" stroke-width="6" stroke-linecap="round"/>
-      <line class="lc-hour" x1="50" y1="50" x2="68" y2="50" stroke="#e2352b" stroke-width="7" stroke-linecap="round"/>
-      <circle cx="50" cy="50" r="6" fill="#161616"/>
+      <g filter="url(#crayon-icon)">
+        <circle cx="50" cy="50" r="44" fill="#d9a83a" stroke="#161616" stroke-width="4"/>
+        <circle cx="50" cy="50" r="37" fill="#e9dcc0" stroke="#161616" stroke-width="3"/>
+        <line x1="50.0" y1="20.0" x2="50.0" y2="15.0" stroke="#161616" stroke-width="4"/><line x1="65.0" y1="24.0" x2="67.5" y2="19.7" stroke="#161616" stroke-width="2"/><line x1="76.0" y1="35.0" x2="80.3" y2="32.5" stroke="#161616" stroke-width="2"/><line x1="80.0" y1="50.0" x2="85.0" y2="50.0" stroke="#161616" stroke-width="4"/><line x1="76.0" y1="65.0" x2="80.3" y2="67.5" stroke="#161616" stroke-width="2"/><line x1="65.0" y1="76.0" x2="67.5" y2="80.3" stroke="#161616" stroke-width="2"/><line x1="50.0" y1="80.0" x2="50.0" y2="85.0" stroke="#161616" stroke-width="4"/><line x1="35.0" y1="76.0" x2="32.5" y2="80.3" stroke="#161616" stroke-width="2"/><line x1="24.0" y1="65.0" x2="19.7" y2="67.5" stroke="#161616" stroke-width="2"/><line x1="20.0" y1="50.0" x2="15.0" y2="50.0" stroke="#161616" stroke-width="4"/><line x1="24.0" y1="35.0" x2="19.7" y2="32.5" stroke="#161616" stroke-width="2"/><line x1="35.0" y1="24.0" x2="32.5" y2="19.7" stroke="#161616" stroke-width="2"/>
+        <rect x="92" y="42" width="10" height="16" rx="3" fill="#d9a83a" stroke="#161616" stroke-width="3"/>
+        <line class="lc-min" x1="50" y1="50" x2="50" y2="20" stroke="#3a9bd9" stroke-width="5" stroke-linecap="round"/>
+        <line class="lc-hour" x1="50" y1="50" x2="66" y2="50" stroke="#e2352b" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="50" cy="50" r="5" fill="#161616"/>
+      </g>
     </svg>
     <p class="loading-text" id="loadingText">Counting the crowd…</p>
   </div>
@@ -277,8 +282,8 @@
 </div>
 
 
-<script src="config.js?v=91"></script>
-<script src="data.js?v=91"></script>
-<script src="app.js?v=91"></script>
+<script src="config.js?v=92"></script>
+<script src="data.js?v=92"></script>
+<script src="app.js?v=92"></script>
 </body>
 </html>
