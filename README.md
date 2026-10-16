@@ -34,7 +34,9 @@ Until this is done the site runs in **preview mode** with made-up sample answers
    (Google may warn the app isn't verified: click **Advanced → Go to … (unsafe)**. It's your own script.)
 5. Copy the **Web app URL** (ends in `/exec`), put it in `config.js` as `sheetUrl`, and push.
 
-Answers appear as rows in an **Answers** tab (time, city, occupation, night shift).
+Answers appear as rows in an **Answers** tab (time, city, occupation, night shift, answer ID).
+The time is saved as soon as someone finishes step 1; if they go on to add city and job, the same row is filled in.
+Time-only answers count towards "everyone"; city and job averages use complete answers only.
 Night-shift workers are compared only with other night-shift workers. Regular times are compared on a day that starts at 10 AM, so 2 AM counts as very late, not early.
 If you set up the sheet before the night-shift column existed, add a **Night shift** header in column F. Only answers whose city and job are in `data.js` are shown on the site.
 If you change the script later, use **Deploy → Manage deployments → Edit → New version** so the URL stays the same.

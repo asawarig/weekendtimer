@@ -388,13 +388,17 @@
   const jobCombo = combo({ input: $('jobInput'), list: $('jobList'), options: window.OCCUPATIONS, onPick: setJob, match: jobMatch });
 
   // ---------- Data (Google Sheet via Apps Script web app) ----------
+  // Each visit's answer has an id, so the time saved after step 1 and the city and job added
+  // later land on the same row.
+  let answerId = null;
+  const newAnswerId = () => (answerId = Math.random().toString(36).slice(2, 12) + Date.now().toString(36));
   async function saveAnswer(a) {
     if (!LIVE) return;
     // text/plain keeps this a "simple" request, which Apps Script accepts from any site.
     const res = await fetch(cfg.sheetUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ minutes: a.minutes, city: a.city, job: a.job, night: a.night }),
+      body: JSON.stringify({ id: answerId || newAnswerId(), minutes: a.minutes, city: a.city || '', job: a.job || '', night: !!a.night }),
     });
     const out = await res.json();
     if (!out.ok) throw new Error(out.error || 'save failed');
@@ -409,8 +413,10 @@
       .map(([minutes, city, job, night]) => ({
         minutes: Number(minutes), city, job, night: night === true || String(night).toUpperCase() === 'TRUE',
       }))
+      .map(r => ({ ...r, city: r.city || null, job: r.job || null }))
+      // Time-only answers (no city or job yet) count towards everyone.
       .filter(r => Number.isInteger(r.minutes) && r.minutes >= 0 && r.minutes < 1440
-        && CITY_SET.has(r.city) && JOB_SET.has(r.job));
+        && (!r.city || CITY_SET.has(r.city)) && (!r.job || JOB_SET.has(r.job)));
   }
 
   // Made-up answers so the design can be previewed before the database is connected.
@@ -632,7 +638,7 @@
   // Groups (cities or jobs) with at least 3 answers, ranked by their typical log-off time.
   function ranking(key, latest) {
     const groups = {}, start = startFor();
-    peers().forEach(a => (groups[a[key]] ||= []).push(a.minutes));
+    peers().forEach(a => { if (a[key]) (groups[a[key]] ||= []).push(a.minutes); });
     return Object.entries(groups)
       .filter(([name, v]) => v.length >= 3 && !name.startsWith('Other') && name !== 'Something else')
       .map(([name, v]) => ({ name, t: avg(v, start), n: v.length }))
@@ -941,7 +947,11 @@
   async function showTeaser() {
     me = { minutes, city: null, job: null, night: nightShift, partial: true };
     filter = { city: false, job: false };
+    // Save the time straight away, so people who stop here still count.
+    newAnswerId();
+    const saving = saveAnswer(me).catch(err => console.error(err));
     try {
+      await saving;
       crowd = await loadCrowd();
       if (!LIVE) crowd.push({ minutes, city: null, job: null, night: nightShift });
     } catch (err) {
@@ -996,7 +1006,7 @@
   // Start over: forget today's answer and go back to step 1.
   $('resetBtn').addEventListener('click', () => {
     try { localStorage.removeItem(STORE_KEY); } catch {}
-    me = null; crowd = []; filter = { city: false, job: false };
+    me = null; crowd = []; filter = { city: false, job: false }; answerId = null;
     minutes = 18 * 60;
     nightShift = false;
     setCity(null);
