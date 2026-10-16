@@ -803,6 +803,8 @@
     $('results').classList.toggle('partial', partial);
     $('curious').hidden = !partial;
     $('exploreBtn').hidden = partial;
+    // Before city and job are known there's nothing to filter by, so no filter buttons.
+    $('filters').hidden = partial;
     $('statCity').parentElement.hidden = partial;
     // The hourglass already shows the overall average, so its separate box goes.
     $('statAll').parentElement.hidden = $('youCard').classList.contains('has-glass');

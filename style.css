@@ -180,7 +180,7 @@ body.night .ex-search.combo label { color: #fffdf8; }
   .curious p { font-size: 19px; }
   .curious .btn { font-size: 18px; padding: 7px 12px; }
 }
-.stat[hidden], .btn[hidden], .stats[hidden] { display: none; }
+.stat[hidden], .btn[hidden], .stats[hidden], .filters[hidden] { display: none; }
 .results:not(.partial) .stats { grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); }
 .results.partial .stats { grid-template-columns: 1fr; }
 
