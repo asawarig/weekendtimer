@@ -18,17 +18,17 @@ window.CITIES = [
 ];
 
 window.OCCUPATIONS = [
-  'Accountant', 'Actor', 'Architect', 'Armed Forces', 'Artist', 'Banker', 'Beautician / Salon',
+  'Accountant', 'Actor', 'Architect', 'Artist', 'Banker', 'Beautician / Salon',
   'Business Analyst', 'Call Centre / BPO', 'Chartered Accountant', 'Chef / Cook', 'Civil Engineer',
   'Consultant', 'Construction Worker', 'Content Writer', 'Customer Support', 'Data Analyst',
   'Data Scientist', 'Delivery Partner', 'Dentist', 'Designer', 'DevOps Engineer', 'Doctor',
-  'Driver', 'Electrician', 'Entrepreneur / Founder', 'Factory Worker', 'Farmer', 'Finance',
-  'Fitness Trainer', 'Freelancer', 'Government Employee', 'Homemaker', 'HR', 'Insurance Advisor',
+  'Driver', 'Electrician', 'Entrepreneur / Founder', 'Factory Worker', 'Finance',
+  'Fitness Trainer', 'Freelancer', 'Government Employee', 'HR', 'Insurance Advisor',
   'IT Support', 'Journalist', 'Lawyer', 'Marketing', 'Mechanical Engineer', 'Musician', 'Nurse',
-  'Operations', 'Pharmacist', 'Photographer', 'Pilot / Cabin Crew', 'Plumber', 'Police',
+  'Operations', 'Pharmacist', 'Photographer', 'Pilot / Cabin Crew', 'Plumber', 
   'Product Manager', 'Professor', 'QA / Tester', 'Real Estate Agent', 'Researcher',
   'Restaurant Staff', 'Retail Staff', 'Sales', 'Scientist', 'Shop Owner', 'Social Worker',
-  'Software Engineer', 'Student', 'Supply Chain / Logistics', 'Teacher', 'Video Creator',
+  'Software Engineer', 'Supply Chain / Logistics', 'Teacher', 'Video Creator',
   'Veterinarian', 'Other',
 ];
 
