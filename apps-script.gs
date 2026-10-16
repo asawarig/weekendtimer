@@ -78,16 +78,25 @@ function doPost(e) {
   }
 }
 
-// Site asks for everyone's answers.
-function doGet() {
+// Site asks for everyone's answers. Add ?debug=1 to the link to see which Sheet and tab it uses.
+function doGet(e) {
   const sheet = getSheet_();
   const last = sheet.getLastRow();
-  if (last < 2) return json_({ ok: true, rows: [] });
+  const debug = e && e.parameter && e.parameter.debug ? {
+    spreadsheet: sheet.getParent().getName(), url: sheet.getParent().getUrl(),
+    tab: sheet.getName(), rowsInTab: Math.max(0, last - 1),
+  } : undefined;
+  if (last < 2) return json_({ ok: true, rows: [], debug });
   const start = Math.max(2, last - MAX_ROWS + 1);
   const values = sheet.getRange(start, 1, last - start + 1, 6).getValues();
   const since = Date.now() - DAYS_SHOWN * 864e5;
   const rows = values
-    .filter(r => r[0] instanceof Date && r[0].getTime() >= since)
-    .map(r => [r[1], r[3], r[4], r[5] === true]);
-  return json_({ ok: true, rows });
+    .filter(r => {
+      // Keep recent answers; a timestamp that isn't a proper date still counts.
+      const t = r[0] instanceof Date ? r[0].getTime() : new Date(r[0]).getTime();
+      return isNaN(t) || t >= since;
+    })
+    .filter(r => r[1] !== '' && r[1] !== null)
+    .map(r => [Number(r[1]), r[3], r[4], r[5] === true || String(r[5]).toUpperCase() === 'TRUE']);
+  return json_({ ok: true, rows, debug });
 }
