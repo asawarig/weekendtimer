@@ -536,8 +536,10 @@
   function drawCityRefs(svg) {
     if ((me && me.night) || half !== 'pm') return;
     const all = window.CITY_REFERENCE.flatMap(r => r.cities.map(() => r.minutes));
-    const avgT = Math.round(all.reduce((a, b) => a + b, 0) / all.length);
-    const from = Math.min(...all), to = Math.max(...all);
+    // Once the visitor's city is known and has research data, show that city instead of India.
+    const cityRef = me && me.city && window.CITY_REFERENCE.find(r => r.cities.includes(me.city));
+    const from = cityRef ? cityRef.minutes - 10 : Math.min(...all);
+    const to = cityRef ? cityRef.minutes + 10 : Math.max(...all);
     const A = m => ((m % 720) / 720) * Math.PI * 2;
     const P = (a, r) => `${(200 + Math.sin(a) * r).toFixed(1)} ${(200 - Math.cos(a) * r).toFixed(1)}`;
     const g = el('g', { class: 'india-ref' }, svg);
@@ -546,15 +548,23 @@
       'stroke-width': 24, 'stroke-opacity': .6, 'stroke-linecap': 'round', filter: 'url(#crayon)' }, g);
     // Tag inside the face, between the centre and the 6, clear of the numbers.
     const tag = el('g', { filter: 'url(#crayon)' }, g);
-    el('rect', { x: 136, y: 226, width: 128, height: 58, rx: 14, fill: '#fffdf8', stroke: '#2fa35a', 'stroke-width': 4 }, tag);
+    el('rect', { x: 130, y: 226, width: 140, height: 58, rx: 14, fill: '#fffdf8', stroke: '#2fa35a', 'stroke-width': 4 }, tag);
     const t1 = el('text', { x: 200, y: 249, 'text-anchor': 'middle', 'font-size': 15, fill: '#1d6b3a' }, g);
-    t1.textContent = "India's rush home";
     const t2 = el('text', { x: 200, y: 275, 'text-anchor': 'middle', 'font-size': 25, fill: '#161616' }, g);
     const hr = m => `${Math.floor(m / 60) % 12 || 12}${m % 60 ? ':' + String(m % 60).padStart(2, '0') : ''}`;
-    t2.textContent = `${hr(from)} to ${hr(to)} PM`;
     const tip = el('title', {}, g);
-    tip.textContent = `Research estimates for ${all.length} big cities (traffic & metro peaks): ${fmt(from)}–${fmt(to)}, average ${fmt(avgT)}`;
+    if (cityRef) {
+      t1.textContent = `${me.city}'s rush home`;
+      t2.textContent = `around ${fmt(cityRef.minutes)}`;
+      t2.setAttribute('font-size', 20);
+      tip.textContent = `${me.city}: about ${fmt(cityRef.minutes)} (research estimate: ${cityRef.source})`;
+    } else {
+      t1.textContent = "India's rush home";
+      t2.textContent = `${hr(from)} to ${hr(to)} PM`;
+      tip.textContent = `Research estimates for ${all.length} big cities (traffic & metro peaks): ${fmt(from)}–${fmt(to)}`;
+    }
   }
+
 
 
 
