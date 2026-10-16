@@ -569,11 +569,10 @@
     const animate = sunsetPlayed !== key && !matchMedia('(prefers-reduced-motion: reduce)').matches;
     sunsetPlayed = key;
     const sun = animate && !fromCrowd;
-    const ang = ((t % 720) / 720) * Math.PI * 2;
-    const youX = me ? 200 + Math.sin(((me.minutes % 720) / 720) * Math.PI * 2) * 246 : 200;
-    const bx = 200 + Math.sin(ang) * 236, side = youX > bx ? -1 : 1;
-    const sx = Math.max(60, Math.min(340, bx + side * 70));
-    const sy = Math.max(200 - Math.cos(ang) * 236 + 10, 478);
+    // It sits in the open space above the clock, so it's seen without scrolling. If the visitor's
+    // "you" star is up there (a time near 12), it moves below the clock instead.
+    const youUp = me && Math.cos(((me.minutes % 720) / 720) * Math.PI * 2) > 0.55;
+    const sx = 200, sy = youUp ? 460 : -66;
     const g = el('g', { class: 'city-ref' + (animate ? (sun ? ' play-sun' : ' play') : '') }, svg);
     if (sun) {
       const C = el('g', { filter: 'url(#crayon)' }, g);
@@ -599,8 +598,10 @@
         stroke: '#fffdf8', 'stroke-width': 4, 'paint-order': 'stroke' }, g);
       e.textContent = str;
     };
-    txt(sy - 4, top, 17, '#a2482a');
-    txt(sy + 22, line, 23, '#161616');
+    // As big as fits the width, so it stays readable on a phone.
+    const fit = (str, max) => Math.min(max, Math.floor(1080 / str.length));
+    txt(sy - 8, top, fit(top, 24), '#a2482a');
+    txt(sy + 24, line, fit(line, 32), '#161616');
     el('title', {}, g).textContent = fromCrowd
       ? `Average of ${real.length} answers ${where}`
       : `Estimated from average weekly hours (${window.PLFS_SOURCE.name}), 9 AM start, 5-day week`;
