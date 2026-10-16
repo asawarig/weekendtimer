@@ -484,8 +484,16 @@
       }, dots);
     });
     const a = avg(subset.map(x => x.minutes), startFor());
-    if (a !== null && inHalf(a)) {
-      hand(svg, ((a % 720) / 60) * 30, 120, 12, '#e2352b');
+    // The red hand shows the average. If that falls in the other half of the day, it shows the
+    // average of the answers in this half instead, or a note if there are none.
+    const inThis = subset.filter(x => inHalf(x.minutes));
+    const halfAvg = a !== null && inHalf(a) ? a : avg(inThis.map(x => x.minutes), startFor());
+    if (halfAvg !== null && inThis.length) {
+      hand(svg, ((halfAvg % 720) / 60) * 30, 120, 12, '#e2352b');
+    } else {
+      // Above the clock in the AM; below it in the PM, where the sunset line takes the top.
+      el('text', { x: 200, y: half === 'am' ? -50 : 470, 'text-anchor': 'middle', 'font-size': 30, fill: '#5a5a5a',
+        class: 'empty-half' }, svg).textContent = 'No one has logged off at this time yet';
     }
     el('circle', { cx: 200, cy: 200, r: 13, fill: '#161616', filter: 'url(#crayon)' }, svg);
 
@@ -539,7 +547,8 @@
     const shown = subset.filter(x => inHalf(x.minutes)).length;
     $('crowdSub').textContent = a === null
       ? `No answers from ${who} yet.`
-      : `On average, ${who === 'everyone' ? 'people' : who} log off at ${fmt(a)}${inHalf(a) ? ' (the red hand)' : ''}.`;
+      : `On average, ${who === 'everyone' ? 'people' : who} log off at ${fmt(a)}${inHalf(a) ? ' (the red hand)'
+        : inThis.length ? `. In the ${half.toUpperCase()}, it's ${fmt(halfAvg)} (the red hand)` : ''}.`;
     document.querySelectorAll('#filters .pill').forEach(b => b.setAttribute('aria-pressed', String(
       b.dataset.f === 'all' ? !filter.city && !filter.job : filter[b.dataset.f])));
     $('halfSwitch').setAttribute('aria-checked', String(half === 'pm'));
