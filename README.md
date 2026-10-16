@@ -39,13 +39,13 @@ Night-shift workers are compared only with other night-shift workers. Regular ti
 If you set up the sheet before the night-shift column existed, add a **Night shift** header in column F. Only answers whose city and job are in `data.js` are shown on the site.
 If you change the script later, use **Deploy → Manage deployments → Edit → New version** so the URL stays the same.
 
-## India rush-hour band
+## Reference log-off times
 
-The crowd clock shows a green "India's rush home 6–7 PM" band on the rim, spanning these big-city research
-estimates (average 6:20 PM), from `CITY_REFERENCE` in `data.js`:
+The crowd clock shows a green band at a reference average log-off time, with a legend above it
+("Bengaluru's average log-off time"). Times come from `CITY_LOGOFF` in `data.js`:
 
-- 6:00 PM: Delhi, Gurugram, Noida, Chennai, Hyderabad, Kolkata, Jaipur (MoveInSync 2019, TomTom 2025 evening peaks)
-- 6:40 PM: Bengaluru (median weekday evening boarding, Namma Metro hourly data Aug–Sep 2025)
-- 7:00 PM: Mumbai, Pune, Ahmedabad (MoveInSync 2019, TomTom 2025)
-
-Traffic and metro peaks mark when most people are heading home, so these are estimates.
+- PLFS 2025 average weekly hours by city (OpenCity), blended 75% men / 25% women (urban worker
+  population ratios, PLFS Jul–Sep 2024: 70.7% men, 23.4% women), then 9 AM + weekly hours ÷ 5.
+- Delhi 7:41, Mumbai 7:37, Ahmedabad 7:20, Pune 6:42, Bengaluru 6:40, Hyderabad 6:36, Kolkata 6:32, Chennai 6:19 PM.
+- Thane, Navi Mumbai → Mumbai; Gurugram, Noida, Ghaziabad, Faridabad → Delhi; Howrah → Kolkata.
+- All other cities, and the first crowd view, show India's 8-city average, 6:56 PM.

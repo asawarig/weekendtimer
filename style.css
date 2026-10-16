@@ -506,3 +506,7 @@ button { font: inherit; color: inherit; }
 
 /* The job step's card grows to hold the open list, so it doesn't hang over the edge. */
 #step-job:has(.options-wrap:not([hidden])) .actions { margin-top: 270px; }
+
+.ref-legend { display: flex; align-items: center; justify-content: flex-end; gap: 8px; font-size: 17px; color: #1d6b3a; margin: 8px 0 -4px; }
+.ref-legend[hidden] { display: none; }
+.rl-swatch { width: 26px; height: 12px; border-radius: 6px; background: #2fa35a; opacity: .8; border: 2px solid #161616; flex: none; }

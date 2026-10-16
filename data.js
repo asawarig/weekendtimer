@@ -42,11 +42,16 @@ window.JOB_AREAS = [
 ];
 window.OCCUPATIONS = window.JOB_AREAS.map(a => a.name);
 
-// Research-based reference log-off times by city, drawn as markers on the crowd clock.
-// Traffic/metro peaks are when most people are heading home, so these are estimates (see README).
-window.CITY_REFERENCE = [
-  { minutes: 18 * 60, cities: ['Delhi', 'Gurugram', 'Noida', 'Chennai', 'Hyderabad', 'Kolkata', 'Jaipur'],
-    source: 'MoveInSync 2019 & TomTom Traffic Index 2025' },
-  { minutes: 18 * 60 + 40, cities: ['Bengaluru'], source: 'Namma Metro hourly ridership, Aug–Sep 2025' },
-  { minutes: 19 * 60, cities: ['Mumbai', 'Pune', 'Ahmedabad'], source: 'MoveInSync 2019 & TomTom Traffic Index 2025' },
-];
+// Reference log-off times by city, from PLFS 2025 average weekly hours (OpenCity), blended for an
+// urban workforce of about 75% men / 25% women (PLFS 2024), assuming a 9 AM start and a 5-day week.
+// Satellite cities use their metro's figure; every other city uses the 8-city average.
+window.PLFS_SOURCE = { name: 'PLFS 2025 via OpenCity', url: 'https://opencity.in/plfs-2025-the-missing-half-of-the-workforce-in-indian-cities/' };
+window.CITY_LOGOFF = {
+  Delhi: 19 * 60 + 41, Mumbai: 19 * 60 + 37, Ahmedabad: 19 * 60 + 20, Pune: 18 * 60 + 42,
+  Bengaluru: 18 * 60 + 40, Hyderabad: 18 * 60 + 36, Kolkata: 18 * 60 + 32, Chennai: 18 * 60 + 19,
+};
+window.CITY_LOGOFF_ALIAS = {
+  Thane: 'Mumbai', 'Navi Mumbai': 'Mumbai', Gurugram: 'Delhi', Noida: 'Delhi', Ghaziabad: 'Delhi',
+  Faridabad: 'Delhi', Howrah: 'Kolkata',
+};
+window.INDIA_LOGOFF = 18 * 60 + 56;

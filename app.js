@@ -518,39 +518,28 @@
     drawCityRefs(svg);
   }
 
-  // India reference: research puts the big-city rush home at 6–7 PM (6:20 PM on average).
-  // Drawn as a soft green crayon band on the rim from 6 to 7 PM, with a bold tag inside the face.
+  // Reference average log-off time (PLFS-based) for the visitor's city, or India before a city is
+  // known / for cities without data. A green crayon band on the rim, explained by a legend above.
+  function refFor(c) {
+    const key = c && (window.CITY_LOGOFF[c] ? c : window.CITY_LOGOFF_ALIAS[c]);
+    return key ? { label: `${c}'s`, t: window.CITY_LOGOFF[key] } : { label: "India's", t: window.INDIA_LOGOFF };
+  }
   function drawCityRefs(svg) {
-    if ((me && me.night) || half !== 'pm') return;
-    const all = window.CITY_REFERENCE.flatMap(r => r.cities.map(() => r.minutes));
-    // Once the visitor's city is known and has research data, show that city instead of India.
-    const cityRef = me && me.city && window.CITY_REFERENCE.find(r => r.cities.includes(me.city));
-    const from = cityRef ? cityRef.minutes - 10 : Math.min(...all);
-    const to = cityRef ? cityRef.minutes + 10 : Math.max(...all);
+    const legend = $('refLegend');
+    const ref = refFor(me && me.city);
+    const show = !(me && me.night) && (ref.t >= 720) === (half === 'pm');
+    legend.hidden = !show;
+    if (!show) return;
+    legend.querySelector('.rl-text').textContent = `${ref.label} average log-off time (${fmt(ref.t)})`;
+    legend.title = `Estimated from average weekly hours (${window.PLFS_SOURCE.name}), 9 AM start, 5-day week`;
     const A = m => ((m % 720) / 720) * Math.PI * 2;
     const P = (a, r) => `${(200 + Math.sin(a) * r).toFixed(1)} ${(200 - Math.cos(a) * r).toFixed(1)}`;
     const g = el('g', { class: 'india-ref' }, svg);
-    const R = 161, a0 = A(from), a1 = A(to);
+    const R = 161, a0 = A(ref.t - 7), a1 = A(ref.t + 7);
     el('path', { d: `M${P(a0, R)} A${R} ${R} 0 0 1 ${P(a1, R)}`, fill: 'none', stroke: '#2fa35a',
-      'stroke-width': 24, 'stroke-opacity': .6, 'stroke-linecap': 'round', filter: 'url(#crayon)' }, g);
-    // Tag inside the face, between the centre and the 6, clear of the numbers.
-    const tag = el('g', { filter: 'url(#crayon)' }, g);
-    el('rect', { x: 130, y: 226, width: 140, height: 58, rx: 14, fill: '#fffdf8', stroke: '#2fa35a', 'stroke-width': 4 }, tag);
-    const t1 = el('text', { x: 200, y: 249, 'text-anchor': 'middle', 'font-size': 15, fill: '#1d6b3a' }, g);
-    const t2 = el('text', { x: 200, y: 275, 'text-anchor': 'middle', 'font-size': 25, fill: '#161616' }, g);
-    const hr = m => `${Math.floor(m / 60) % 12 || 12}${m % 60 ? ':' + String(m % 60).padStart(2, '0') : ''}`;
-    const tip = el('title', {}, g);
-    if (cityRef) {
-      t1.textContent = `${me.city}'s rush home`;
-      t2.textContent = `around ${fmt(cityRef.minutes)}`;
-      t2.setAttribute('font-size', 20);
-      tip.textContent = `${me.city}: about ${fmt(cityRef.minutes)} (research estimate: ${cityRef.source})`;
-    } else {
-      t1.textContent = "India's rush home";
-      t2.textContent = `${hr(from)} to ${hr(to)} PM`;
-      tip.textContent = `Research estimates for ${all.length} big cities (traffic & metro peaks): ${fmt(from)}–${fmt(to)}`;
-    }
+      'stroke-width': 24, 'stroke-opacity': .75, 'stroke-linecap': 'round', filter: 'url(#crayon)' }, g);
   }
+
 
 
 
