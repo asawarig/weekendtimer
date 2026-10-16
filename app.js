@@ -443,6 +443,7 @@
   const groupName = () => (me.night ? 'night-shift workers' : 'everyone');
 
   function renderCrowdClock() {
+    let drawYou = null;
     const svg = $('crowdClock');
     drawFace(svg, { fill: '#cfe8fa' });
     const dots = el('g', { class: 'crowd-dots', filter: 'url(#crayon)' }, svg);
@@ -482,26 +483,33 @@
       el('polygon', { points: pts.join(' '), fill: '#e2352b', stroke: '#161616', 'stroke-width': 3,
         'stroke-linejoin': 'round', filter: 'url(#crayon)' }, svg);
 
-      // "you" sits beside the star (along the ring, a little outward), with a curved arrow to it.
-      const tx = Math.cos(ang), ty = Math.sin(ang);
-      const lx = sx + tx * 80 + ux * 34, ly = sy + ty * 80 + uy * 34;
-      const vx = sx - lx, vy = sy - ly, vl = Math.hypot(vx, vy);
-      const x0 = lx + vx / vl * 22, y0 = ly + vy / vl * 22;
-      const x1 = sx - vx / vl * 25, y1 = sy - vy / vl * 25;
-      const cx = (x0 + x1) / 2 + ux * 16, cy = (y0 + y1) / 2 + uy * 16;
-      const g = el('g', { filter: 'url(#crayon)', fill: 'none', stroke: '#161616', 'stroke-width': 4,
-        'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, svg);
-      el('path', { d: `M${x0.toFixed(1)} ${y0.toFixed(1)} Q${cx.toFixed(1)} ${cy.toFixed(1)} ${x1.toFixed(1)} ${y1.toFixed(1)}` }, g);
-      const dx = x1 - cx, dy = y1 - cy, len = Math.hypot(dx, dy) || 1;
-      const bx = dx / len, by = dy / len, head = 11;
-      const wing = k => `${(x1 - bx * head - by * head * 0.65 * k).toFixed(1)} ${(y1 - by * head + bx * head * 0.65 * k).toFixed(1)}`;
-      el('path', { d: `M${wing(1)} L${x1.toFixed(1)} ${y1.toFixed(1)} L${wing(-1)}` }, g);
+      // "you" and its arrow go on one side of the star; drawYou(-1) puts them on the other side.
+      const youMark = el('g', { class: 'you-mark' }, svg);
+      drawYou = flip => {
+        youMark.replaceChildren();
+        // "you" sits beside the star (along the ring, a little outward), with a curved arrow to it.
+        const tx = Math.cos(ang) * flip, ty = Math.sin(ang) * flip;
+        // Kept inside the clock's frame so the label is never cut off at the sides.
+        const lx = Math.max(-80, Math.min(480, sx + tx * 80 + ux * 34)), ly = sy + ty * 80 + uy * 34;
+        const vx = sx - lx, vy = sy - ly, vl = Math.hypot(vx, vy);
+        const x0 = lx + vx / vl * 22, y0 = ly + vy / vl * 22;
+        const x1 = sx - vx / vl * 25, y1 = sy - vy / vl * 25;
+        const cx = (x0 + x1) / 2 + ux * 16, cy = (y0 + y1) / 2 + uy * 16;
+        const g = el('g', { filter: 'url(#crayon)', fill: 'none', stroke: '#161616', 'stroke-width': 4,
+          'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, youMark);
+        el('path', { d: `M${x0.toFixed(1)} ${y0.toFixed(1)} Q${cx.toFixed(1)} ${cy.toFixed(1)} ${x1.toFixed(1)} ${y1.toFixed(1)}` }, g);
+        const dx = x1 - cx, dy = y1 - cy, len = Math.hypot(dx, dy) || 1;
+        const bx = dx / len, by = dy / len, head = 11;
+        const wing = k => `${(x1 - bx * head - by * head * 0.65 * k).toFixed(1)} ${(y1 - by * head + bx * head * 0.65 * k).toFixed(1)}`;
+        el('path', { d: `M${wing(1)} L${x1.toFixed(1)} ${y1.toFixed(1)} L${wing(-1)}` }, g);
 
-      const label = el('text', {
-        x: lx.toFixed(1), y: (ly + 11).toFixed(1), 'font-size': 34, fill: '#e2352b',
-        stroke: '#161616', 'stroke-width': 1.2, 'paint-order': 'stroke', 'text-anchor': 'middle',
-      }, svg);
-      label.textContent = 'you';
+        const label = el('text', {
+          x: lx.toFixed(1), y: (ly + 11).toFixed(1), 'font-size': 34, fill: '#e2352b',
+          stroke: '#161616', 'stroke-width': 1.2, 'paint-order': 'stroke', 'text-anchor': 'middle',
+        }, youMark);
+        label.textContent = 'you';
+      };
+      drawYou(1);
     }
 
     const night = me.night ? 'night-shift ' : '';
@@ -516,6 +524,16 @@
       b.dataset.f === 'all' ? !filter.city && !filter.job : filter[b.dataset.f])));
     $('halfSwitch').setAttribute('aria-checked', String(half === 'pm'));
     drawCityRefs(svg);
+    // Keep "you" clear of the reference line: if they overlap, move "you" to the star's other side.
+    if (drawYou) {
+      const hit = () => {
+        const y = svg.querySelector('.you-mark text'), lines = [...svg.querySelectorAll('.city-ref text')];
+        if (!y || !lines.length) return false;
+        const u = y.getBBox(), pad = 6;
+        return lines.some(t => { const r = t.getBBox(); return u.x < r.x + r.width + pad && r.x < u.x + u.width + pad && u.y < r.y + r.height + pad && r.y < u.y + u.height + pad; });
+      };
+      if (hit()) { drawYou(-1); if (hit()) drawYou(1); }
+    }
   }
 
   // Reference log-off time for the visitor's city: secondary research (PLFS-based) until the city
@@ -578,20 +596,16 @@
       const C = el('g', { filter: 'url(#crayon)' }, g);
       const cid = 'sunclip' + Math.random().toString(36).slice(2, 7);
       el('rect', { x: sx - 70, y: sy - 90, width: 140, height: 90 }, el('clipPath', { id: cid }, el('defs', {}, g)));
-      const s = el('g', {}, el('g', { 'clip-path': `url(#${cid})` }, C));
+      const s = el('g', { class: 'sun' }, el('g', { 'clip-path': `url(#${cid})` }, C));
       el('circle', { cx: sx, cy: sy - 6, r: 24, fill: '#f5b82e', stroke: '#161616', 'stroke-width': 3.5 }, s);
       for (let k = 0; k < 8; k++) {
         const a = Math.PI * 2 * k / 8, c = Math.cos(a), n = Math.sin(a);
         el('path', { d: `M${sx + c * 31} ${sy - 6 + n * 31} L${sx + c * 41} ${sy - 6 + n * 41}`, stroke: '#f5b82e', 'stroke-width': 4, 'stroke-linecap': 'round' }, s);
       }
-      const rise = el('animateTransform', { attributeName: 'transform', type: 'translate', values: '0 46; 0 -26; 0 -26; 0 46',
-        keyTimes: '0; 0.33; 0.5; 1', dur: '3.2s', fill: 'freeze', calcMode: 'spline', keySplines: '.2 .6 .4 1; 0 0 1 1; .5 0 .7 1' }, s);
       // The horizon and its reflection fade away once the sun has gone down.
-      const hz = el('g', {}, C);
+      const hz = el('g', { class: 'horizon' }, C);
       el('path', { d: `M${sx - 44} ${sy} H${sx + 44}`, stroke: '#161616', 'stroke-width': 4, 'stroke-linecap': 'round' }, hz);
       el('path', { d: `M${sx - 28} ${sy + 9} H${sx + 28} M${sx - 15} ${sy + 17} H${sx + 15}`, stroke: '#e2352b', 'stroke-width': 3, 'stroke-linecap': 'round' }, hz);
-      const fade = el('animate', { attributeName: 'opacity', values: '1; 1; 0', keyTimes: '0; 0.88; 1', dur: '3.5s', fill: 'freeze' }, hz);
-      try { rise.beginElement(); fade.beginElement(); } catch (e) {}
     }
     const txt = (y, str, size, fill) => {
       const e = el('text', { x: sx, y, 'text-anchor': 'middle', 'font-size': size, fill,
@@ -600,8 +614,8 @@
     };
     // As big as fits the width, so it stays readable on a phone.
     const fit = (str, max) => Math.min(max, Math.floor(1080 / str.length));
-    txt(sy - 8, top, fit(top, 24), '#a2482a');
-    txt(sy + 24, line, fit(line, 32), '#161616');
+    txt(sy - 10, top, fit(top, 28), '#a2482a');
+    txt(sy + 26, line, fit(line, 34), '#161616');
     el('title', {}, g).textContent = fromCrowd
       ? `Average of ${real.length} answers ${where}`
       : `Estimated from average weekly hours (${window.PLFS_SOURCE.name}), 9 AM start, 5-day week`;

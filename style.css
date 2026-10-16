@@ -519,3 +519,13 @@ button { font: inherit; color: inherit; }
 .city-ref.play-sun text { opacity: 0; animation: refIn .6s ease-out 3.5s forwards; }
 .city-ref.play text { opacity: 0; animation: refIn .6s ease-out .1s forwards; }
 @keyframes refIn { to { opacity: 1; } }
+/* The sun rises, pauses, then sinks behind its horizon line, which then fades. */
+.city-ref.play-sun .sun { transform: translateY(46px); animation: sunArc 3.2s forwards; }
+.city-ref.play-sun .horizon { animation: horizonOut 3.5s forwards; }
+@keyframes sunArc {
+  0% { transform: translateY(46px); animation-timing-function: cubic-bezier(.2, .6, .4, 1); }
+  33%, 50% { transform: translateY(-26px); animation-timing-function: cubic-bezier(.5, 0, .7, 1); }
+  100% { transform: translateY(46px); }
+}
+@keyframes horizonOut { 0%, 88% { opacity: 1; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .city-ref .sun, .city-ref .horizon { animation: none; } }
