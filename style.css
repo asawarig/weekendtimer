@@ -167,7 +167,7 @@ body.night .ex-search.combo label { color: #fffdf8; }
 
 /* ---------- 'Curious?' invite after the first crowd view ---------- */
 .curious {
-  --fill: var(--purple); color: #fffdf8; padding: 14px 16px 14px 20px; margin: 14px 0 4px;
+  --fill: var(--purple); color: #fffdf8; padding: 14px 16px 14px 20px; margin: 0 0 20px;
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
 }
 .curious[hidden] { display: none; }
