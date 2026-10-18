@@ -1,4 +1,4 @@
-// Builds the social share cards in s/: one image (1200x630) and one small page per result, so a
+// Builds the social share cards in log-your-logoff/s/: one image (1200x630) and one small page per result, so a
 // post on X or LinkedIn shows the right picture. Each page has the Open Graph / Twitter card tags
 // and sends visitors straight on to the site.
 //
@@ -8,7 +8,7 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
 
-const SITE = 'https://asawarig.github.io/weekendtimer/';
+const SITE = 'https://fun.plumhq.com/log-your-logoff/';
 const cards = [];
 for (let n = 5; n <= 95; n += 5) {
   cards.push({ key: `early-${n}`, s1: 'I plan to log off before', big: `${n}%`, s2: 'of India today', hour: 5.5, title: `I plan to log off before ${n}% of India today` });
@@ -51,8 +51,8 @@ const page = c => `<!doctype html>
     await p.goto(`http://localhost:8765/tools/share-card.html?${q}`);
     await p.evaluate(() => document.fonts.ready);
     await p.waitForTimeout(150);
-    await p.screenshot({ path: `s/${c.key}.jpg`, type: 'jpeg', quality: 85 });
-    fs.writeFileSync(`s/${c.key}.html`, page(c));
+    await p.screenshot({ path: `log-your-logoff/s/${c.key}.jpg`, type: 'jpeg', quality: 85 });
+    fs.writeFileSync(`log-your-logoff/s/${c.key}.html`, page(c));
   }
   await b.close();
   console.log(`Built ${cards.length} share cards in s/`);

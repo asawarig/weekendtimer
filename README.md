@@ -58,7 +58,13 @@ city logs off at 7:04 PM") and the sun is skipped. Research times come from `CIT
 ## Share cards
 
 The X and LinkedIn buttons post a line like "I plan to log off before 60% of India today" with a link
-to a small page in `s/` (e.g. `s/early-60.html`). Each page carries Open Graph / Twitter card tags, so the
+to a small page in `log-your-logoff/s/` (e.g. `s/early-60.html`). Each page carries Open Graph / Twitter card tags, so the
 post shows a matching image (`s/early-60.jpg`), and it forwards visitors to the site. Percentages are
 rounded to the nearest 5%. To change the design, edit `tools/share-card.html` and rebuild with
 `node tools/make-share-cards.js` (see the comment at the top of that file).
+
+## Where it lives
+
+The site is in `log-your-logoff/` and is meant to be served at https://fun.plumhq.com/log-your-logoff/
+(GitHub Pages with the custom domain `fun.plumhq.com`, set by a `CNAME` file at the repo root once the
+DNS record exists). The root `index.html` forwards to `log-your-logoff/`.

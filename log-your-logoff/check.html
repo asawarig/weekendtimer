@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Connection check</title>
+<style>
+  body { font: 16px/1.5 system-ui, sans-serif; margin: 0; padding: 16px; background: #fffdf8; color: #161616; }
+  h1 { font-size: 20px; margin: 0 0 12px; }
+  .step { border: 2px solid #161616; border-radius: 12px; padding: 12px; margin: 12px 0; }
+  .ok { color: #1d7a3a; font-weight: 600; } .bad { color: #c62a20; font-weight: 600; }
+  pre { white-space: pre-wrap; word-break: break-all; background: #f2efe8; padding: 8px; border-radius: 8px; font-size: 13px; margin: 6px 0 0; }
+  button { font: inherit; padding: 10px 16px; border-radius: 10px; border: 2px solid #161616; background: #f5b82e; cursor: pointer; }
+</style>
+</head>
+<body>
+<h1>Crowd database check</h1>
+<p>Screenshot this whole page and send it over.</p>
+<button id="go" type="button">Run check</button>
+<div id="out"></div>
+<script src="config.js?v=106"></script>
+<script>
+  let url = (window.CLOCK_CONFIG || {}).sheetUrl;
+  const out = document.getElementById('out');
+  function show(title, good, detail) {
+    const d = document.createElement('div');
+    d.className = 'step';
+    d.innerHTML = `<div class="${good ? 'ok' : 'bad'}">${good ? '✓' : '✗'} ${title}</div>`;
+    const pre = document.createElement('pre'); pre.textContent = detail; d.appendChild(pre);
+    out.appendChild(d);
+  }
+  async function call(opts) {
+    try {
+      const res = await fetch(url, opts);
+      const text = await res.text();
+      let json = null; try { json = JSON.parse(text); } catch (e) {}
+      return { good: !!(json && json.ok), detail: `HTTP ${res.status} from ${new URL(res.url).host}\n${text.slice(0, 900)}` };
+    } catch (err) {
+      return { good: false, detail: `Request blocked: ${err.name}: ${err.message}` };
+    }
+  }
+  document.getElementById('go').addEventListener('click', async () => {
+    out.innerHTML = '';
+    show('Sheet link in config', !!url, url || '(empty)');
+    if (!url) return;
+    let r = await call({});
+    show('1. Read answers', r.good, r.detail);
+    r = await call({ method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ id: 'connectioncheck', minutes: 600, city: 'CHECK', job: 'CHECK', night: false }) });
+    show('2. Save a test answer', r.good, r.detail);
+    const u = url; url = url + '?debug=1';
+    r = await call({});
+    url = u;
+    const saved = r.detail.includes('CHECK');
+    show('3. Test answer is in the Sheet', saved, r.detail);
+    show('Browser', true, navigator.userAgent);
+  });
+</script>
+</body>
+</html>

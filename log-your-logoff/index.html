@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Log your logoff</title>
+<meta name="description" content="What time will you stop working today? Add yours and see when the rest of India logs off.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Log your logoff">
+<meta property="og:description" content="What time will you stop working today? Add yours and see when the rest of India logs off.">
+<meta property="og:image" content="https://fun.plumhq.com/log-your-logoff/s/even.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"%3E %3Ccircle cx="60" cy="64" r="40" fill="%23f5b82e"/%3E %3Cpath d="M83.3 26.7A44 44 0 1 1 36.7 26.7" fill="none" stroke="%23161616" stroke-width="11" stroke-linecap="round"/%3E %3Cg stroke="%23161616" stroke-width="5" stroke-linecap="round"%3E %3Cpath d="M97 64h-7M60 101v-7M23 64h7"/%3E %3C/g%3E %3Cpath d="M60 64L80 76" stroke="%23161616" stroke-width="12" stroke-linecap="round"/%3E %3Cpath d="M60 64L80 76" stroke="%233a9bd9" stroke-width="6" stroke-linecap="round"/%3E %3Cpath d="M60 64V12" stroke="%23161616" stroke-width="15" stroke-linecap="round"/%3E %3Cpath d="M60 64V12" stroke="%23e2352b" stroke-width="8" stroke-linecap="round"/%3E %3Ccircle cx="60" cy="64" r="7" fill="%23161616"/%3E %3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Patrick+Hand&display=swap" rel="stylesheet">
+<script>
+  // Safari and every iPhone/iPad browser (all use Apple's WebKit engine) can fail to draw shapes
+  // that use the crayon SVG filters, leaving them invisible. Skip those filters there.
+  (function () {
+    var ua = navigator.userAgent;
+    var apple = /AppleWebKit/.test(ua) && !/Chrome\/|Chromium|Edg\//.test(ua);
+    var ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (apple || ios) document.documentElement.classList.add('no-crayon-filter');
+  })();
+</script>
+<link rel="stylesheet" href="style.css?v=106">
+</head>
+<body>
+
+<!-- Crayon effects shared by the whole page -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="wobble" x="-4%" y="-6%" width="108%" height="112%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="4" result="warp"/>
+      <feDisplacementMap in="SourceGraphic" in2="warp" scale="6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="crayon" filterUnits="userSpaceOnUse" x="-200" y="-200" width="800" height="800">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="4" result="warp"/>
+      <feDisplacementMap in="SourceGraphic" in2="warp" scale="6" xChannelSelector="R" yChannelSelector="G" result="wobbly"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="2" seed="9" result="grain"/>
+      <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.4 2.1" result="grainMask"/>
+      <feComposite in="wobbly" in2="grainMask" operator="in"/>
+    </filter>
+    <filter id="crayon-sky" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="4" result="warp"/>
+      <feDisplacementMap in="SourceGraphic" in2="warp" scale="6" xChannelSelector="R" yChannelSelector="G" result="wobbly"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="2" seed="9" result="grain"/>
+      <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.4 2.1" result="grainMask"/>
+      <feComposite in="wobbly" in2="grainMask" operator="in"/>
+    </filter>
+    <filter id="crayon-icon" filterUnits="userSpaceOnUse" x="-50" y="-50" width="150" height="150">
+      <feTurbulence type="fractalNoise" baseFrequency="0.25" numOctaves="2" seed="4" result="warp"/>
+      <feDisplacementMap in="SourceGraphic" in2="warp" scale="1.4" xChannelSelector="R" yChannelSelector="G" result="wobbly"/>
+      <feTurbulence type="fractalNoise" baseFrequency="3" numOctaves="2" seed="9" result="grain"/>
+      <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 2.05" result="grainMask"/>
+      <feComposite in="wobbly" in2="grainMask" operator="in"/>
+    </filter>
+    <!-- Crayon icons (24x24) -->
+    <symbol id="i-arrow-r" viewBox="0 0 24 24"><g filter="url(#crayon-icon)" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5h15M13.5 6.5l6 6-6 6"/></g></symbol>
+    <symbol id="i-arrow-l" viewBox="0 0 24 24"><g filter="url(#crayon-icon)" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12.5H5M10.5 6.5l-6 6 6 6"/></g></symbol>
+    <symbol id="i-ext" viewBox="0 0 24 24"><g filter="url(#crayon-icon)" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M9 6h9v9"/></g></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><g filter="url(#crayon-icon)" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></g></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><g filter="url(#crayon-icon)" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 9.5A7.5 7.5 0 1 1 5 14"/><path d="M4.5 4.5v5h5"/></g></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><g filter="url(#crayon-icon)" stroke="#161616" stroke-width="2.4" stroke-linejoin="round"><path d="M7.5 10.5V8a4.5 4.5 0 0 1 9 0v2.5" fill="none" stroke-linecap="round"/><rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5" fill="#f5b82e"/><path d="M12 14.5v2.5" stroke-linecap="round"/></g></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><g filter="url(#crayon-icon)"><path d="M15.5 3.5a8.5 8.5 0 1 0 5 15A7 7 0 0 1 15.5 3.5z" fill="#fff3c4" stroke="#161616" stroke-width="2.2" stroke-linejoin="round"/></g></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><g filter="url(#crayon-icon)" stroke-linecap="round"><g stroke="#f5b82e" stroke-width="2.6"><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></g><circle cx="12" cy="12" r="5.2" fill="#f5b82e" stroke="#161616" stroke-width="2"/></g></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><g filter="url(#crayon-icon)"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z" fill="#e2352b" stroke="#161616" stroke-width="2" stroke-linejoin="round"/></g></symbol>
+    <symbol id="logoMark" viewBox="0 0 120 120">
+      <g filter="url(#crayon)">
+        <circle cx="60" cy="64" r="40" fill="#f5b82e"/>
+          <path d="M83.3 26.7A44 44 0 1 1 36.7 26.7" fill="none" stroke="#161616" stroke-width="11" stroke-linecap="round"/>
+          <g stroke="#161616" stroke-width="5" stroke-linecap="round">
+            <path d="M97 64h-7M60 101v-7M23 64h7"/>
+          </g>
+          <path d="M60 64L80 76" stroke="#161616" stroke-width="12" stroke-linecap="round"/>
+          <path d="M60 64L80 76" stroke="#3a9bd9" stroke-width="6" stroke-linecap="round"/>
+          <path d="M60 64V12" stroke="#161616" stroke-width="15" stroke-linecap="round"/>
+          <path d="M60 64V12" stroke="#e2352b" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="60" cy="64" r="7" fill="#161616"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<svg class="sky" id="sky" aria-hidden="true"></svg>
+
+<nav class="topnav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="./" aria-label="Log your logoff, home">
+      <svg class="nav-mark" viewBox="0 0 120 120" aria-hidden="true"><use href="#logoMark"/></svg>
+      <span class="wordmark" aria-hidden="true"><span class="wm-small">Log your</span><span class="wm-big">logoff</span></span>
+    </a>
+    <div class="nav-right">
+      <a class="nav-plum" href="https://www.plumhq.com" target="_blank" rel="noopener">
+        <span class="by">by</span>
+        <img src="assets/plum-logo.png?v=106" alt="Plum" width="80" height="25">
+      </a>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap">
+  <p class="privacy crayon-box" id="privacyNote"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg> Answers are anonymous: only your time, city, job and shift type are saved.</p>
+
+
+
+  <!-- Step 1: time -->
+  <section class="step crayon-box" id="step-time" data-step="1">
+    <h2>Let's see when India logs off. Starting with <span class="hl">you</span>.</h2>
+    <p class="intro">When are you leaving work today?</p>
+    <p class="sr-only">Wind the crown on the right up or down, drag the hands, or tap the time below and type it.</p>
+    <div class="clock-holder">
+      <svg class="clock" id="pickClock" viewBox="-40 -40 480 480" role="slider" tabindex="0"
+           aria-label="Stop-working time" aria-valuemin="0" aria-valuemax="1439"></svg>
+    </div>
+    <div class="time-row">
+      <label class="sr-only" for="timeReadout">Type your log-off time</label>
+      <div class="time-field crayon-box">
+      <input class="time-readout" id="timeReadout" type="text" inputmode="text" autocomplete="off" spellcheck="false" value="6:00 PM">
+      </div>
+      <div class="ampm" role="group" aria-label="AM or PM">
+        <button type="button" class="pill" data-ampm="am">AM</button>
+        <button type="button" class="pill" data-ampm="pm">PM</button>
+      </div>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn btn-red" data-next="2">Next <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+    </div>
+    <p class="time-hint" id="timeHint">Move the hands to your log-off time to continue.</p>
+  </section>
+
+  <!-- Step 2: city -->
+  <section class="step crayon-box" id="step-city" data-step="2" hidden>
+    <p class="step-count">Almost there: 1 of 2</p>
+    <h2>Where are you working from?</h2>
+    <div class="chips" id="cityChips"></div>
+    <div class="combo" id="cityCombo">
+      <label for="cityInput">Or search all cities</label>
+      <div class="field crayon-box">
+        <input id="cityInput" type="text" autocomplete="off" placeholder="Type a city…"
+               role="combobox" aria-expanded="false" aria-controls="cityList" aria-autocomplete="list">
+      </div>
+      <div class="options-wrap crayon-box" hidden><ul class="options" id="cityList" role="listbox"></ul></div>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn btn-ghost" id="cityBack"><svg class="icon" aria-hidden="true"><use href="#i-arrow-l"/></svg> Back</button>
+      <button type="button" class="btn btn-blue" data-next="3" id="cityNext" disabled>Next <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+    </div>
+  </section>
+
+  <!-- Step 3: occupation -->
+  <section class="step crayon-box" id="step-job" data-step="3" hidden>
+    <p class="step-count">Last one: 2 of 2</p>
+    <h2>What do you do?</h2>
+    <div class="combo" id="jobCombo">
+      <label for="jobInput">Search or pick from the list</label>
+      <div class="field crayon-box">
+        <input id="jobInput" type="text" autocomplete="off" placeholder="e.g. Tech, Teaching, nurse…"
+               role="combobox" aria-expanded="false" aria-controls="jobList" aria-autocomplete="list">
+      </div>
+      <div class="options-wrap crayon-box" hidden><ul class="options" id="jobList" role="listbox"></ul></div>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn btn-ghost" data-next="2"><svg class="icon" aria-hidden="true"><use href="#i-arrow-l"/></svg> Back</button>
+      <button type="button" class="btn btn-purple" id="submitBtn" disabled>Add me to the clock</button>
+    </div>
+    <p class="error" id="submitError" hidden></p>
+  </section>
+
+  <!-- Results -->
+  <section class="results" id="results" hidden>
+
+    <div class="crowd crayon-box">
+      <div class="crowd-head">
+        <h2>Each dot is when someone logs off</h2>
+        <button type="button" class="ampm-switch" id="halfSwitch" role="switch" aria-checked="true" aria-label="Show PM answers (off shows AM)">
+          <span class="sw-label" data-half="am">AM</span>
+          <span class="sw-track crayon-box"><span class="sw-knob"></span></span>
+          <span class="sw-label" data-half="pm">PM</span>
+        </button>
+      </div>
+      <p class="crowd-sub" id="crowdSub"></p>
+      <div class="filters" id="filters" role="group" aria-label="Show"></div>
+      <div class="curious curious-top crayon-box" id="curiousTop" hidden>
+        <p>Curious how you compare in your <b>city</b> and <b>job</b>?</p>
+        <button type="button" class="btn btn-purple" id="curiousBtnTop">Yes, show me <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+      </div>
+      <div class="ref-legend" id="refLegend" hidden><span class="rl-swatch"></span><span class="rl-text"></span></div>
+      <div class="clock-holder">
+        <svg class="clock" id="crowdClock" viewBox="-112 -170 624 700" role="img" aria-label="Crowd clock of stop-working times"></svg>
+      </div>
+    </div>
+
+    <div class="you crayon-box" id="youCard"></div>
+
+    <div class="curious crayon-box" id="curious" hidden>
+      <p>Curious how you compare in your <b>city</b> and <b>job</b>?</p>
+      <button type="button" class="btn btn-purple" id="curiousBtn">Yes, show me <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+    </div>
+
+    <div class="share crayon-box" id="shareCard">
+      <p class="share-line" id="shareLine"></p>
+      <div class="share-btns" id="shareBtns"></div>
+    </div>
+
+    <div class="stats">
+      <div class="stat crayon-box fill-yellow"><span class="label" id="statAllLabel">Everyone logs off around</span><span class="big" id="statAll">–</span></div>
+      <div class="stat crayon-box fill-blue"><span class="label" id="statCityLabel">Your city</span><span class="big" id="statCity">–</span></div>
+      <div class="stat crayon-box fill-purple"><span class="label" id="statJobLabel">Your job</span><span class="big" id="statJob">–</span></div>
+    </div>
+
+
+    <div class="actions center">
+      <button type="button" class="btn btn-ghost" id="resetBtn"><svg class="icon" aria-hidden="true"><use href="#i-reset"/></svg> Start over</button>
+      <button type="button" class="btn btn-red" id="exploreBtn">Explore more <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+    </div>
+    <div class="preview-note crayon-box" id="previewNote" hidden>
+    Preview mode: the crowd below is made-up sample data. Real answers start once the database is connected.
+    </div>
+  </section>
+
+  <!-- Explore -->
+  <section class="explore" id="explore" hidden>
+    <button type="button" class="btn btn-ghost ex-back" id="exBack"><svg class="icon" aria-hidden="true"><use href="#i-arrow-l"/></svg> Back to my results</button>
+    <header class="ex-hero crayon-box">
+      <h2>Explore the crowd</h2>
+      <p id="exSub"></p>
+    </header>
+
+    <div class="ex-search combo">
+      <label for="exSearch">Look up any city or job</label>
+      <div class="field crayon-box">
+        <input id="exSearch" type="text" autocomplete="off" placeholder="e.g. Kochi, Nurse, Teacher…"
+               role="combobox" aria-expanded="false" aria-controls="exSearchList" aria-autocomplete="list">
+      </div>
+      <div class="options-wrap crayon-box" hidden><ul class="options" id="exSearchList" role="listbox"></ul></div>
+    </div>
+    <div class="ex-result" id="exResult" aria-live="polite"></div>
+
+    <h3 class="ex-title"><svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg> Cities that log off latest</h3>
+    <div class="clock-grid" id="exCities"></div>
+    <div class="actions center"><button type="button" class="btn btn-ghost" id="exMoreCities" hidden></button></div>
+
+    <h3 class="ex-title"><svg class="icon" aria-hidden="true"><use href="#i-sun"/></svg> Work that logs off earliest</h3>
+    <div class="clock-grid" id="exJobs"></div>
+    <div class="actions center"><button type="button" class="btn btn-ghost" id="exMoreJobs" hidden></button></div>
+  </section>
+
+</main>
+
+<!-- Night-shift check, shown on Next when the time is between midnight and 10 AM -->
+<div class="loading" id="loading" hidden role="status" aria-live="polite">
+  <div class="loading-card crayon-box">
+    <svg class="loading-clock" viewBox="0 0 100 100" aria-hidden="true">
+      <g filter="url(#crayon-icon)">
+        <circle cx="50" cy="50" r="44" fill="#d9a83a" stroke="#161616" stroke-width="4"/>
+        <circle cx="50" cy="50" r="37" fill="#e9dcc0" stroke="#161616" stroke-width="3"/>
+        <line x1="50.0" y1="20.0" x2="50.0" y2="15.0" stroke="#161616" stroke-width="4"/><line x1="65.0" y1="24.0" x2="67.5" y2="19.7" stroke="#161616" stroke-width="2"/><line x1="76.0" y1="35.0" x2="80.3" y2="32.5" stroke="#161616" stroke-width="2"/><line x1="80.0" y1="50.0" x2="85.0" y2="50.0" stroke="#161616" stroke-width="4"/><line x1="76.0" y1="65.0" x2="80.3" y2="67.5" stroke="#161616" stroke-width="2"/><line x1="65.0" y1="76.0" x2="67.5" y2="80.3" stroke="#161616" stroke-width="2"/><line x1="50.0" y1="80.0" x2="50.0" y2="85.0" stroke="#161616" stroke-width="4"/><line x1="35.0" y1="76.0" x2="32.5" y2="80.3" stroke="#161616" stroke-width="2"/><line x1="24.0" y1="65.0" x2="19.7" y2="67.5" stroke="#161616" stroke-width="2"/><line x1="20.0" y1="50.0" x2="15.0" y2="50.0" stroke="#161616" stroke-width="4"/><line x1="24.0" y1="35.0" x2="19.7" y2="32.5" stroke="#161616" stroke-width="2"/><line x1="35.0" y1="24.0" x2="32.5" y2="19.7" stroke="#161616" stroke-width="2"/>
+        <rect x="92" y="42" width="10" height="16" rx="3" fill="#d9a83a" stroke="#161616" stroke-width="3"/>
+        <line class="lc-min" x1="50" y1="50" x2="50" y2="20" stroke="#3a9bd9" stroke-width="5" stroke-linecap="round"/>
+        <line class="lc-hour" x1="50" y1="50" x2="66" y2="50" stroke="#e2352b" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="50" cy="50" r="5" fill="#161616"/>
+      </g>
+    </svg>
+    <p class="loading-text" id="loadingText">Counting the crowd…</p>
+  </div>
+</div>
+
+<div class="detail-backdrop" id="nightAsk" hidden>
+  <div class="night-ask crayon-box" role="dialog" aria-modal="true" aria-labelledby="nightAskQ">
+    <button type="button" class="dt-close" id="nightClose" aria-label="Close, go back and change the time"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    <svg class="night-ask-moon" aria-hidden="true"><use href="#i-moon"/></svg>
+    <p id="nightAskQ">Oh, seems like it's a little too late to log off from work, do you work the night shift?</p>
+    <div class="night-ask-actions">
+      <button type="button" class="btn btn-ghost" id="nightNo">No, just a long day</button>
+      <button type="button" class="btn btn-purple" id="nightYes">Yes, I work the night shift</button>
+    </div>
+  </div>
+</div>
+
+<!-- Detail pop-up for one city or job -->
+<div class="detail-backdrop" id="detail" hidden>
+  <div class="detail crayon-box" role="dialog" aria-modal="true" aria-labelledby="dtTitle">
+    <button type="button" class="dt-close" id="dtClose" aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    <div class="dt-body">
+      <div class="dt-left">
+        <h2 id="dtTitle"></h2>
+        <div id="dtCard"></div>
+        <div class="actions center"><button type="button" class="btn btn-ghost" id="dtAll" hidden></button></div>
+      </div>
+      <div class="dt-right">
+        <h3 id="dtListTitle"></h3>
+        <div class="field crayon-box"><input id="dtSearch" type="text" autocomplete="off" aria-label="Search the list"></div>
+        <ul class="dt-list" id="dtList"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="config.js?v=106"></script>
+<script src="data.js?v=106"></script>
+<script src="app.js?v=106"></script>
+</body>
+</html>
