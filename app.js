@@ -100,7 +100,14 @@
     });
   }
 
-  function renderPicker() {
+  // Next stays off until they've set a time themselves (dragged, wound, scrolled, typed or
+  // picked AM/PM), so nobody sails through on the 6:00 PM default.
+  let timeSet = false;
+  function renderPicker(byVisitor = true) {
+    if (byVisitor) timeSet = true;
+    const next = document.querySelector('#step-time [data-next="2"]');
+    next.disabled = !timeSet;
+    $('timeHint').hidden = timeSet;
     drawFace(pick);
     ringText(pick);
     const h12 = (minutes % 720) / 60, m = minutes % 60;
@@ -205,7 +212,7 @@
     if (v !== null) { minutes = v; renderPicker(); }
   });
   timeInput.addEventListener('keydown', e => { if (e.key === 'Enter') timeInput.blur(); });
-  timeInput.addEventListener('blur', () => { typing = false; renderPicker(); });
+  timeInput.addEventListener('blur', () => { typing = false; renderPicker(false); });
 
   // ---------- Day and night sky ----------
   // [minute of day, top colour, bottom colour]
@@ -1099,7 +1106,8 @@
     jobCombo.set('');
     setJob(null);
     $('explore').hidden = true;
-    renderPicker();
+    timeSet = false;
+    renderPicker(false);
     $('results').hidden = true;
     $('privacyNote').hidden = false;
     showStep(1);
@@ -1118,7 +1126,7 @@
   // ---------- Start ----------
   $('privacyNote').hidden = true;
   $('previewNote').hidden = LIVE;
-  renderPicker();
+  renderPicker(false);
 
   // Already answered today? Go straight to the crowd.
   let saved = null;

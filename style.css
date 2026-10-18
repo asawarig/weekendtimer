@@ -551,3 +551,5 @@ button { font: inherit; color: inherit; }
 .btn-x  { --fill: #161616; color: #fff; }
 .btn-li { --fill: #0a66c2; color: #fff; }
 .night-ask .dt-close { top: 8px; right: 8px; }
+.time-hint { text-align: center; margin: 10px 0 0; color: #555; font-size: 18px; }
+.time-hint[hidden] { display: none; }
