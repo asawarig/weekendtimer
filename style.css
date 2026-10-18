@@ -553,3 +553,4 @@ button { font: inherit; color: inherit; }
 .night-ask .dt-close { top: 8px; right: 8px; }
 .time-hint { text-align: center; margin: 10px 0 0; color: #555; font-size: 18px; }
 .time-hint[hidden] { display: none; }
+.curious.curious-top { margin: 14px 0 4px; }

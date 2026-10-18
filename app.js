@@ -982,6 +982,7 @@
     const partial = !!me.partial;
     $('results').classList.toggle('partial', partial);
     $('curious').hidden = !partial;
+    $('curiousTop').hidden = !partial;
     $('exploreBtn').hidden = partial;
     // Before city and job are known there's nothing to filter by, so no filter buttons.
     $('filters').hidden = partial;
@@ -1028,6 +1029,13 @@
     renderCrowdClock();
   });
 
+  // Make sure the visitor's own answer is in the crowd: always in preview, and in live mode if
+  // the sheet didn't return it (save failed or not visible yet), so their dot is never missing.
+  function includeMe(a) {
+    const has = crowd.some(c => c.minutes === a.minutes && (c.city || null) === a.city && (c.job || null) === a.job && !!c.night === !!a.night);
+    if (!LIVE || !has) crowd.push(a);
+  }
+
   // After the time only: show where they stand among everyone, then invite them to add city and job.
   async function showTeaser() {
     me = { minutes, city: null, job: null, night: nightShift, partial: true };
@@ -1039,7 +1047,7 @@
     try {
       await saving;
       crowd = await loadCrowd();
-      if (!LIVE) crowd.push({ minutes, city: null, job: null, night: nightShift });
+      includeMe({ minutes, city: null, job: null, night: nightShift });
     } catch (err) {
       console.error(err);
       crowd = [];
@@ -1050,11 +1058,14 @@
 
   $('cityBack').addEventListener('click', () => renderResults());
 
-  $('curiousBtn').addEventListener('click', () => {
+  // The same invitation sits at the top of the crowd card and above the share card.
+  const goCurious = () => {
     $('results').hidden = true;
     $('explore').hidden = true;
     showStep(2);
-  });
+  };
+  $('curiousBtn').addEventListener('click', goCurious);
+  $('curiousBtnTop').addEventListener('click', goCurious);
 
   $('submitBtn').addEventListener('click', async () => {
     const btn = $('submitBtn');
@@ -1066,7 +1077,7 @@
       await saveAnswer(me);
       try { localStorage.setItem(STORE_KEY, JSON.stringify(me)); } catch {}
       crowd = await loadCrowd();
-      if (!LIVE) crowd.push({ minutes: me.minutes, city: me.city, job: me.job, night: !!me.night });
+      includeMe({ minutes: me.minutes, city: me.city, job: me.job, night: !!me.night });
       // Start on their own city and job; they can tap "Everyone" to widen it.
       filter = { city: true, job: true };
       hideLoading();
@@ -1138,7 +1149,7 @@
     loadCrowd().then(c => {
       hideLoading();
       crowd = c;
-      if (!LIVE) crowd.push({ minutes: me.minutes, city: me.city, job: me.job, night: !!me.night });
+      includeMe({ minutes: me.minutes, city: me.city, job: me.job, night: !!me.night });
       renderResults();
     }).catch(err => { hideLoading(); console.error(err); });
   }
