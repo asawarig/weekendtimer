@@ -554,3 +554,5 @@ button { font: inherit; color: inherit; }
 .time-hint { text-align: center; margin: 10px 0 0; color: #555; font-size: 18px; }
 .time-hint[hidden] { display: none; }
 .curious.curious-top { margin: 14px 0 4px; }
+.stat { align-items: center; }
+.stat .mini-clock { width: 96px; max-width: 96px; margin: 0 0 8px; }

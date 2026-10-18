@@ -996,10 +996,19 @@
     const nightLabel = me.night ? ' on nights' : '';
     $('statAllLabel').textContent = me.night ? 'Night shifts log off around' : 'Everyone logs off around';
     $('statAll').textContent = pool.length ? fmt(avg(pool.map(a => a.minutes), start)) : '–';
+    // A little clock on each card, showing that group's time.
+    const statClock = (id, t) => {
+      const card = $(id).parentElement;
+      card.querySelector('.mini-clock')?.remove();
+      if (t !== null) card.prepend(miniClock(t));
+    };
+    statClock('statAll', pool.length ? avg(pool.map(a => a.minutes), start) : null);
     $('statCityLabel').textContent = `${me.city}${nightLabel} logs off around`;
     $('statCity').textContent = cityTimes.length ? fmt(avg(cityTimes, start)) : '–';
     $('statJobLabel').textContent = `People in ${me.job}${nightLabel} log off around`;
     $('statJob').textContent = jobTimes.length ? fmt(avg(jobTimes, start)) : '–';
+    statClock('statCity', cityTimes.length ? avg(cityTimes, start) : null);
+    statClock('statJob', jobTimes.length ? avg(jobTimes, start) : null);
 
     $('filters').innerHTML = (partial
       ? [['all', me.night ? 'All night shifts' : 'Everyone']]
