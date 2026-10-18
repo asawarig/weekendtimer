@@ -38,6 +38,8 @@ window.JOB_AREAS = [
   { name: 'On the road', examples: 'driver, delivery, pilot, cabin crew', keywords: 'driver delivery partner rider courier pilot cabin crew air hostess transport' },
   { name: 'Hands-on work', examples: 'electrician, plumber, salon, fitness, tailor', keywords: 'electrician plumber mechanic carpenter tailor salon beautician barber fitness trainer gym technician' },
   { name: 'Creative & Arts', examples: 'artist, musician, photographer', keywords: 'artist musician actor photographer painter dancer writer' },
+  { name: 'Founder', examples: 'founder, co-founder, business owner', keywords: 'founder co-founder cofounder entrepreneur startup business owner self-employed' },
+  { name: 'CXO', examples: 'CEO, CMO, CTO, CFO, COO', keywords: 'cxo ceo cmo cto cfo coo cpo chro cro cio ciso cdo cbo chief executive officer md managing director president vp vice president head leadership' },
   { name: 'Something else', examples: '', keywords: 'other' },
 ];
 window.OCCUPATIONS = window.JOB_AREAS.map(a => a.name);

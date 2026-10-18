@@ -397,12 +397,14 @@
   });
 
   // Occupation: searchable dropdown of areas of work. Typing a job title also finds its area
-  // (e.g. "nurse" -> Healthcare), matching the start of words so "ca" finds Finance only.
+  // (e.g. "nurse" -> Healthcare, "CEO" -> CXO), matching the start of words so "ca" finds Finance only.
   const AREA = Object.fromEntries(window.JOB_AREAS.map(a => [a.name, `${a.name} ${a.examples} ${a.keywords}`.toLowerCase()]));
   const jobMatch = (o, q) => {
     if (!q) return true;
     const text = AREA[o] || o.toLowerCase(), words = text.split(/[^a-z0-9]+/);
-    return q.length <= 2 ? words.includes(q) || o.toLowerCase().startsWith(q) : words.some(w => w.startsWith(q)) || text.includes(q);
+    // Short queries match whole words (2 letters) or word starts (3), so "cto" finds CXO, not "doctor".
+    if (q.length <= 2) return words.includes(q) || o.toLowerCase().startsWith(q);
+    return words.some(w => w.startsWith(q)) || (q.length > 3 && text.includes(q));
   };
   function setJob(j) { job = j; $('submitBtn').disabled = !j; }
   const jobCombo = combo({ input: $('jobInput'), list: $('jobList'), options: window.OCCUPATIONS, onPick: setJob, match: jobMatch });
