@@ -938,7 +938,7 @@
       card = 'night'; xFirst = false;
     } else if (d < -15) {
       const n = pct(true);
-      line = 'You have a great work-life balance, it makes great content. Talk about it on X!';
+      line = 'You have a great work-life balance, it makes for great content. Talk about it on X!';
       post = `I plan to log off before ${n ? `${n}%` : 'most'} of India today. Work-life balance, unlocked. When are you logging off?`;
       card = n ? `early-${n}` : 'early'; xFirst = true;
     } else if (d > 15) {
