@@ -319,6 +319,12 @@
     document.body.classList.remove('modal-open');
     showTeaser();
   }
+  // Closing goes back to step 1, e.g. to switch a time picked as AM by mistake to PM.
+  $('nightClose').addEventListener('click', () => {
+    $('nightAsk').hidden = true;
+    document.body.classList.remove('modal-open');
+  });
+  $('nightAsk').addEventListener('click', e => { if (e.target === $('nightAsk')) $('nightClose').click(); });
   $('nightYes').addEventListener('click', () => answerNight(true));
   $('nightNo').addEventListener('click', () => answerNight(false));
   $('nightAsk').addEventListener('keydown', e => {
@@ -898,8 +904,42 @@
     </svg>`;
   }
 
+  // Share card. Compared with everyone's average once there are CROWD_MIN answers, otherwise
+  // with India's secondary-research average. Within 15 minutes counts as "on the average".
+  const SITE_URL = 'https://asawarig.github.io/weekendtimer/';
+  const X_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.8 3h3.2l-7 8 8.2 10h-6.4l-5-6.1L5 21H1.8l7.5-8.6L1.5 3H8l4.5 5.6zm-1.1 16.2h1.8L7.4 4.7H5.5z"/></svg>';
+  const LI_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4v11H3zm7 0h3.8v1.6h.1c.5-1 1.8-2 3.8-2 4 0 4.8 2.6 4.8 6v5.4h-4v-4.8c0-1.2 0-2.7-1.6-2.7s-1.9 1.3-1.9 2.6v4.9h-4z"/></svg>';
+  function renderShare(pool, start) {
+    const day = !me.night;
+    const crowdAvg = pool.length >= CROWD_MIN ? avg(pool.map(a => a.minutes), start) : null;
+    const ref = crowdAvg !== null ? crowdAvg : day ? window.INDIA_LOGOFF : null;
+    const d = ref === null ? null : norm(me.minutes, start) - norm(ref, start);
+    const whose = crowdAvg !== null ? (day ? "everyone's average" : 'the night-shift average') : "India's average";
+    const mins = d === null ? '' : (() => { const a = Math.abs(d), h = Math.floor(a / 60), m = a % 60; return (h ? `${h}h ` : '') + (m ? `${m}m` : ''); })().trim();
+    let line, post, xFirst;
+    if (d !== null && d < -15) {
+      line = 'You have a great work-life balance, it makes great content. Talk about it on X!';
+      post = `I logged off at ${fmt(me.minutes)} today, ${mins} before ${whose}. When do you log off?`;
+      xFirst = true;
+    } else if (d === null || d > 15) {
+      line = "You've been working really hard! Talk about it on LinkedIn.";
+      post = d === null ? `I logged off at ${fmt(me.minutes)} after a night shift. When do you log off?`
+        : `I logged off at ${fmt(me.minutes)} today, ${mins} after ${whose}. When do you log off?`;
+      xFirst = false;
+    } else {
+      line = "Looks like you agree with the country's average. How does it make you feel? Let us know by sharing about it.";
+      post = `I logged off at ${fmt(me.minutes)} today, right around ${whose}. When do you log off?`;
+      xFirst = true;
+    }
+    const x = `<a class="btn btn-x" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(post)}&url=${encodeURIComponent(SITE_URL)}">${X_ICON} Share on X</a>`;
+    const li = `<a class="btn btn-li" target="_blank" rel="noopener" href="https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(post + ' ' + SITE_URL)}">${LI_ICON} Share on LinkedIn</a>`;
+    $('shareLine').textContent = line;
+    $('shareBtns').innerHTML = xFirst ? x + li : li + x;
+  }
+
   function renderResults() {
     const pool = peers(), start = startFor();
+    renderShare(pool, start);
     $('youCard').innerHTML = `
       <span class="label">You're logging off at</span>
       <span class="big">${fmt(me.minutes)}</span>

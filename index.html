@@ -19,7 +19,7 @@
     if (apple || ios) document.documentElement.classList.add('no-crayon-filter');
   })();
 </script>
-<link rel="stylesheet" href="style.css?v=95">
+<link rel="stylesheet" href="style.css?v=96">
 </head>
 <body>
 
@@ -89,7 +89,7 @@
     <div class="nav-right">
       <a class="nav-plum" href="https://www.plumhq.com" target="_blank" rel="noopener">
         <span class="by">by</span>
-        <img src="assets/plum-logo.png?v=95" alt="Plum" width="80" height="25">
+        <img src="assets/plum-logo.png?v=96" alt="Plum" width="80" height="25">
       </a>
     </div>
   </div>
@@ -188,6 +188,11 @@
 
     <div class="you crayon-box" id="youCard"></div>
 
+    <div class="share crayon-box" id="shareCard">
+      <p class="share-line" id="shareLine"></p>
+      <div class="share-btns" id="shareBtns"></div>
+    </div>
+
     <div class="stats">
       <div class="stat crayon-box fill-yellow"><span class="label" id="statAllLabel">Everyone logs off around</span><span class="big" id="statAll">–</span></div>
       <div class="stat crayon-box fill-blue"><span class="label" id="statCityLabel">Your city</span><span class="big" id="statCity">–</span></div>
@@ -253,6 +258,7 @@
 
 <div class="detail-backdrop" id="nightAsk" hidden>
   <div class="night-ask crayon-box" role="dialog" aria-modal="true" aria-labelledby="nightAskQ">
+    <button type="button" class="dt-close" id="nightClose" aria-label="Close, go back and change the time"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
     <svg class="night-ask-moon" aria-hidden="true"><use href="#i-moon"/></svg>
     <p id="nightAskQ">Oh, seems like it's a little too late to log off from work, do you work the night shift?</p>
     <div class="night-ask-actions">
@@ -282,8 +288,8 @@
 </div>
 
 
-<script src="config.js?v=95"></script>
-<script src="data.js?v=95"></script>
-<script src="app.js?v=95"></script>
+<script src="config.js?v=96"></script>
+<script src="data.js?v=96"></script>
+<script src="app.js?v=96"></script>
 </body>
 </html>

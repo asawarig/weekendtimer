@@ -541,3 +541,13 @@ button { font: inherit; color: inherit; }
 @keyframes lcSpin { to { transform: rotate(360deg); } }
 .loading-text { margin: 0; font-family: var(--hand); font-size: 24px; text-align: center; }
 @media (prefers-reduced-motion: reduce) { .loading-clock line { animation-duration: 4s, 48s; } }
+
+/* Share card: a line that fits how their time compares, then X and LinkedIn buttons. */
+.share { padding: 18px 20px; margin: 0 0 20px; text-align: center; }
+.share-line { margin: 0 0 14px; font-family: var(--hand); font-size: 24px; line-height: 1.25; }
+.share-btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.share-btns .btn { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-size: 22px; }
+.share-btns .btn svg { width: 20px; height: 20px; fill: currentColor; }
+.btn-x  { --fill: #161616; color: #fff; }
+.btn-li { --fill: #0a66c2; color: #fff; }
+.night-ask .dt-close { top: 8px; right: 8px; }
