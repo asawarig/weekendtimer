@@ -551,5 +551,3 @@ button { font: inherit; color: inherit; }
 .btn-x  { --fill: #161616; color: #fff; }
 .btn-li { --fill: #0a66c2; color: #fff; }
 .night-ask .dt-close { top: 8px; right: 8px; }
-.share-preview { display: block; width: min(260px, 70%); margin: 0 auto 14px; border-radius: 14px; border: 3px solid var(--ink); }
-.share-preview[hidden] { display: none; }

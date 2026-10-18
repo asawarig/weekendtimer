@@ -54,3 +54,11 @@ city logs off at 7:04 PM") and the sun is skipped. Research times come from `CIT
 - Thane, Navi Mumbai → Mumbai; Gurugram, Noida, Ghaziabad, Faridabad → Delhi; Howrah → Kolkata.
 - Before a city is chosen (or for "Other city"), India's 8-city average, 6:56 PM.
 - Cities with no research data say "You're the first from Kochi!" until they reach 10 answers.
+
+## Share cards
+
+The X and LinkedIn buttons post a line like "I plan to log off before 60% of India today" with a link
+to a small page in `s/` (e.g. `s/early-60.html`). Each page carries Open Graph / Twitter card tags, so the
+post shows a matching image (`s/early-60.jpg`), and it forwards visitors to the site. Percentages are
+rounded to the nearest 5%. To change the design, edit `tools/share-card.html` and rebuild with
+`node tools/make-share-cards.js` (see the comment at the top of that file).

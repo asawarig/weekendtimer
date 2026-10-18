@@ -918,100 +918,38 @@
     const ref = crowdAvg !== null ? crowdAvg : day ? window.INDIA_LOGOFF : null;
     const d = ref === null ? null : norm(me.minutes, start) - norm(ref, start);
     const mine = norm(me.minutes, start);
-    const clampPct = n => Math.min(99, Math.max(1, n));
-    const pctAfter = others >= CROWD_MIN ? clampPct(Math.round(pool.filter(a => norm(a.minutes, start) > mine).length / others * 100)) : null;
-    const pctBefore = others >= CROWD_MIN ? clampPct(Math.round(pool.filter(a => norm(a.minutes, start) < mine).length / others * 100)) : null;
-    const who = day ? 'India' : 'night-shift India';
-    const mins = d === null ? '' : (() => { const a = Math.abs(d), h = Math.floor(a / 60), m = a % 60; return (h ? `${h}h ` : '') + (m ? `${m} min` : ''); })().trim();
-    // kind: early / late / even. img: the headline on the share image, as [small, big, small].
-    let line, post, img, xFirst;
-    if (d !== null && d < -15) {
-      line = 'You have a great work-life balance, it makes great content. Talk about it on X!';
-      img = pctAfter !== null ? ['I plan to log off before', `${pctAfter}%`, `of ${who} today`] : ['I plan to log off', mins, `before ${who}'s average`];
-      post = `${img.join(' ')}. Work-life balance, unlocked. When are you logging off?`;
-      xFirst = true;
-    } else if (d === null || d > 15) {
+    // Share of others logging off after (or before) them, to the nearest 5%, matching the cards in s/.
+    const pct = after => {
+      if (others < CROWD_MIN) return null;
+      const n = pool.filter(a => after ? norm(a.minutes, start) > mine : norm(a.minutes, start) < mine).length;
+      return Math.min(95, Math.max(5, Math.round(n / others * 20) * 5));
+    };
+    let line, post, card, xFirst;
+    if (!day) {
       line = "You've been working really hard! Talk about it on LinkedIn.";
-      img = d === null ? ['I plan to log off at', fmt(me.minutes), 'after a night shift']
-        : pctBefore !== null ? ['I plan to log off after', `${pctBefore}%`, `of ${who} today`] : ['I plan to log off', mins, `after ${who}'s average`];
-      post = `${img.join(' ')}. Someone send chai. When are you logging off?`;
-      xFirst = false;
+      post = "I plan to log off after a night shift, while India's waking up. When are you logging off?";
+      card = 'night'; xFirst = false;
+    } else if (d < -15) {
+      const n = pct(true);
+      line = 'You have a great work-life balance, it makes great content. Talk about it on X!';
+      post = `I plan to log off before ${n ? `${n}%` : 'most'} of India today. Work-life balance, unlocked. When are you logging off?`;
+      card = n ? `early-${n}` : 'early'; xFirst = true;
+    } else if (d > 15) {
+      const n = pct(false);
+      line = "You've been working really hard! Talk about it on LinkedIn.";
+      post = `I plan to log off after ${n ? `${n}%` : 'most'} of India today. Someone send chai. When are you logging off?`;
+      card = n ? `late-${n}` : 'late'; xFirst = false;
     } else {
       line = "Looks like you agree with the country's average. How does it make you feel? Let us know by sharing about it.";
-      img = ['I plan to log off at', fmt(me.minutes), `right when ${who} does`];
-      post = `I plan to log off at ${fmt(me.minutes)} today, right when most of ${who} does. Peak average. When are you logging off?`;
-      xFirst = true;
+      post = 'I plan to log off right when India does today. Peak average. When are you logging off?';
+      card = 'even'; xFirst = true;
     }
-    const x = `<a class="btn btn-x" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(post)}&url=${encodeURIComponent(SITE_URL)}">${X_ICON} Share on X</a>`;
-    const li = `<a class="btn btn-li" target="_blank" rel="noopener" href="https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(post + ' ' + SITE_URL)}">${LI_ICON} Share on LinkedIn</a>`;
+    // The link points at a small page in s/ whose preview image matches the post.
+    const link = `${SITE_URL}s/${card}.html`;
+    const x = `<a class="btn btn-x" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(post)}&url=${encodeURIComponent(link)}">${X_ICON} Share on X</a>`;
+    const li = `<a class="btn btn-li" target="_blank" rel="noopener" href="https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(post + ' ' + link)}">${LI_ICON} Share on LinkedIn</a>`;
     $('shareLine').textContent = line;
-    $('shareBtns').innerHTML = (xFirst ? x + li : li + x)
-      + '<button type="button" class="btn btn-ghost" id="shareImgBtn">Save image</button>';
-    shareImage = null;
-    makeShareImage(img, fmt(me.minutes)).then(blob => {
-      if (!blob) return;
-      shareImage = new File([blob], 'log-your-logoff.png', { type: 'image/png' });
-      const url = URL.createObjectURL(blob);
-      $('sharePreview').src = url;
-      $('sharePreview').hidden = false;
-      // Phones can share the image straight into X, LinkedIn, WhatsApp or Instagram.
-      if (navigator.canShare && navigator.canShare({ files: [shareImage] })) $('shareImgBtn').textContent = 'Share image';
-    });
-    $('shareImgBtn').addEventListener('click', async () => {
-      if (!shareImage) return;
-      if (navigator.canShare && navigator.canShare({ files: [shareImage] })) {
-        try { await navigator.share({ files: [shareImage], text: `${post} ${SITE_URL}` }); } catch (e) {}
-      } else {
-        const a = document.createElement('a');
-        a.href = $('sharePreview').src; a.download = shareImage.name; a.click();
-      }
-    });
-  }
-
-  // A square share image drawn on a canvas: the headline, their time, a little clock, the site.
-  let shareImage = null;
-  async function makeShareImage([small1, big, small2], time) {
-    try {
-      await Promise.all([document.fonts.load('80px "Gochi Hand"'), document.fonts.load('40px "Patrick Hand"')]);
-      const S = 1080, c = document.createElement('canvas');
-      c.width = c.height = S;
-      const g = c.getContext('2d');
-      const [top, bottom] = skyAt(me.minutes);
-      const bg = g.createLinearGradient(0, 0, 0, S);
-      bg.addColorStop(0, top); bg.addColorStop(1, bottom);
-      g.fillStyle = bg; g.fillRect(0, 0, S, S);
-      // Card
-      const card = (x, y, w, h, r, fill) => {
-        g.beginPath(); g.roundRect(x, y, w, h, r); g.fillStyle = fill; g.fill();
-        g.lineWidth = 10; g.strokeStyle = '#161616'; g.stroke();
-      };
-      card(70, 70, S - 140, S - 140, 48, '#fffdf8');
-      g.textAlign = 'center'; g.fillStyle = '#161616';
-      const fit = (text, max, font) => { let size = max; do { g.font = `${size}px ${font}`; size -= 4; } while (g.measureText(text).width > S - 260 && size > 20); };
-      fit(small1, 64, '"Gochi Hand"'); g.fillText(small1, S / 2, 230);
-      g.fillStyle = '#e2352b'; fit(big, 230, '"Gochi Hand"'); g.fillText(big, S / 2, 450);
-      g.fillStyle = '#161616'; fit(small2, 64, '"Gochi Hand"'); g.fillText(small2, S / 2, 540);
-      // Clock showing their time
-      const cx = S / 2, cy = 700, R = 105;
-      g.beginPath(); g.arc(cx, cy, R, 0, Math.PI * 2); g.fillStyle = '#e4f2fc'; g.fill(); g.lineWidth = 12; g.strokeStyle = '#161616'; g.stroke();
-      for (let i = 0; i < 12; i++) {
-        const a = i / 12 * Math.PI * 2, r1 = i % 3 ? R - 22 : R - 32;
-        g.beginPath(); g.moveTo(cx + Math.sin(a) * r1, cy - Math.cos(a) * r1); g.lineTo(cx + Math.sin(a) * (R - 10), cy - Math.cos(a) * (R - 10));
-        g.lineWidth = i % 3 ? 5 : 8; g.stroke();
-      }
-      const hand = (ang, len, w, col) => { g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + Math.sin(ang) * len, cy - Math.cos(ang) * len); g.lineCap = 'round'; g.lineWidth = w; g.strokeStyle = col; g.stroke(); };
-      hand((me.minutes % 60) / 60 * Math.PI * 2, 82, 12, '#3a9bd9');
-      hand(((me.minutes % 720) / 720) * Math.PI * 2, 58, 16, '#e2352b');
-      g.beginPath(); g.arc(cx, cy, 13, 0, Math.PI * 2); g.fillStyle = '#161616'; g.fill();
-      g.font = '56px "Gochi Hand"'; g.fillStyle = '#161616'; g.fillText(time, cx, cy + R + 62);
-      // Footer, inside the card so it reads on any sky colour.
-      g.font = '36px "Patrick Hand"'; g.fillStyle = '#555';
-      g.fillText('Log your logoff by Plum  ·  ' + SITE_URL.replace(/^https:\/\//, '').replace(/\/$/, ''), S / 2, S - 105);
-      return await new Promise(r => c.toBlob(r, 'image/png'));
-    } catch (e) {
-      console.error(e);
-      return null;
-    }
+    $('shareBtns').innerHTML = xFirst ? x + li : li + x;
   }
 
   function renderResults() {
