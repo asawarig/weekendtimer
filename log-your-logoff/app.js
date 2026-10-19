@@ -915,8 +915,10 @@
 
   // Share card. Compared with everyone's average once there are CROWD_MIN answers, otherwise
   // with India's secondary-research average. Within 15 minutes counts as "on the average".
-  // The page's own folder, so share links work on fun.plumhq.com and on the GitHub Pages address.
-  const SITE_URL = new URL('./', location.href.split(/[?#]/)[0]).href;
+  // The site's own address: the Webflow Cloud mount path when the Astro page sets it, otherwise the
+  // page's folder (GitHub Pages). Share links then point wherever the site is running.
+  const SITE_URL = window.SITE_BASE ? new URL(window.SITE_BASE, location.origin).href
+    : new URL('./', location.href.split(/[?#]/)[0]).href;
   const X_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.8 3h3.2l-7 8 8.2 10h-6.4l-5-6.1L5 21H1.8l7.5-8.6L1.5 3H8l4.5 5.6zm-1.1 16.2h1.8L7.4 4.7H5.5z"/></svg>';
   const LI_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4v11H3zm7 0h3.8v1.6h.1c.5-1 1.8-2 3.8-2 4 0 4.8 2.6 4.8 6v5.4h-4v-4.8c0-1.2 0-2.7-1.6-2.7s-1.9 1.3-1.9 2.6v4.9h-4z"/></svg>';
   function renderShare(pool, start) {

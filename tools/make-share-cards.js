@@ -8,7 +8,7 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
 
-const SITE = 'https://fun.plumhq.com/log-your-logoff/';
+const SITE = 'https://www.plumhq.com/fun/log-your-logoff/';
 const cards = [];
 for (let n = 5; n <= 95; n += 5) {
   cards.push({ key: `early-${n}`, s1: 'I plan to log off before', big: `${n}%`, s2: 'of India today', hour: 5.5, title: `I plan to log off before ${n}% of India today` });
