@@ -2,7 +2,7 @@
 // Log your logoff, as an Astro page for Webflow Cloud. All scripts, styles and images are plain files in
 // public/ (copied from log-your-logoff/ by `npm run sync`, which `npm run build` also runs); their URLs start with the app's mount path.
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
-const v = 108;
+const v = 109;
 ---
 <!doctype html>
 <html lang="en">
@@ -16,6 +16,7 @@ const v = 108;
 <meta property="og:description" content="What time will you stop working today? Add yours and see when the rest of India logs off.">
 <meta property="og:image" content="https://www.plumhq.com/fun/log-your-logoff/s/even.jpg">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAE9klEQVR4nMRWfUxbVRQ/r699/eD1u8DAmYFxDsc6Zjaim6KLDMaUONFE40eGTKP+YQbEKDOaDDRGZ4zblD82tyUmxgRjZEMmCmhcoplbMsZGxCUaRBMRKC1t6Qf9en2e+/ZeaUsp5W3JfsnNPfeec+/53XPvOe8p4SZDCTJhNps3qFSqV4gcjUY73W73byADsgkolcrOVlPeA0T+yO0vw247yIBsAmVq1dZnjDpBPuWf3zoD8iCbwGSUYyTZxfEMyIQiF6OCgoJaq9VaCTmC2OKamlxslyOgzc/PP4l9v0KhOKfX621kMtxvL0s3lOZYls0ntigO4NoT2KtBDgGj0ViKp7hAUdRecYrqbi8+GPjOPhnjqavp9mSO6L58q+gDaV9c+zySuGAymdasiIDFYjEwDDOAol0wUkD4WLPJv61cvRd3XbXUZkS3fZP2uaP7jHNkjUiiAtO1H9PWmCsBGlOsGxfeTgasBvx971iYnVu0RsgRdZU6U2+HhclTg18ksQ737Mrkb9EEhv1F7KqJrFKCv6fDxq67laFghVi/hqG+edvG0go+IJKow+toWo4AScs2aXCyxaS8rUh2pgJZe6zZzEtjJPEmpKV+CgGbzbYLO+HBlK6ip6s2ajRwnai+S8Outiqc4rAUo7BjSQKYPvWS3NLAWuEGobmBTX4/9UsSQDwuCVV2Rn7s01BlV6uShg3JuoQTg8FgwU44tSkPPGaWNkEWxHkeDrp8CTkbCs00GHQwNxcEA76DYqwxZq/X604hgIpEmLQa4A+fEjIIqjcxYC9dXOpD2L7yhwSZxjb0ZwQ2r021uzwWgbMjESAppFMDhwQE4FXrsRMIJK5ArVYbJJkGKn7+ahhIG5/iIBN4xcKpOVoFjd0b4fUTHpj1LdiPT8VA2odKumw8LJuQJQHLZQlWv3EiF1mo6XOHCwshC97vmoPjfQHg8Qzs3Q1Q+EgrzP8zAsHBj+HV+/+Dpx/UEUcJ+3v2OWamPfF8gTDHrXa5XBMpBAgwRXzX2PHc2GeraIVi+fozODQPHV1hmK9oBHPVU3hSGrwXz8DDgU448KxesInGeFjbNMVT1xgFHA5HIgIpWYD6UVGif7oSjkEOqNmshR/eNcATqs9honMPBP+6BPqKWvj5Dzph8+NwKCY6B57nh5PXpxBA5WlJ/qTHPwk5QsMooO1JA/S2BqDk19dg6r0d0LZ7IXqdPT5HJh8EKTHGSqjHFzqNohYN+S/2m+Hecs2KvwPJODsS4po+9NCicx+2W5xOp0/Sp0RAVLQLzBAvHPIEJ1053URGTDhj8PIRT0Qao/P2ZOeCnwzraPwiXsG+nAyMeZTvdLtVX1K4uDCSPKfxCJnqxN/TMdh9wCkUH9H55ZmZmS0opuR1pv8BLh6P78EFwtG9AV6/8w2nd2Ao5E43/BTT8OiZwKINvr8Y9NTsX3COiGBAG9OdE2Ss9ximS/hjuYum6V4caiIxML50xAOVdyhHm+rySu5br87T61K5+4Jx+OX3cOD4t8Hx4bHohiRVCPO+HvN+JJOvrA8Mr2IbdoPYdOk6nZoKsVqIxeOgCIZJ4xd9usmjQ+e1s7Oz55fysewLFyvkIRQfhRUAnX+NzlvQ+b/Z7HJOMTEaj+HGD+F93rmE2Si+nz5s3dlOLYtAGhiMTDG+kQIgdZvjHB6PhxSuyEo3uq4icyPwPwAAAP//OAabLgAAAAZJREFUAwDudbsg7qegZQAAAABJRU5ErkJggg==">
 <link rel="icon" type="image/svg+xml" href={`${base}assets/favicon.svg?v=${v}`}>
 <link rel="icon" type="image/png" sizes="32x32" href={`${base}assets/favicon-32.png?v=${v}`}>
 <link rel="apple-touch-icon" href={`${base}assets/apple-touch-icon.png?v=${v}`}>
